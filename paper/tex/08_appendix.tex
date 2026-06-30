@@ -1,88 +1,65 @@
 \appendices
 
-\section{Detailed mechanism-solver construction}
+\section{Mechanism-solver construction}
 \label{app:mechanism}
 
-We elaborate on the bisection used to obtain the mechanism solution
-$(\sigma, p_1,\dots,p_n)$ for an action profile $\boldsymbol{\eps}$.
+The mechanism solution $(\sigma, p_1,\dots,p_n)$ for a given action profile
+$\boldsymbol{\eps}$ is obtained by a nested bisection. For each candidate
+$\sigma$, we find the largest per-group $p_g$ that satisfies the $I$-fold
+$(p_g, \sigma)$-subsampled Gaussian at $(\eps_g, \delta)$-DP under (C1).
+Because the achieved $\eps$ is monotone-increasing in $p_g$, a unique $p_g
+\in (0, 1]$ exists (capped at $1$ if the budget cannot be exhausted); we
+locate it by binary search using the R\'enyi-DP
+accountant~\cite{mironov2017renyi} until the achieved $\eps$ matches
+$\eps_g$ to a relative tolerance of $10^{-3}$. We then bisect $\sigma$ on
+top of this inner search, using the realised batch size $B(\sigma) =
+\sum_g |G_g|\, p_g(\sigma, \boldsymbol{\eps})$ as the outer-loop monitor,
+until $B$ matches $E_b$ to the same tolerance. Profiles in which any $p_g$
+falls below $10^{-5}$ are flagged infeasible per
+\cref{ass:participation}; below that threshold the group's contribution to
+(C2) is numerically negligible and the iDP contract is trivially
+satisfied. The qualitative results are insensitive to this threshold
+across $[10^{-6}, 10^{-3}]$.
 
-\paragraph{Inner step: $p_g$ from $(\sigma, \eps_g)$.}
-For each fixed $\sigma$ and each group~$g$, we want the largest $p_g \in [0,1]$
-satisfying the $I$-fold $(p_g, \sigma)$-subsampled Gaussian at $(\eps_g,
-\delta)$-DP under (C1). Since the $\eps$ value of the subsampled Gaussian is
-strictly increasing in $p_g$ (more sampling $\Rightarrow$ more privacy
-loss), a unique $p_g \in (0, 1]$ exists, capped at $1$ if the budget cannot
-be exhausted. We compute the per-group $\eps$ by R\'enyi-DP
-composition~\cite{mironov2017renyi} and binary-search $p_g$ to bring this
-$\eps$ to $\eps_g$ to within a relative tolerance of $10^{-3}$.
-
-\paragraph{Outer step: $\sigma$ from $(p_g, \boldsymbol{\eps})$.}
-Define $B(\sigma) = \sum_g |G_g|\, p_g(\sigma, \boldsymbol{\eps})$ as the
-realised expected batch size. Since each $p_g$ is monotone-increasing in
-$\sigma$, so is $B$. We bisect $\sigma$ to bring $B$ to the target $E_b$,
-again to within a relative tolerance of $10^{-3}$.
-
-\paragraph{Participation threshold.}
-We declare profile infeasible (per \cref{ass:participation}) if any
-$p_g$ falls below $10^{-5}$. Below this threshold the group's contribution
-to (C2) is numerically negligible and the iDP contract is trivially
-satisfied. We verified the qualitative results are insensitive to the
-choice of this threshold across $[10^{-6}, 10^{-3}]$.
-
-\paragraph{MIA advantage.}
-Given the mechanism solution $(\sigma, p_g)$, we compute the MIA advantage
-of group~$g$ exactly from the privacy-loss-distribution of the $I$-fold
-$(p_g, \sigma)$-subsampled Gaussian using
-\cite{google-dp-accounting}, then evaluate the trade-off function and
-\cref{eq:adv}. This is the same formulation used by
-\citet{kaiser2026your} and yields the tightest analytical MIA advantage
-for the resulting mechanism.
+Once $(\sigma, p_g)$ is fixed, the realised MIA advantage of group~$g$ is
+computed exactly from the privacy-loss-distribution of the $I$-fold
+$(p_g, \sigma)$-subsampled Gaussian~\cite{google-dp-accounting} by
+evaluating the trade-off function and~\eqref{eq:adv}. This matches the
+formulation of \citet{kaiser2026your} and yields the tightest analytical
+MIA advantage for the resulting mechanism.
 
 \section{Validity of $V(\sigma) = 1/(1+\sigma^2)$}
 \label{app:V}
 
-\paragraph{Frame.} The convex-DP-ERM excess-risk bound of
-\citet{bassily2014private} is, for a 1-Lipschitz $L$-strongly-convex
-$\ell\colon \mathcal{X} \times \mathcal{D} \to \R$,
+\citet{bassily2014private} prove that for a $1$-Lipschitz strongly-convex
+$\ell\colon \mathcal{X} \times \mathcal{D} \to \R$, the excess empirical
+risk of DP-ERM satisfies
 \[
-\E[\hat L(\widehat\theta) - \hat L(\theta^*)] = O\Bigl(\frac{d \log(1/\delta)}{n^2 \eps^2}\Bigr).
+\E[\hat L(\widehat\theta) - \hat L(\theta^*)]
+\;=\; O\!\left(\frac{d\,\log(1/\delta)}{n^2\,\eps^2}\right).
 \]
-Translating to noise multiplier via the moments accountant of
-\citet{abadi2016deep}, this reads $O(\sigma^2 \cdot d / n^2)$ in
-\emph{excess} empirical risk. Treating ``model utility'' as
-$-$``excess risk'' and re-normalising to $V \in [0,1]$ produces $V \propto
-1/(1+\alpha\sigma^2)$ for a problem-dependent $\alpha$. We set $\alpha = 1$
-for simplicity; sensitivity analysis (\cref{app:sensitivity}) shows the
-qualitative results are unchanged for $\alpha \in [0.1, 10]$.
+Under the moments accountant of \citet{abadi2016deep} this translates into
+a $\sigma^2 \cdot d / n^2$ dependence of the excess risk. Treating model
+utility as the negative of excess risk and renormalising to $[0, 1]$
+gives $V(\sigma) \propto 1/(1 + \alpha\,\sigma^2)$ for a problem-dependent
+constant $\alpha$; we set $\alpha = 1$ for simplicity. The bound assumes
+convexity, but the empirical literature on DP-SGD in deep
+learning~\cite{tramer2021private, abadi2016deep, boenisch2023have} confirms
+the same qualitative direction. The equilibrium results that follow do
+not depend on the particular functional form: only on $V$ being
+continuous, monotone-decreasing in $\sigma$, and bounded.
 
-\paragraph{Beyond convex.} For non-convex deep-learning losses no analogous
-closed-form bound is known. The empirical
-literature~\cite{tramer2021private, abadi2016deep, boenisch2023have}
-reports monotone test-accuracy degradation with $\sigma$ in standard
-benchmarks. We use $V(\sigma) = 1/(1+\sigma^2)$ as a \emph{directional}
-proxy; the qualitative results of our paper (existence of asymmetric NEs,
-monotone coalition attack, externality lemma) do not depend on the precise
-shape of $V$; they require only that $V$ is continuous, monotone-decreasing
-in $\sigma$, and bounded.
-
-\section{Sensitivity to grid resolution and to $V$}
+\section{Sensitivity checks}
 \label{app:sensitivity}
 
-\paragraph{Grid refinement.} For the 2-player setting of \cref{fig:C1} we
-re-ran the sweep with $K = 44$ log-spaced points (twice the resolution) and
-verified that the set of pure NEs is contained, modulo the new
-intermediate grid points, in the set found at $K = 22$. Specifically, the
-asymmetric NEs at $K=22$ persist at $K=44$ and the new intermediate grid
-points do not introduce additional NEs.
-
-\paragraph{Functional form of $V$.} The same 2-player sweep was repeated
-with $V(\sigma) = e^{-\sigma}$ (an exponential decay alternative); the pure
-NEs shift quantitatively (mostly toward higher $\eps$ values, since
-$V_{\exp}$ falls off faster than $V_{1/(1+\sigma^2)}$ as $\sigma$ grows)
-but the asymmetric structure is preserved.
-
-\paragraph{Participation threshold.} Lowering the threshold to $10^{-6}$
-extends the feasible region; the NEs found at $10^{-5}$ remain NEs but
-additional ones appear in the newly feasible interior. Raising the threshold
-to $10^{-3}$ shrinks the feasible region and removes some NEs at the
-boundary; the surviving NEs do not move.
+We re-ran the 2-player setting of \cref{fig:C1} at $K = 44$ (twice the
+resolution along each axis) and obtained the same eight pure NEs at
+nearly identical locations; the asymmetric multiplicity is therefore not
+a grid artefact. Substituting $V(\sigma) = e^{-\sigma}$ for $V(\sigma) =
+1/(1+\sigma^2)$ shifts the NEs quantitatively---they sit at somewhat
+higher $\eps$ values because the exponential decays faster as $\sigma$
+grows---but the asymmetric structure is preserved. Lowering the
+participation threshold from $10^{-5}$ to $10^{-6}$ enlarges the feasible
+region and uncovers a few additional NEs on the new interior; raising
+it to $10^{-3}$ removes some boundary NEs while leaving the
+interior ones unchanged.

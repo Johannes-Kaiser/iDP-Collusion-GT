@@ -46,34 +46,34 @@ stable to refinement.
 
 \subsection{The two ingredients of utility}
 
-\paragraph{Model-utility value $V(\sigma)$.}
-We model model utility as a monotone-decreasing scalar function of the
-mechanism's noise multiplier $\sigma$. We use
+Utility has two pieces: a shared model-quality term and a per-player
+privacy cost. For the model-quality term we use
 \begin{equation}
-V(\sigma) \;=\; \frac{1}{1 + \sigma^2}. \label{eq:V}
+V(\sigma) \;=\; \frac{1}{1 + \sigma^2},
+\label{eq:V}
 \end{equation}
-\emph{Frame.} The convex-DP-ERM excess-empirical-risk bound of
-\citet{bassily2014private} (FOCS 2014) is, for a Lipschitz strongly-convex
-loss, $O(d \log(1/\delta)/(n\eps)^2)$, which translates under the moments
-accountant of \citet{abadi2016deep} (CCS 2016) into a $\sigma^2/n^2$
-scaling of the excess risk. \emph{Validity in our setting.} The bound is
-proven in the convex setting; deep-learning DP-SGD is generally non-convex
-and the bound does not apply directly. We use $V(\sigma) = 1/(1+\sigma^2)$
-as a \emph{directional} proxy. The empirical literature on DP-SGD in deep
-learning~\cite{tramer2021private, abadi2016deep, boenisch2023have} reports
-monotonic degradation of test accuracy with $\sigma$, supporting the
-qualitative form. None of our game-theoretic results depend on the precise
-shape of $V$: only that it is continuous, monotone-decreasing in $\sigma$,
-and bounded.
+which is monotone-decreasing in the noise multiplier $\sigma$, bounded in
+$[0, 1]$, and motivated by the convex-DP-ERM excess-empirical-risk bound
+of \citet{bassily2014private}: for a Lipschitz strongly-convex loss the
+excess empirical risk of DP-SGD scales as $O(d \log(1/\delta)/(n\eps)^2)$,
+which under the moments accountant of \citet{abadi2016deep} translates
+into a $\sigma^2/n^2$ dependence. The bound is proven in the convex
+setting, while deep-learning DP-SGD is generally non-convex; we therefore
+use \eqref{eq:V} as a directional proxy. The empirical literature on
+DP-SGD in deep learning~\cite{tramer2021private, abadi2016deep,
+boenisch2023have} reports monotonic degradation of test accuracy with
+$\sigma$, supporting the qualitative form. None of the equilibrium
+results that follow depend on the precise shape of $V$, only on its being
+continuous, monotone-decreasing in $\sigma$, and bounded.
 
-\paragraph{Realised MIA advantage $A_i(\boldsymbol{\eps})$.}
-We use the tight analytical MIA advantage of the $I$-fold $(p_i, \sigma)$-
-subsampled Gaussian as defined in~\eqref{eq:adv}. This is the same advantage
-measure used by \citet{kaiser2026your}; our choice transfers their
-empirical measurement to a strategic setting unchanged. The functional
-dependence $A_i(\boldsymbol{\eps})$ runs through $(p_i, \sigma)$, both of
-which are determined by the entire vector $\boldsymbol{\eps}$ via the
-mechanism's (C1) and (C2).
+For the privacy cost, we use the tight analytical MIA advantage of the
+$I$-fold $(p_i, \sigma)$-subsampled Gaussian, defined in~\eqref{eq:adv}.
+This is the advantage measure of \citet{kaiser2026your} and transfers
+their empirical measurement to a strategic setting unchanged. The
+functional dependence $A_i(\boldsymbol{\eps})$ runs through $(p_i,
+\sigma)$, both of which are determined by the entire vector
+$\boldsymbol{\eps}$ via the mechanism's constraints (C1) and (C2). This
+coupling is the source of the externality.
 
 \subsection{Decomposition into contracted and excess cost}
 \label{sec:decomposition}

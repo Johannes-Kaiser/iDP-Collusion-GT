@@ -45,6 +45,11 @@
 % natbib-style citet via cite package fallback:
 \providecommand{\citet}[1]{\cite{#1}}
 
+% Render IEEEtran's \paragraph as inline-bold (no a)/b)/c) labels)
+\makeatletter
+\renewcommand{\paragraph}[1]{\par\medskip\noindent\textbf{#1}\hspace{0.5em}}
+\makeatother
+
 % Title and authors
 \title{The Privacy Externality Game:\\
 Strategic Budget Choices in Sampling-Based Individual Differential Privacy}
