@@ -80,4 +80,16 @@ N.~Carlini, S.~Chien, M.~Nasr, S.~Song, A.~Terzis, and F.~Tramer, ``Membership i
 \bibitem{carlini2022privacy}
 N.~Carlini, M.~Jagielski, C.~Zhang, N.~Papernot, A.~Terzis, and F.~Tramer, ``The privacy onion effect: Memorization is relative,'' in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2022.
 
+\bibitem{li2024fedpcs}
+Z.~Li, Z.~Lin, A.~Yi, and X.~Chen, ``A game-theoretic framework for privacy-aware client sampling in federated learning,'' \emph{arXiv preprint arXiv:2412.05636}, 2024.
+
+\bibitem{donahue2021optimality}
+K.~Donahue and J.~Kleinberg, ``Optimality and stability in federated learning: A game-theoretic approach,'' in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2021.
+
+\bibitem{tu2025idhfl}
+e.~a. Tu, ``{ID-HFL}: Incentive-driven heterogeneous federated learning based on game theory and differential privacy,'' \emph{Knowledge-Based Systems}, 2025.
+
+\bibitem{ma2024evolutionary}
+L.~Ma \emph{et~al.}, ``Differential privacy in federated learning: An evolutionary game analysis,'' \emph{Applied Sciences}, vol.~15, no.~6, p. 2914, 2025.
+
 \end{thebibliography}

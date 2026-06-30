@@ -24,3 +24,20 @@ __pycache__/
 *.png
 *.pkl
 *.csv
+
+# LaTeX intermediates
+paper/main.aux
+paper/main.log
+paper/main.bbl
+paper/main.blg
+paper/main.out
+paper/main.toc
+paper/tex/*.aux
+
+# Experiment caches (regeneratable)
+game_experiments/_cache/
+
+# Editor/OS
+.DS_Store
+
+# Do NOT exclude paper/main.pdf or paper/figures/*.pdf — those are products.

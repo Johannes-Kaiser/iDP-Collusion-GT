@@ -224,7 +224,7 @@ def experiment_E3():
         ns = [2, 3, 4, 5]
         rows = []
         for n in ns:
-            game = small_scenario(n=n, awareness="aware", use_coarse=(n >= 4))
+            game = small_scenario(n=n, awareness="aware", use_coarse=(n >= 3))
             t0 = time.time()
             history = game.best_response_dynamics(
                 start=tuple([8.0] * n), max_iter=15,
@@ -358,7 +358,7 @@ def experiment_E5():
         rows = []
         for reg in ("aware", "naive"):
             for n in [2, 3, 4, 5]:
-                game = small_scenario(n=n, awareness=reg, use_coarse=(n >= 4))
+                game = small_scenario(n=n, awareness=reg, use_coarse=(n >= 3))
                 history = game.best_response_dynamics(
                     start=tuple([8.0] * n), max_iter=15,
                 )

@@ -60,57 +60,78 @@ a non-negative cost on every other player.
 
 \subsection{Nash equilibria in the naive regime}
 
-\begin{proposition}[Naive equilibrium]
-\label{prop:naive-ne}
-In the naive regime~\eqref{eq:utility-naive}, every action $\eps_i$ that is
-admissible and feasible is a strict best response that depends only on the
-shared $\sigma(\boldsymbol{\eps})$ and the player's own $(B_i, C_i,
-\eps_i^{\max})$. Consequently any pure profile $\boldsymbol{\eps}^*$ in which
-every player has best-responded to the prevailing $\sigma$ is a Nash
-equilibrium.
-\end{proposition}
-
-\begin{proof}
 A naive player's utility~\eqref{eq:utility-naive} depends on
-$\boldsymbol{\eps}_{-i}$ only through $\sigma(\boldsymbol{\eps})$. Thus, taking
-the others' actions as given, the player's best response is the $\eps_i \in
-\mathcal{A}$ minimising the linear penalty $\eps_i/\eps_i^{\max}$ subject to
-maintaining feasibility, which is the smallest admissible $\eps_i$ for which
-the mechanism still admits a solution. This is independent of the realised
-advantage $A_i(\boldsymbol{\eps})$.
-\end{proof}
+$\boldsymbol{\eps}_{-i}$ only through $\sigma(\boldsymbol{\eps})$. Each player
+therefore trades off the linear cost $\eps_i / \eps_i^{\max}$ against the
+indirect effect of $\eps_i$ on the shared $\sigma$. In the symmetric setting
+we observe three pure Nash equilibria.
 
-\begin{remark}
-Proposition~\ref{prop:naive-ne} formalises why the iDP attack of
-Kaiser et al.~\cite{kaiser2026your} succeeds in practice: naive players rationally
-choose low budgets without recognising the externality, and the equilibrium
-they reach is precisely the configuration in which $\sigma$ is largest, the
-realised MIA advantage on every \emph{other} player's data is highest, and yet
-every formal $(\eps_g, \delta)$-iDP contract is honoured.
-\end{remark}
+\begin{observation}[Naive equilibria]
+\label{obs:naive-ne}
+For the symmetric $2$-player aware PEG with $B_i = C_i = 1$, $\eps^{\max}=64$,
+the action grid $\mathcal{A} = \{1,2,4,8,16,32,64\}$, $|G_1|=|G_2|=5000$,
+$E_b=128$, $I=390$, $\delta=10^{-12}$ and $V(\sigma) = 1/(1+\sigma)$, the
+naive-regime PEG admits three pure Nash equilibria:
+\[
+\boldsymbol{\eps}^*_{\text{naive}} \in \{(1, 8),\,(4, 4),\,(8, 1)\}.
+\]
+The symmetric equilibrium $(4,4)$ has realised $A_1 = A_2 = 0.123$. The
+asymmetric equilibria have one player at $A = 0$ and the other at $A = 0.275$
+\textnormal{(see Table~\ref{tab:NE})}.
+\end{observation}
+
+The presence of asymmetric equilibria is the formal expression of the
+budget-manipulation attack: the configuration $(1, 8)$ is exactly the
+``one player sacrifices privacy for the other'' regime. The asymmetry is
+self-stabilising---neither player has a profitable unilateral deviation,
+because the high-$\eps$ player gains both model utility \emph{and} no
+externality cost (the nominal-cost-only utility~\eqref{eq:utility-naive} does
+not see the realised $A_2$).
 
 \subsection{Equilibria in the aware regime}
 
-The aware regime is qualitatively different. Each player now internalises a
-non-trivial dependence on $\boldsymbol{\eps}_{-i}$ through the realised MIA
-advantage $A_i(\boldsymbol{\eps})$, and the resulting game need not admit a
-pure Nash equilibrium.
+The aware regime internalises the realised advantage through
+$A_i(\boldsymbol{\eps})$. The resulting game has a qualitatively different
+structure: in the same symmetric setting as Observation~\ref{obs:naive-ne}, all
+pure Nash equilibria lie at low budgets and are asymmetric by one grid step.
 
-\begin{proposition}[Cycling of best responses]
-\label{prop:aware-cycle}
-There exist parameterisations of the aware-regime PEG (with $n \geq 2$,
-$|\mathcal{A}| \geq 5$, all players sharing $(B_i, C_i)$) in which
-best-response dynamics cycles indefinitely and the game has no pure Nash
-equilibrium.
-\end{proposition}
+\begin{observation}[Aware equilibria]
+\label{obs:aware-ne}
+Under the same parameters as Observation~\ref{obs:naive-ne}, the aware-regime
+PEG admits two pure Nash equilibria:
+\[
+\boldsymbol{\eps}^*_{\text{aware}} \in \{(1, 2),\,(2, 1)\}.
+\]
+Both equilibria are asymmetric by exactly one grid step, yield $A_1 + A_2
+\approx 0.131$, and dominate the naive symmetric equilibrium $(4, 4)$ in
+total realised MIA: aware players reach an equilibrium with roughly half the
+realised population-level vulnerability of naive players
+\textnormal{(see Table~\ref{tab:NE})}.
+\end{observation}
 
-We demonstrate this empirically in \cref{sec:experiments}. The intuition is
-that two players in a symmetric setting face an anti-coordination subgame: when
-one player picks a low $\eps$ to suppress own MIA, the other now benefits from
-a high $\eps$ to recover model utility before the externality bites; this is
-the same alternation observed in matching-pennies-style games. Mixed
-equilibria, computed via fictitious play~\cite{monderer1996potential},
-nevertheless exist.
+The picture is the following. Both aware players have the incentive to pick a
+small $\eps$ for their own realised privacy, but they cannot both pick the
+smallest grid value $\eps = 1$: at the symmetric point $(1, 1)$, $\sigma$
+explodes (very small $\eps$ everywhere) and the model-utility term $V(\sigma)$
+collapses. Each player's best response is therefore to deviate \emph{upward}
+by one grid step, recovering model utility while shifting the externality onto
+the other player. The result is an anti-coordination equilibrium: one player
+plays $\eps = 1$, the other plays $\eps = 2$, and the realised advantages
+$(A_1, A_2)$ are unequal but small in aggregate. Crucially, both equilibria
+are at the low end of the action grid---aware players move \emph{toward}
+privacy at the equilibrium, not away from it.
+
+\begin{remark}
+Observations~\ref{obs:naive-ne} and~\ref{obs:aware-ne} together imply that the
+attack on iDP of Kaiser et al.~\cite{kaiser2026your} is precisely the
+asymmetric naive equilibrium $(1, 8)$ or $(8, 1)$. The asymmetric equilibrium
+is rational, not adversarial: any naive player who consults their iDP contract
+and sees only $(\eps_i, \delta)$ will gladly accept a low $\eps_i$ and is
+indifferent to the realised $A_j$ on their peer. The aware regime is the only
+way to internalise the externality, and even then the equilibrium remains
+asymmetric---i.e., the aware regime mitigates but does not eliminate the
+externality.
+\end{remark}
 
 \subsection{Coalition Stackelberg and the attack recovery}
 

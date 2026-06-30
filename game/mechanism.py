@@ -156,16 +156,41 @@ _MECH_CACHE: dict = {}
 
 def solve_mechanism_cached(eps_target, group_sizes, expected_batch_size, steps,
                             delta=1e-12) -> MechanismResult:
-    key = (
-        tuple(sorted(zip(map(float, eps_target), map(int, group_sizes)))),
-        int(expected_batch_size), int(steps), float(delta),
-    )
+    """Order-preserving wrapper around solve_mechanism with a multi-set cache.
+    The cache key is multiset-canonicalised (so permutations share work), but
+    the returned MechanismResult has its arrays aligned to the *input* order
+    of (eps_target, group_sizes)."""
+    n = len(eps_target)
+    eps_t = [float(e) for e in eps_target]
+    gs = [int(g) for g in group_sizes]
+    pairs = list(zip(eps_t, gs))
+    # Canonicalised key for caching: sorted multi-set
+    sorted_pairs_idx = sorted(range(n), key=lambda i: pairs[i])
+    sorted_pairs = [pairs[i] for i in sorted_pairs_idx]
+    key = (tuple(sorted_pairs), int(expected_batch_size), int(steps), float(delta))
     if key not in _MECH_CACHE:
+        sorted_eps = [p[0] for p in sorted_pairs]
+        sorted_gs = [p[1] for p in sorted_pairs]
         _MECH_CACHE[key] = solve_mechanism(
-            eps_target=eps_target, group_sizes=group_sizes,
+            eps_target=sorted_eps, group_sizes=sorted_gs,
             expected_batch_size=expected_batch_size, steps=steps, delta=delta,
         )
-    return _MECH_CACHE[key]
+    cached = _MECH_CACHE[key]
+    # Map cached (sorted-order) arrays back to the input order
+    # inverse permutation: input[i] -> sorted index sorted_pairs_idx[i]
+    inv = [0] * n
+    for sort_pos, orig_idx in enumerate(sorted_pairs_idx):
+        inv[orig_idx] = sort_pos
+    return MechanismResult(
+        sigma=cached.sigma,
+        sample_rates=np.array([cached.sample_rates[inv[i]] for i in range(n)]),
+        eps_per_group=np.array([cached.eps_per_group[inv[i]] for i in range(n)]),
+        steps=cached.steps, delta=cached.delta,
+        eps_target=np.array(eps_t),
+        group_sizes=np.array(gs),
+        expected_batch_size=int(expected_batch_size),
+        feasible=cached.feasible,
+    )
 
 
 if __name__ == "__main__":
