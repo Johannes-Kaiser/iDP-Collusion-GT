@@ -1,0 +1,97 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{subcaption}
+\usepackage[hidelinks]{hyperref}
+\usepackage[capitalise]{cleveref}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Custom macros
+\newcommand{\eps}{\varepsilon}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Adv}{\mathrm{Adv}}
+\newcommand{\NE}{\mathrm{NE}}
+\newcommand{\BR}{\mathrm{BR}}
+\newcommand{\PoEV}{\mathrm{PoEV}}
+\newcommand{\PoA}{\mathrm{PoA}}
+\newcommand{\PEG}{\mathrm{PEG}}
+\newcommand{\iDP}{i\text{-}\mathrm{DP}}
+\newcommand{\DP}{\mathrm{DP}}
+\newcommand{\MIA}{\mathrm{MIA}}
+\newcommand{\GS}[1]{|G_{#1}|}
+
+% Title and authors
+\title{The Privacy Externality Game:\\
+Strategic Budget Choices in Sampling-Based Individual Differential Privacy}
+
+\author{
+\IEEEauthorblockN{Anonymous Submission}
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Individual differential privacy (iDP) gives each data contributor a personal
+privacy budget. The currently dominant realisation---sampling-based iDP---turns
+each contributor's chosen budget into a per-sample inclusion rate, with a single
+noise multiplier shared across the dataset. We show that this realisation creates
+a privacy externality: lowering one's own budget mechanically raises the membership-
+inference (MIA) advantage on every other data point. Although every individual
+$(\eps_i, \delta)$-iDP guarantee is honoured, the realised privacy of any one
+contributor is determined by the choices of all others. We model the resulting
+strategic situation as a finite, normal-form game, the Privacy Externality Game
+(PEG), and study its equilibria. We prove that the privacy externality is
+monotone: $\partial A_i / \partial \eps_j \leq 0$ for $j \neq i$ under the
+mechanism's binding constraints. We then characterise the game under two
+realistic awareness regimes---naive (players perceive only their nominal
+$\eps_i$) and aware (players perceive the realised MIA advantage)---and show
+that the aware regime exhibits no pure Nash equilibrium in canonical settings,
+admitting only mixed equilibria. A coalition Stackelberg analysis recovers the
+attack of Kaiser et al.\ (SaTML 2026) as the rational best response of any
+coordinated set of data holders. The implication is that the empirical
+$62\%$-vulnerability attack rate observed in iDP is not adversarial but
+equilibrium behaviour: even non-malicious players in iDP impose privacy
+externalities on every other contributor.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Differential privacy, individual differential privacy, game theory, Nash
+equilibrium, collusion, membership inference.
+\end{IEEEkeywords}
+
+\input{tex/01_intro}
+\input{tex/02_background}
+\input{tex/03_game}
+\input{tex/04_analysis}
+\input{tex/05_experiments}
+\input{tex/06_related}
+\input{tex/07_discussion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\input{tex/08_appendix}
+
+\end{document}

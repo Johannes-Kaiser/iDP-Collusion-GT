@@ -1,0 +1,139 @@
+\section{Equilibrium Analysis}
+\label{sec:analysis}
+
+\subsection{Monotonicity of the externality}
+
+The privacy externality of sampling-based iDP is monotone in every other
+player's budget under the binding mechanism constraints.
+
+\begin{lemma}[Privacy externality]
+\label{lem:externality}
+Consider the sampling-based iDP mechanism of \cref{def:sampling-idp} on a
+profile $\boldsymbol{\eps} \in \mathcal{F}$ at which constraints (C1) bind
+for every group and (C2) binds at $E_b$. Then for every $i \neq j$,
+\begin{equation}
+\frac{\partial A_i(\boldsymbol{\eps})}{\partial \eps_j} \;\leq\; 0.
+\label{eq:externality-lemma}
+\end{equation}
+That is, lowering the budget of any other group $j$ (a more privacy-conscious
+peer) weakly raises group $i$'s realised MIA advantage.
+\end{lemma}
+
+\begin{proof}[Proof sketch]
+We work with the R\'enyi-DP form of (C1), in which $\rho_g = 2 I \alpha\,
+p_g^2 / \sigma^2$ at a chosen order $\alpha$. Since $\rho_g$ is monotone-
+increasing in $\eps_g$, $p_g$ is determined by $\sigma$ and $\eps_g$ via $p_g
+= (\sigma/\sqrt{2I\alpha})\,\sqrt{\rho_g(\eps_g)}$. Substituting into (C2),
+\begin{equation}
+\sum_g \frac{|G_g|}{M}\,\frac{\sigma}{\sqrt{2I\alpha}}\,
+\sqrt{\rho_g(\eps_g)} \;=\; \frac{E_b}{M},
+\end{equation}
+which gives $\sigma$ as a continuously differentiable, monotone-decreasing
+function of any single $\rho_g$ (and so of any single $\eps_g$). Implicit
+differentiation yields, for every $i \neq j$,
+\(
+\partial \sigma / \partial \eps_j \;<\; 0
+\)
+and
+\(
+\partial p_i / \partial \eps_j \;>\; 0,
+\)
+because if $\eps_j$ falls then $\sigma$ rises and so does $p_i$ via the (C1)
+relation at fixed $\eps_i$.
+
+The MIA advantage $A_i = \Adv(\mathcal{M}_{p_i,\sigma,I})$ is, for the
+$I$-fold subsampled Gaussian, increasing in $p_i$ and decreasing in $\sigma$
+along the privacy-profile envelope (this is exactly the statement that the
+trade-off function of the subsampled Gaussian is sharper for larger sampling
+rate or smaller noise multiplier~\cite{balle2020privacy, dong2022gaussian}).
+The compound effect of $\partial \eps_j$ on $A_i$ via $(\sigma, p_i)$ along
+the binding constraint surface is therefore non-positive, which is
+\eqref{eq:externality-lemma}.
+\end{proof}
+
+\Cref{lem:externality} is the formal expression of the empirical finding of
+Kaiser et al.~\cite{kaiser2026your}: choosing a low budget for oneself
+mechanically inflates the realised privacy risk of every other contributor.
+This monotonicity makes the strategic situation we analyse one of negative
+externalities: every additional unit of privacy demanded by one player imposes
+a non-negative cost on every other player.
+
+\subsection{Nash equilibria in the naive regime}
+
+\begin{proposition}[Naive equilibrium]
+\label{prop:naive-ne}
+In the naive regime~\eqref{eq:utility-naive}, every action $\eps_i$ that is
+admissible and feasible is a strict best response that depends only on the
+shared $\sigma(\boldsymbol{\eps})$ and the player's own $(B_i, C_i,
+\eps_i^{\max})$. Consequently any pure profile $\boldsymbol{\eps}^*$ in which
+every player has best-responded to the prevailing $\sigma$ is a Nash
+equilibrium.
+\end{proposition}
+
+\begin{proof}
+A naive player's utility~\eqref{eq:utility-naive} depends on
+$\boldsymbol{\eps}_{-i}$ only through $\sigma(\boldsymbol{\eps})$. Thus, taking
+the others' actions as given, the player's best response is the $\eps_i \in
+\mathcal{A}$ minimising the linear penalty $\eps_i/\eps_i^{\max}$ subject to
+maintaining feasibility, which is the smallest admissible $\eps_i$ for which
+the mechanism still admits a solution. This is independent of the realised
+advantage $A_i(\boldsymbol{\eps})$.
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:naive-ne} formalises why the iDP attack of
+Kaiser et al.~\cite{kaiser2026your} succeeds in practice: naive players rationally
+choose low budgets without recognising the externality, and the equilibrium
+they reach is precisely the configuration in which $\sigma$ is largest, the
+realised MIA advantage on every \emph{other} player's data is highest, and yet
+every formal $(\eps_g, \delta)$-iDP contract is honoured.
+\end{remark}
+
+\subsection{Equilibria in the aware regime}
+
+The aware regime is qualitatively different. Each player now internalises a
+non-trivial dependence on $\boldsymbol{\eps}_{-i}$ through the realised MIA
+advantage $A_i(\boldsymbol{\eps})$, and the resulting game need not admit a
+pure Nash equilibrium.
+
+\begin{proposition}[Cycling of best responses]
+\label{prop:aware-cycle}
+There exist parameterisations of the aware-regime PEG (with $n \geq 2$,
+$|\mathcal{A}| \geq 5$, all players sharing $(B_i, C_i)$) in which
+best-response dynamics cycles indefinitely and the game has no pure Nash
+equilibrium.
+\end{proposition}
+
+We demonstrate this empirically in \cref{sec:experiments}. The intuition is
+that two players in a symmetric setting face an anti-coordination subgame: when
+one player picks a low $\eps$ to suppress own MIA, the other now benefits from
+a high $\eps$ to recover model utility before the externality bites; this is
+the same alternation observed in matching-pennies-style games. Mixed
+equilibria, computed via fictitious play~\cite{monderer1996potential},
+nevertheless exist.
+
+\subsection{Coalition Stackelberg and the attack recovery}
+
+\begin{proposition}[Coalition best response recovers the attack]
+\label{prop:coalition-attack}
+Fix a target $t$ and a coalition $C$ of size $k = |C|$, with $\lambda \to
+\infty$ in Definition~\ref{def:coalition} (the coalition cares only about
+maximising the target's vulnerability). The coalition's best response is
+$\eps_i = \eps^{\min}$ for every $i \in C$, and the target's MIA advantage
+$A_t$ is monotone-increasing in $k$.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+By Lemma~\ref{lem:externality}, $\partial A_t / \partial \eps_i \leq 0$ for
+every $i \in C$. Setting every $\eps_i$ as low as feasible maximises $A_t$
+pointwise on $\mathcal{A}^{k}$. The monotonicity in $k$ is the same
+lemma applied to adding a member to $C$: doing so strictly enlarges the set of
+budgets that pull $\sigma$ upward, raising $A_t$.
+\end{proof}
+
+Proposition~\ref{prop:coalition-attack} establishes that the budget-
+manipulation attack of Kaiser et al.~\cite{kaiser2026your} is precisely the
+\emph{rational} best response of any coordinated subset of data holders,
+regardless of intent. Whether the coalition is malicious is irrelevant: any
+group of aware players whose joint utility weights their target's harm equally
+to their own utility will pick the same action vector.

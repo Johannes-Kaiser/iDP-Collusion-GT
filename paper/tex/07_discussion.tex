@@ -1,0 +1,53 @@
+\section{Discussion and Conclusion}
+\label{sec:discussion}
+
+We have shown that sampling-based individual differential privacy is not just
+\emph{vulnerable} to collusion attacks but \emph{equilibrium-incompatible}:
+the budget-manipulation attack of Kaiser et al.~\cite{kaiser2026your} is the
+rational best response of any coordinated subset of data holders, and the
+underlying privacy externality is the equilibrium behaviour of even
+non-malicious players. The implication for designers of iDP systems is that
+the formal $(\eps_i, \delta)$-iDP contract, while honoured at every individual
+record, does not deliver the privacy each contributor expects whenever players
+are aware of the externality.
+
+\paragraph{Limitations of this work.} Three caveats are worth noting.
+First, our model assumes one-shot play. Real deployments of iDP are dynamic:
+contributors join and leave; budgets can be re-negotiated; trainers
+re-train. The repeated-game extension is the natural next step.
+Second, we assume full information about other players' actions.
+Real contracts may keep budgets private, so a Bayesian variant of the PEG
+with private types is a natural and important direction. Third, our
+analysis is restricted to the sampling-based realisation of iDP; the
+\emph{sensitivity-based} realisation~\cite{boenisch2023have} adjusts per-sample
+clipping bounds rather than per-sample sampling rates and does not exhibit the
+same externality (the noise-to-sensitivity ratio is preserved by construction,
+so privacy profiles are unaffected by the budget distribution). Our framework
+specialises to that case as the trivial PEG in which the externality vanishes.
+
+\paragraph{Mitigation.} The natural mitigation is to make the contract
+internalise the externality. The $(\eps_i, \delta, \Delta)$-iDP formulation of
+Kaiser et al.~\cite{kaiser2026your, kaissis2024beyond} adds a $\Delta$-divergence
+bound on the realised vulnerability, restricting the action space of the PEG
+to profiles that satisfy a per-record bound on excess advantage. We expect
+this restriction to admit a unique equilibrium and to drive the Price of
+Excess Vulnerability to zero (by definition). Characterising the constrained
+PEG and identifying its equilibrium is a clean extension of this work.
+
+\paragraph{Wider lesson.} The wider lesson of this paper is that an
+\emph{individual} privacy contract is incomplete: it does not pin down the
+collective dynamics. Where individuals interact strategically (in a single
+machine-learning training, in a federated round, in any future composition of
+the iDP mechanism), the contract must also constrain their joint behaviour or
+the equilibrium will quietly violate every participant's expectations while
+preserving every formal guarantee. The Privacy Externality Game makes this
+gap explicit, formalises the equilibrium, and clarifies what an iDP contract
+must do to close it.
+
+\paragraph{Conclusion.} The promise of iDP---that every data contributor
+controls her own privacy---is broken by the privacy externality of sampling-
+based mechanisms. We formalised the strategic situation faced by iDP data
+contributors as the Privacy Externality Game, proved monotonicity of the
+externality and characterised the equilibria. The result is that the
+collusion attack on iDP is not adversarial but \emph{rational}, and the
+remedy must operate at the level of the contract.

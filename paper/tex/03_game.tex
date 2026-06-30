@@ -1,0 +1,142 @@
+\section{The Privacy Externality Game}
+\label{sec:game}
+
+We formalise the strategic situation faced by data contributors in
+sampling-based iDP as a finite normal-form game.
+
+\subsection{Players, actions and mechanism}
+
+\begin{definition}[Privacy Externality Game]
+\label{def:peg}
+Fix a common $\delta>0$, an expected batch size $E_b$, an iteration count $I$,
+and a set of $n$ \emph{groups} with sizes $|G_1|,\dots,|G_n|$. The Privacy
+Externality Game (PEG) is the tuple $\langle N, \Sigma, U\rangle$ where
+\begin{itemize}
+\item $N = \{1,\dots,n\}$ is the set of players. Each player $i$ controls
+group $i$.
+\item Each player's action set is a finite grid
+$\Sigma_i = \mathcal{A} \subset \R_{>0}$ of admissible
+$\eps$-values, $\eps_i^{\min} \leq \eps_i \leq \eps_i^{\max}$.
+\item Given the action profile $\boldsymbol{\eps} \in \mathcal{A}^n$, the
+mechanism solution $(\sigma(\boldsymbol{\eps}), p_1(\boldsymbol{\eps}),\dots,
+p_n(\boldsymbol{\eps}))$ is determined by Definition~\ref{def:sampling-idp},
+provided the solution exists; if it does not, we say $\boldsymbol{\eps}$ is
+\emph{infeasible}.
+\item Each player's utility $u_i(\boldsymbol{\eps})$ depends on
+$\sigma(\boldsymbol{\eps})$, on the realised MIA advantage
+$A_i(\boldsymbol{\eps}) := \Adv\bigl(\mathcal{M}_{p_i,\sigma,I}\bigr)$, and on
+the player's own action $\eps_i$ (specified per regime below).
+\end{itemize}
+\end{definition}
+
+\begin{assumption}[Feasibility]
+\label{ass:feasibility}
+The action grid $\mathcal{A}^n$ is restricted to its feasible subset
+$\mathcal{F} \subseteq \mathcal{A}^n$ where the mechanism solution exists.
+Infeasible profiles are removed from a player's action set after the others'
+moves are observed.
+\end{assumption}
+
+\subsection{Vulnerability function and externality}
+
+\begin{definition}[Vulnerability function]
+\label{def:vulnerability}
+The \emph{vulnerability function} of player $i$ is
+\[
+A_i\colon \mathcal{F} \to [0, 1],\quad \boldsymbol{\eps} \mapsto
+\Adv\bigl(\mathcal{M}_{p_i(\boldsymbol{\eps}),\,\sigma(\boldsymbol{\eps}),\,I}\bigr).
+\]
+\end{definition}
+
+In Pej\'o et al.'s \emph{Together or Alone}~\cite{pejo2019together}, the
+analogous function $\Phi_n(p_1,p_2)$ measured \emph{accuracy loss} arising
+from a player's own privacy choice. In our setting, $A_i(\boldsymbol{\eps})$
+measures \emph{realised privacy risk} arising from \emph{every player's} choice.
+This is the privacy externality.
+
+\subsection{Awareness regimes}
+
+We separate two contracting situations. Both occur in practice and the
+distinction is critical to interpreting the equilibrium.
+
+\paragraph{Naive regime.}
+The player perceives the cost of disclosure as her \emph{nominal} budget
+$\eps_i$:
+\begin{equation}
+u_i^{\textrm{naive}}(\boldsymbol{\eps}) \;=\; B_i\, V(\sigma(\boldsymbol{\eps}))
+- C_i\, \frac{\eps_i}{\eps_i^{\max}}.
+\label{eq:utility-naive}
+\end{equation}
+
+\paragraph{Aware regime.}
+The player perceives the cost of disclosure as the \emph{realised} MIA
+advantage:
+\begin{equation}
+u_i^{\textrm{aware}}(\boldsymbol{\eps}) \;=\; B_i\, V(\sigma(\boldsymbol{\eps}))
+- C_i\, A_i(\boldsymbol{\eps}).
+\label{eq:utility-aware}
+\end{equation}
+
+Here $V$ is a model-utility proxy that is monotone-decreasing in $\sigma$ (we
+use $V(\sigma) = 1/(1+\sigma)$ throughout) and $B_i, C_i > 0$ are player-
+specific weights mirroring the $B$ and $C$ in
+Pej\'o et al.~\cite{pejo2019together}. The naive regime models a player who
+has been given the formal $(\eps_i,\delta)$ guarantee and prices it
+verbatim; the aware regime models a player who knows the realised vulnerability
+of her data after the others have played.
+
+\begin{remark}
+A naive player who knows only her contracted $(\eps_i,\delta)$ cannot detect
+that her actual risk has increased through her peers' choices. The realised
+MIA advantage $A_i(\boldsymbol{\eps})$ may exceed her contractually expected
+vulnerability without any formal guarantee being broken. We make this point
+formal in Lemma~\ref{lem:externality}.
+\end{remark}
+
+\subsection{Coalition variant}
+
+\begin{definition}[$k$-coalition Stackelberg PEG]
+\label{def:coalition}
+Fix a target index $t \in N$ and a colluding subset $C \subset N \setminus
+\{t\}$ with $|C| = k$. The $k$-coalition Stackelberg PEG is the two-stage game
+in which:
+\begin{enumerate}
+\item Stage~1 (leader): the coalition jointly commits to an action vector
+$\boldsymbol{\eps}_C \in \mathcal{A}^k$ to maximise
+\(
+\lambda \cdot A_t(\boldsymbol{\eps}) + \sum_{i \in C} u_i^{\textrm{aware}}(\boldsymbol{\eps}),
+\)
+where $\lambda \geq 0$ controls the coalition's appetite for harming~$t$ vs.\
+maintaining their own utility.
+\item Stage~2 (followers): the non-coalition players $\{t\} \cup (N \setminus
+(C \cup \{t\}))$ best-respond.
+\end{enumerate}
+\end{definition}
+
+\subsection{Equilibrium concepts}
+
+We will use two equilibrium concepts. The \emph{pure Nash equilibrium} of the
+PEG is an $\boldsymbol{\eps}^* \in \mathcal{F}$ such that
+$u_i(\eps_i^*, \boldsymbol{\eps}_{-i}^*) \geq u_i(\eps_i, \boldsymbol{\eps}_{-i}^*)$
+for every player $i$ and every $\eps_i \in \mathcal{A}$ such that
+$(\eps_i, \boldsymbol{\eps}_{-i}^*) \in \mathcal{F}$. Where no pure NE exists,
+we characterise the empirical mixed equilibrium reached by fictitious
+play~\cite{monderer1996potential}.
+
+\begin{definition}[Price of Excess Vulnerability]
+\label{def:poev}
+Let $\boldsymbol{\eps}^{(0)}$ be a baseline profile (in our experiments,
+$\boldsymbol{\eps}^{(0)} = (\bar\eps,\dots,\bar\eps)$ for the mean of the
+admissible grid). For an equilibrium $\boldsymbol{\eps}^*$, the
+\emph{Price of Excess Vulnerability} is
+\begin{equation}
+\PoEV(\boldsymbol{\eps}^*)\;=\;
+\frac{\sum_{i\in N} A_i(\boldsymbol{\eps}^*) - \sum_{i\in N} A_i(\boldsymbol{\eps}^{(0)})}
+{\sum_{i\in N} A_i(\boldsymbol{\eps}^{(0)})}.
+\label{eq:poev}
+\end{equation}
+\end{definition}
+$\PoEV \geq 0$ measures the population-level inflation of MIA advantage at the
+equilibrium relative to the uniform baseline. It is the privacy analogue of
+Pej\'o et al.'s Price of Privacy, expressed in vulnerability rather than
+accuracy loss.

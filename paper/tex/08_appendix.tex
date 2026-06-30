@@ -1,0 +1,62 @@
+\appendices
+
+\section{Detailed mechanism-solver construction}
+\label{app:mechanism}
+
+We elaborate on the bisection used to obtain the mechanism solution
+$(\sigma, p_1,\dots,p_n)$ for an action profile $\boldsymbol{\eps}$.
+
+\paragraph{Inner step: $p_g$ from $(\sigma, \eps_g)$.}
+For each fixed $\sigma$ and each group~$g$, we want the largest $p_g \in [0, 1]$
+satisfying the $I$-fold $(p_g, \sigma)$-subsampled Gaussian
+at $(\eps_g, \delta)$-DP under (C1). Since the $\eps$ value of the
+subsampled Gaussian is strictly increasing in $p_g$ (more sampling
+$\Rightarrow$ more privacy loss), a unique $p_g \in (0, 1]$ exists, capped at
+$1$ if the budget cannot be exhausted. We compute the per-group $\eps$ by
+R\'enyi-DP composition~\cite{mironov2017renyi} (which gives an upper bound that
+binds in the regime of interest) and binary-search $p_g$ to bring this $\eps$
+to $\eps_g$ to within a relative tolerance of $10^{-3}$.
+
+\paragraph{Outer step: $\sigma$ from $(p_g, \boldsymbol{\eps})$.}
+Define $B(\sigma) = \sum_g |G_g|\, p_g(\sigma, \boldsymbol{\eps})$ as the
+realised expected batch size. Since each $p_g$ is monotone-increasing in
+$\sigma$, so is $B$. We bisect $\sigma$ to bring $B$ to the target $E_b$,
+again to within a relative tolerance of $10^{-3}$.
+
+\paragraph{MIA advantage.}
+Given the mechanism solution $(\sigma, p_g)$, we compute the MIA advantage of
+group~$g$ from the privacy-loss-distribution of the $I$-fold $(p_g, \sigma)$-
+subsampled Gaussian using \cite{google-dp-accounting}, then evaluate the
+trade-off function and \cref{eq:adv}:
+\begin{equation}
+A_g \;=\; \sup_\alpha \,\bigl(1 - \alpha - T_g(\alpha)\bigr),
+\quad
+T_g(\alpha) \;=\; \sup_{\eps \geq 0} \,\bigl(1 - \delta_g(\eps) - \alpha \cdot e^\eps\bigr)^+.
+\end{equation}
+This is the formulation of Kaiser et al.~\cite{kaiser2026your} and gives the
+tightest analytical MIA advantage for the resulting mechanism.
+
+\section{Caveats on the equilibrium reporting}
+\label{app:caveats}
+
+\paragraph{Cycling in the aware regime.}
+The aware-regime PEG has utility functions that mix a (globally shared)
+$V(\sigma)$ term with a (player-specific) $A_i(\boldsymbol{\eps})$ term. The
+sign of the cross-partials $\partial^2 u_i / \partial \eps_i \partial \eps_j$ is
+not constant on the action grid: at low $\eps_i$, lowering $\eps_j$
+\emph{decreases} $V$ (penalises both players), but at high $\eps_i$ it
+mostly steers $A_i$ upward (penalises player $i$ more). The result is a
+non-supermodular game which admits no pure NE in general. Our experiments
+report the BR-cycle average as a stand-in for an empirical mixed equilibrium.
+
+\paragraph{Sensitivity to the action grid.}
+The choice of action grid $\mathcal{A}$ matters: a coarse grid yields a coarse
+equilibrium. We use $\mathcal{A} = \{1, 2, 4, 8, 16, 32, 64\}$ throughout. A
+sensitivity check with a finer grid (powers of $\sqrt{2}$ between $1$ and $64$)
+yields qualitatively identical curves with smoother transitions.
+
+\paragraph{Choice of $V$ and $C$.}
+We use $V(\sigma) = 1/(1+\sigma)$ and $B_i = C_i = 1$. Pej\'o et
+al.~\cite{pejo2019together} use linear $V$. Our results are qualitatively
+unchanged under either choice provided $V$ is strictly decreasing and convex
+in $\sigma$.

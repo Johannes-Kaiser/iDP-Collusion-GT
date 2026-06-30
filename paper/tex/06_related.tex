@@ -1,0 +1,80 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Individual differential privacy.}
+The classical $(\eps,\delta)$-DP guarantee~\cite{dwork2006calibrating} applies
+uniformly to every record. Personalised DP, introduced by Jorgensen et
+al.~\cite{jorgensen2015conservative}, allows per-record budgets and was first
+realised by attribute deletion and weighting. The sampling-based realisation
+of Boenisch et al.~\cite{boenisch2023have} (NeurIPS 2023) is the most widely
+used today and is the realisation under which the privacy externality we study
+arises. Filtering-based iDP using R\'enyi filters~\cite{feldman2021individual}
+also supports per-record budgets but suffers from catastrophic forgetting and
+is therefore rarely used in practice. Our game framework is specific to the
+sampling-based realisation; we discuss the extension to sensitivity-based iDP
+in \cref{sec:discussion}.
+
+\paragraph{Excess privacy risk and mechanism comparison.}
+Mechanisms calibrated to the same $(\eps,\delta)$ can have very different
+privacy profiles and thus very different realised
+risks~\cite{kaissis2024beyond, balle2020privacy, dong2022gaussian}.
+The $\Delta$-divergence introduced by Kaissis et al.~\cite{kaissis2024beyond}
+provides a notion of approximate Blackwell-dominance that quantifies the
+worst-case excess MIA advantage across mechanism choices and is used by
+Kaiser et al.~\cite{kaiser2026your} to motivate an $(\eps_i, \delta, \Delta)$-iDP
+contract that bounds excess vulnerability. Our PEG is complementary: rather
+than restricting mechanism design, we explain why
+the realised excess vulnerability emerges as the equilibrium of self-interested
+play under the current iDP contract.
+
+\paragraph{Collusion vulnerabilities in iDP.}
+Kaiser et al.~\cite{kaiser2026your} empirically demonstrate that lowering some
+contributors' budgets in sampling-based iDP raises the MIA advantage on every
+other contributor's data, even though every $(\eps_g, \delta)$-DP guarantee
+continues to hold. They model two attacks: a centralised budget-manipulation
+attack and a distributed collusion attack. Our work places both attacks
+inside a single game-theoretic model and shows they correspond to two
+versions of the same Stackelberg best response, executed either by a single
+designated leader (the model trainer) or by a coordinating coalition.
+
+\paragraph{Game theory of privacy and collaborative learning.}
+Pej\'o et al.~\cite{pejo2019together} introduced a two-player game on
+collaborative learning, with players choosing privacy parameters $p \in [0, 1]$
+in an arbitrary privacy mechanism. Their notion of \emph{Price of Privacy} is
+the relative accuracy loss at the equilibrium versus no privacy. Crucially,
+their privacy mechanism's effect on accuracy depends on \emph{both} players'
+choices, but its effect on \emph{privacy} depends only on the player's own
+choice---there is no privacy externality. Our PEG transplants their
+methodology into a setting where the externality is in the privacy direction,
+not the accuracy direction. We retain their conceptual contribution (the Price
+of Privacy) and extend it to the Price of Excess Vulnerability
+(Definition~\ref{def:poev}).
+
+Earlier work studied related game-theoretic privacy questions in different
+settings: Ioannidis and Loiseau~\cite{ioannidis2013linear} model linear
+regression with private features as a non-cooperative game; Chessa, Grossklags
+and Loiseau~\cite{chessa2015game} study non-monetary incentives in data
+analytics; Pawlick and Zhu~\cite{pawlick2016stackelberg} model the
+machine-learner-vs-data-perturber conflict as a Stackelberg game. None of
+these treat the privacy externality of a shared sampling mechanism, which is
+specific to the sampling-based realisation of iDP.
+
+\paragraph{Membership inference attacks.}
+The MIA advantage as we use it follows the formalisation of
+Carlini et al.~\cite{carlini2022membership}, who introduced the likelihood-
+ratio attack (LiRA) as a tight empirical estimator. The privacy onion
+effect~\cite{carlini2022privacy} explains why not every data point is equally
+vulnerable, even at fixed privacy budget; our framework predicts the
+\emph{average} realised MIA advantage and abstracts over per-record onion
+heterogeneity.
+
+\paragraph{Federated learning and incentive design.}
+A separate literature studies privacy-aware incentive design in federated
+learning: a server commits to incentives, and heterogeneous clients respond
+with their own privacy choices, often modelled as a Stackelberg game. This
+includes incentive-driven heterogeneous FL with per-client DP and
+client-sampling models. Our framework can be viewed as a foundational
+description of the strategic floor that any such incentive design must rest
+on: it tells the mechanism designer the equilibrium that emerges in the
+absence of incentives, which is what any incentive scheme needs to improve
+upon.

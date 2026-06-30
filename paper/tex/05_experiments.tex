@@ -1,0 +1,160 @@
+\section{Experimental Evaluation}
+\label{sec:experiments}
+
+We evaluate the PEG numerically across six experiments designed to expose the
+structural properties identified in \cref{sec:analysis}.
+
+\subsection{Setup}
+\label{sec:setup}
+
+\paragraph{Mechanism solver.} For each action profile $\boldsymbol{\eps}$,
+we compute the mechanism solution $(\sigma, p_1,\dots,p_n)$ by bisecting on
+$\sigma$ so that the (C2) batch-size constraint is met, with each $p_g$ chosen
+to make (C1) bind via Mironov-RDP composition~\cite{mironov2017renyi}. We then
+compute each $A_i$ from the privacy-loss-distribution of the $I$-fold
+$(p_i, \sigma)$-subsampled Gaussian using
+\cite{google-dp-accounting}, which gives a numerically tight MIA advantage via
+\cref{eq:adv}.
+
+\paragraph{Scenarios.} Unless stated otherwise, all experiments use $n$
+symmetric groups of $|G_g| = 5000$ samples each, expected batch size $E_b =
+128$, $5$ epochs of training, and $\delta = 10^{-12}$. The action grid is
+$\mathcal{A} = \{1, 2, 4, 8, 16, 32, 64\}$. These choices broadly mirror the
+empirical iDP scenarios of~\cite{kaiser2026your, boenisch2023have}.
+
+\paragraph{Equilibrium reporting.} Where best-response dynamics converges,
+we report the resulting pure Nash equilibrium. Where it cycles (as in the
+aware regime), we report the time-average over the cycle of the last few
+iterations; the same averaging is used in the comparative-statics figures.
+
+\subsection{E1: payoff and advantage landscape, aware vs.\ naive}
+
+\Cref{fig:E1} reports the $2$-player payoff and advantage grids in both
+regimes. Two phenomena are visible. First, the aware-regime utility
+(\Cref{fig:E1}, top) exhibits a saddle pattern that destroys the existence of a
+pure NE in the symmetric setting: regardless of the choice of own $\eps_i$, the
+own utility can always be improved by some unilateral move. Second, the
+realised MIA advantage (\Cref{fig:E1}, bottom row) is materially different
+across the two regimes: in the aware regime, players' own choices steer them
+away from the extremes, whereas in the naive regime, the realised vulnerability
+explodes at low $\eps_i$ because both players race to the smallest budget
+without internalising its externality on themselves and others.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_E1_payoff_grids.pdf}
+\caption{E1: $2$-player payoff $u_1$ and realised MIA advantage $A_1$ as a
+function of own ($\eps_1$, vertical axis) and other ($\eps_2$, horizontal
+axis) budgets, in the aware and naive regimes. Naive players treat their
+nominal $\eps_i$ as the privacy cost; aware players treat the realised
+advantage $A_i$ as the privacy cost. The aware-regime utility (top-left) has
+no clear best-response argmax along either axis, foreshadowing the
+non-existence of a pure Nash equilibrium.}
+\label{fig:E1}
+\end{figure*}
+
+\subsection{E2: 2-player asymmetric group sizes}
+\label{sec:E2}
+
+\Cref{fig:E2} reports the equilibrium budget and the realised MIA advantage
+as a function of the dataset size ratio $|G_1|/|G_2|$. Because best-response
+dynamics cycles in the aware regime, we report the time-average over the
+last 5 iterations of best-response dynamics as the equilibrium proxy. Two
+findings emerge. First, the minority group (lower $|G_g|$) consistently
+suffers a higher realised MIA advantage, because its sampling rate $p_g$ is
+pushed upward by the (C2) batch-size constraint when its own population is
+small. Second, the equilibrium choice of $\eps$ depends on the relative
+position in the dataset: a minority player has a strong incentive to declare
+\emph{more} privacy (lower $\eps$), yet this drives the larger group's
+sampling rate even higher, increasing the larger group's externality cost.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_E2_asymmetric.pdf}
+\caption{E2: equilibrium budget (left) and realised MIA advantage (right) as a
+function of dataset size ratio $|G_1|/|G_2|$, in the aware regime.}
+\label{fig:E2}
+\end{figure*}
+
+\subsection{E3: equilibrium versus number of players}
+\label{sec:E3}
+
+We extend to $n \in \{2,3,4,5\}$ symmetric aware players. \Cref{fig:E3}
+reports the mean equilibrium budget and the mean realised MIA advantage at
+the equilibrium. The mean realised advantage rises with $n$: more players
+means more independent strategic interactions through the shared $\sigma$,
+and the equilibrium drifts toward lower $\eps$ for everyone, raising
+$\sigma$ but also raising each $p_g$ (by (C2)).
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_E3_nplayer.pdf}
+\caption{E3: equilibrium budget (left) and mean realised MIA advantage (right)
+as a function of the number of players $n$ in the symmetric aware-regime
+setting.}
+\label{fig:E3}
+\end{figure*}
+
+\subsection{E4: coalition Stackelberg attack}
+\label{sec:E4}
+
+We fix $n = 5$, designate player $0$ as the target with $\eps_t = 32$, and let
+the remaining $n-1 = 4$ players form a coalition of size $k$, with the
+$n-1-k$ non-coalition players fixed at $\eps = 32$. \Cref{fig:E4} reports
+$A_t$ as a function of $k$. Consistent with
+Proposition~\ref{prop:coalition-attack}, $A_t$ is monotone-increasing in $k$:
+as the coalition grows, more of the dataset's total budget can be driven
+downward, raising the target's sampling rate and its MIA advantage.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_E4_coalition.pdf}
+\caption{E4: realised MIA advantage of the target as a function of coalition
+size $k$. The target plays $\eps_t = 32$; the coalition's optimal $\eps_C$
+is the smallest admissible budget at every $k$, recovering the budget-
+manipulation attack of Kaiser et al.~\cite{kaiser2026your}.}
+\label{fig:E4}
+\end{figure}
+
+\subsection{E5: naive vs.\ aware comparison}
+\label{sec:E5}
+
+\Cref{fig:E5} reports the equilibrium budget and the equilibrium MIA advantage
+across $n \in \{2,3,4,5\}$ in both regimes. The naive regime delivers a higher
+realised MIA advantage at every $n$: naive players ignore the externality,
+and their best response is to declare a low $\eps$ which makes everyone less
+private. Aware players partially internalise this externality and so the
+equilibrium MIA advantage is lower (though not zero, since the externality is
+still mediated by every individual player's own model-utility incentive).
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_E5_awareness.pdf}
+\caption{E5: equilibrium budget and realised MIA advantage for $n \in
+\{2,3,4,5\}$ in the naive and aware regimes. The naive regime always
+yields a higher realised MIA advantage at the equilibrium.}
+\label{fig:E5}
+\end{figure*}
+
+\subsection{E6: privacy externality surface}
+\label{sec:E6}
+
+Finally, we report the realised MIA advantage of a fixed target player as
+the other group's budget and population proportion are swept.
+\Cref{fig:E6} mirrors the analytical computation of
+Figure~3 of \cite{kaiser2026your} but framed through the PEG. The target's
+$A_t$ rises sharply as the other group's $\eps$ falls (strategically equivalent
+to ``the colluders pick low budgets'') and as their relative proportion grows
+(strategically equivalent to ``more colluders''). This is the
+externality lemma made visible: any other player's privacy demand inflates the
+target's vulnerability monotonically.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_E6_surface.pdf}
+\caption{E6: target's realised MIA advantage as a function of the other
+group's budget $\eps_O$ and proportion. The target keeps $\eps_T \in \{4,
+16\}$ fixed. The curves rise as $\eps_O$ falls (more privacy demanded by
+others) and as the proportion of the other group rises.}
+\label{fig:E6}
+\end{figure*}
