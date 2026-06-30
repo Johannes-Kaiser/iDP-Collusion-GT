@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.31)  30 JUN 2026 11:28
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.31)  30 JUN 2026 11:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -548,19 +548,19 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 
 
 ]) (./tex/02_background.tex) (./tex/03_game.tex [2]) (./tex/04_analysis.tex [3]) (./tex/05_experiments.tex [4]
-<figures/fig_E1_payoff_grids.pdf, id=257, 497.25526pt x 394.08383pt>
+<figures/fig_E1_payoff_grids.pdf, id=265, 497.40479pt x 147.78767pt>
 File: figures/fig_E1_payoff_grids.pdf Graphic file (type pdf)
 <use figures/fig_E1_payoff_grids.pdf>
 Package pdftex.def Info: figures/fig_E1_payoff_grids.pdf  used on input line 45.
-(pdftex.def)             Requested size: 516.0pt x 408.94153pt.
-<figures/fig_E2_asymmetric.pdf, id=259, 496.93636pt x 168.07909pt>
+(pdftex.def)             Requested size: 516.0pt x 153.32121pt.
+<figures/fig_E2_asymmetric.pdf, id=267, 496.93636pt x 168.07909pt>
 File: figures/fig_E2_asymmetric.pdf Graphic file (type pdf)
 <use figures/fig_E2_asymmetric.pdf>
-Package pdftex.def Info: figures/fig_E2_asymmetric.pdf  used on input line 73.
+Package pdftex.def Info: figures/fig_E2_asymmetric.pdf  used on input line 78.
 (pdftex.def)             Requested size: 516.0pt x 174.54677pt.
 
 
-LaTeX Warning: File `figures/fig_E3_nplayer.pdf' not found on input line 91.
+LaTeX Warning: File `figures/fig_E3_nplayer.pdf' not found on input line 96.
 
 
 ! Package pdftex.def Error: File `figures/fig_E3_nplayer.pdf' not found: using draft setting.
@@ -569,17 +569,17 @@ See the pdftex.def package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.91 ...th=\linewidth]{figures/fig_E3_nplayer.pdf}
+l.96 ...th=\linewidth]{figures/fig_E3_nplayer.pdf}
                                                   
 Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 91.
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 96.
 (/u/home/kaiserj/.TinyTeX/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 
-LaTeX Warning: File `figures/fig_E4_coalition.pdf' not found on input line 111.
+LaTeX Warning: File `figures/fig_E4_coalition.pdf' not found on input line 116.
 
 
 ! Package pdftex.def Error: File `figures/fig_E4_coalition.pdf' not found: using draft setting.
@@ -588,13 +588,13 @@ See the pdftex.def package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.111 ...\linewidth]{figures/fig_E4_coalition.pdf}
+l.116 ...\linewidth]{figures/fig_E4_coalition.pdf}
                                                   
 Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
 
-LaTeX Warning: File `figures/fig_E5_awareness.pdf' not found on input line 132.
+LaTeX Warning: File `figures/fig_E5_awareness.pdf' not found on input line 137.
 
 
 ! Package pdftex.def Error: File `figures/fig_E5_awareness.pdf' not found: using draft setting.
@@ -603,13 +603,13 @@ See the pdftex.def package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.132 ...\linewidth]{figures/fig_E5_awareness.pdf}
+l.137 ...\linewidth]{figures/fig_E5_awareness.pdf}
                                                   
 Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
 
-LaTeX Warning: File `figures/fig_E6_surface.pdf' not found on input line 154.
+LaTeX Warning: File `figures/fig_E6_surface.pdf' not found on input line 159.
 
 
 ! Package pdftex.def Error: File `figures/fig_E6_surface.pdf' not found: using draft setting.
@@ -618,7 +618,7 @@ See the pdftex.def package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.154 ...h=\linewidth]{figures/fig_E6_surface.pdf}
+l.159 ...h=\linewidth]{figures/fig_E6_surface.pdf}
                                                   
 Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
@@ -627,9 +627,31 @@ If that doesn't work, type  X <return>  to quit.
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 ) (./tex/07_discussion.tex
-Underfull \vbox (badness 1635) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [6 <./figures/fig_E1_payoff_grids.pdf>]) (./main.bbl [7 <./figures/fig_E2_asymmetric.pdf>] [8])
+ [6 <./figures/fig_E1_payoff_grids.pdf> <./figures/fig_E2_asymmetric.pdf>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [7]) (./main.bbl [8]) (./tex/08_appendix.tex
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [9]
+Underfull \hbox (badness 2503) in paragraph at lines 21--25
+ \OT1/ptm/m/it/10 (+20) b) Outer step: $\OML/cmm/m/it/10 ^^[$ \OT1/ptm/m/it/10 (+20) from $\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 p[]; []\OT1/cmr/m/n/10 )$\OT1/ptm/m/it/10 (+20) .: [][] \OT1/ptm/m/n/10 (+20) De-fine $\OML/cmm/m/it/10 B\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^[\OT1/cmr/m/n/10 ) =
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (10.21417pt too wide) detected at line 35
+[][][][]\OML/cmm/m/it/10 A[]  \OT1/cmr/m/n/10 =  [] []1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10  \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 T[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 \OT1/cmr/m/n/10 )[]\OML/cmm/m/it/10 ;  T[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 \OT1/cmr/m/n/10 )  =  [] []1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^N[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 "\OT1/cmr/m/n/10 ) \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10  \OMS/cmsy/m/n/10 ^^A \OML/cmm/m/it/10 e[][][]:
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [10])
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -641,29 +663,29 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[9
+[11
 
-] [10] [11] (./main.aux)
+] (./main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 08D83B0AE81734726F4A5BBD5D213180;5732.
+(rerunfilecheck)             Checksum: 786007519653071B02D45AD7732E156A;6342.
  ) 
 Here is how much of TeX's memory you used:
- 17588 strings out of 469515
- 296785 string characters out of 5469773
+ 17614 strings out of 469515
+ 297305 string characters out of 5469773
  777547 words of memory out of 5000000
- 45543 multiletter control sequences out of 15000+600000
+ 45554 multiletter control sequences out of 15000+600000
  686277 words of font info for 356 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,10n,79p,1001b,615s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,79p,1024b,611s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib7.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></u/home/kaiserj/.TinyTeX/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (11 pages, 343216 bytes).
+Output written on main.pdf (11 pages, 339754 bytes).
 PDF statistics:
- 578 PDF objects out of 1000 (max. 8388607)
- 424 compressed objects within 5 object streams
- 110 named destinations out of 1000 (max. 500000)
- 52459 words of extra memory for PDF output out of 61914 (max. 10000000)
+ 604 PDF objects out of 1000 (max. 8388607)
+ 447 compressed objects within 5 object streams
+ 122 named destinations out of 1000 (max. 500000)
+ 52475 words of extra memory for PDF output out of 61914 (max. 10000000)
 

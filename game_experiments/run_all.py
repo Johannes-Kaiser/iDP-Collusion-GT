@@ -42,10 +42,14 @@ apply_paper_style()
 # --------------------------------------------------------------------------
 DELTA = 1e-12
 ACTIONS = (1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0)
+# A coarser grid used by the n>=3 experiments to keep the sweep tractable
+# (action-space size = 4 vs 7 -> roughly 7x fewer multi-set profiles for n=5).
+ACTIONS_COARSE = (2.0, 8.0, 32.0, 64.0)
 
 
 def small_scenario(n: int, eps_max: float = 64.0,
-                    awareness: str = "aware") -> Game:
+                    awareness: str = "aware",
+                    use_coarse: bool = False) -> Game:
     """Symmetric n-player scenario, 5k samples each, batch 128, 5 epochs."""
     group_size = 5000
     M = group_size * n
@@ -65,7 +69,7 @@ def small_scenario(n: int, eps_max: float = 64.0,
     return make_n_player_game(
         players=players, group_sizes=[group_size] * n,
         expected_batch_size=expected_batch, steps=steps,
-        actions=ACTIONS, delta=DELTA,
+        actions=(ACTIONS_COARSE if use_coarse else ACTIONS), delta=DELTA,
     )
 
 
@@ -220,7 +224,7 @@ def experiment_E3():
         ns = [2, 3, 4, 5]
         rows = []
         for n in ns:
-            game = small_scenario(n=n, awareness="aware")
+            game = small_scenario(n=n, awareness="aware", use_coarse=(n >= 4))
             t0 = time.time()
             history = game.best_response_dynamics(
                 start=tuple([8.0] * n), max_iter=15,
@@ -276,7 +280,7 @@ def experiment_E4():
             data = pickle.load(f)
     else:
         n = 5
-        game = small_scenario(n=n, awareness="aware")
+        game = small_scenario(n=n, awareness="aware", use_coarse=True)
         # The target plays at eps_target_fixed = 32 (large budget by assumption).
         # The coalition picks low eps; rest of (non-coalition) players also play 32.
         results = []
@@ -354,7 +358,7 @@ def experiment_E5():
         rows = []
         for reg in ("aware", "naive"):
             for n in [2, 3, 4, 5]:
-                game = small_scenario(n=n, awareness=reg)
+                game = small_scenario(n=n, awareness=reg, use_coarse=(n >= 4))
                 history = game.best_response_dynamics(
                     start=tuple([8.0] * n), max_iter=15,
                 )
