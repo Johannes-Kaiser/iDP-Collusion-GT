@@ -60,6 +60,36 @@ the privacy onion effect: not every data point is equally vulnerable at
 the same nominal budget. Our framework predicts the \emph{average} realised
 MIA advantage per group and abstracts over per-record onion heterogeneity.
 
+\paragraph{Federated-DP regimes and the locus of the externality.}
+A common framing of DP in federated learning distinguishes three trust
+models. Under \emph{central DP} the aggregator is trusted: clients send
+unmodified updates and the server perturbs the aggregate
+\cite{geyer2017differentially}. Under \emph{local DP} the aggregator is
+untrusted and each client perturbs its own update before transmission
+\cite{truex2020ldp}. Distributed DP bridges the two via cryptographic
+intermediates such as secure aggregation~\cite{bonawitz2017practical};
+a comprehensive overview is given by~\citet{kairouz2021advances}.
+
+These regimes differ in where the noise is added, not in how the
+\emph{budgets} are coordinated. The sampling-based iDP mechanism we
+study assumes a coordinator with read access to every contributor's
+$\eps_i$ and the right to adjust per-record sampling rates and a shared
+$\sigma$. This is the central-DP regime, and it is also the regime
+under which the dominant cross-silo personalised-DP formulation of
+\citet{liu2024crosssilo} operates: records inside a silo share a
+budget, distinct silos may have distinct budgets, and the aggregator
+coordinates a single mechanism instance across all of them. The PEG
+therefore models exactly the strategic situation between silos in
+cross-silo federated learning with heterogeneous record-level (or
+silo-level) DP guarantees. Pure local DP, in which each client adds
+noise independently and the aggregator has no coordinating role, does
+not exhibit the externality we study; there is no shared $\sigma$ to
+couple the players' sampling rates. We expect distributed DP via
+secure aggregation~\cite{bonawitz2017practical} to inherit the
+externality of the central regime because the coordinator still solves
+for $(\sigma, p_g)$ from a public budget vector, but a rigorous
+treatment of the cryptographic compositions is outside our scope.
+
 \paragraph{Federated learning incentive design.}
 A separate literature studies privacy-aware incentive design in federated
 learning: a server commits to incentives, and heterogeneous clients respond
