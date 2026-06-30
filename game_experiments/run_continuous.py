@@ -124,14 +124,18 @@ def experiment_C1():
             br1 = data["br1"]; br2 = data["br2"]
             mask1 = br1 >= 0
             mask2 = br2 >= 0
-            ax.loglog(actions_vec[mask1],
-                       actions_vec[br1[mask1]],
+            # BR_1(eps_2): for each eps_2, returns the eps_1 maximising u_1.
+            # Plot in (eps_1, eps_2) space: x = BR_1, y = eps_2.
+            ax.loglog(actions_vec[br1[mask1]],
+                       actions_vec[mask1],
                        "o-", color=PRIMARY_BLUE, markersize=4, lw=1.2,
-                       label=r"$\mathrm{BR}_1(\varepsilon_2)$")
-            ax.loglog(actions_vec[br2[mask2]],
-                       actions_vec[mask2],
+                       label=r"$\varepsilon_1 = \mathrm{BR}_1(\varepsilon_2)$")
+            # BR_2(eps_1): for each eps_1, returns the eps_2 maximising u_2.
+            # x = eps_1, y = BR_2.
+            ax.loglog(actions_vec[mask2],
+                       actions_vec[br2[mask2]],
                        "s-", color=PRIMARY_ORANGE, markersize=4, lw=1.2,
-                       label=r"$\mathrm{BR}_2(\varepsilon_1)$")
+                       label=r"$\varepsilon_2 = \mathrm{BR}_2(\varepsilon_1)$")
             for (ni, nj) in data["nes"]:
                 ax.scatter([actions_vec[ni]], [actions_vec[nj]],
                             marker="*", s=80, c="black",
@@ -139,7 +143,7 @@ def experiment_C1():
                             zorder=5)
             ax.set_xlabel(r"$\varepsilon_1$"); ax.set_ylabel(r"$\varepsilon_2$")
             ax.set_title("Best-response & pure NE")
-            ax.legend(frameon=False)
+            ax.legend(frameon=False, fontsize=6)
             continue
         im = ax.imshow(M, origin="lower", aspect="auto", cmap=cmap,
                         extent=[0, len(actions)-1, 0, len(actions)-1])

@@ -41,3 +41,9 @@ game_experiments/_cache/
 .DS_Store
 
 # Do NOT exclude paper/main.pdf or paper/figures/*.pdf — those are products.
+
+# More LaTeX intermediates that slipped in
+main.aux
+main.log
+paper/main.bbl
+paper/main.blg
