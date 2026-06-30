@@ -1,9 +1,9 @@
 \section{Numerical Evaluation}
 \label{sec:experiments}
 
-We evaluate the PEG numerically across four experiments. Each isolates one
-distinct question that the framework raises. \cref{tab:experiments-overview}
-summarises what each one asks, what it controls for, and what it answers.
+We evaluate the PEG numerically across four experiments, each isolating one
+distinct question raised by the framework. \cref{tab:experiments-overview}
+gives a one-line preview of each before we develop them in turn.
 
 \begin{table}[t]
 \centering
@@ -17,7 +17,7 @@ summarises what each one asks, what it controls for, and what it answers.
 C1 & Symmetric equilibrium? & 2 equal-size groups, full $\boldsymbol{\eps}$-grid sweep & 8 NEs, all asymmetric (\cref{fig:C1}) \\
 C2 & Effect of size asymmetry & 2 groups, size ratio $r \in [0.1, 10]$ & Minority plays low $\eps$, majority absorbs $A$ (\cref{fig:C2}) \\
 C4 & How bad under coordination? & $n{=}5$, target $\eps_t{=}32$, coalition of size $k$ & $A_t$ monotone in $k$; $+65\%$ at $k{=}4$ (\cref{fig:C4}) \\
-C5 & Where does the externality come from? & 2-group, vary $\eps_O$ and proportion at fixed $\eps_T$ & $A_t$ monotone in $\eps_O$, crossover at $\eps_O{=}\eps_T$ (\cref{fig:C5}) \\
+C5 & Functional form of the externality & 2-group, vary $\eps_O$ and proportion at fixed $\eps_T$ & $A_t$ monotone in $\eps_O$, crossover at $\eps_O{=}\eps_T$ (\cref{fig:C5}) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -25,31 +25,24 @@ C5 & Where does the externality come from? & 2-group, vary $\eps_O$ and proporti
 \subsection{Common setup}
 \label{sec:setup}
 
-All experiments are analytical---no model training---and follow the same
-mechanism-solver and advantage-computation pipeline.
-
-\paragraph{Mechanism solver.} For each action profile $\boldsymbol{\eps}$ we
-compute the mechanism solution $(\sigma, p_1,\dots,p_n)$ by bisecting on
-$\sigma$ until the batch-size constraint (C2) is met, with each per-group
-sampling rate chosen to make the (C1) RDP constraint
-bind~\cite{mironov2017renyi}. Profiles in which any $p_i$ falls below a small
-participation threshold are flagged as infeasible
-(\cref{ass:participation}). We then compute each realised $A_i$ exactly from
-the privacy profile of the $I$-fold $(p_i, \sigma)$-subsampled Gaussian using
-PLD accounting~\cite{google-dp-accounting}, recovering the formula
-of~\eqref{eq:adv}.
-
-\paragraph{Action space.} Unless stated, the action space is the
-log-spaced grid $\mathcal{A}_K \subset [0.5, 64]$ with $K = 22$ points,
-$\delta = 10^{-12}$. We verified on a refined grid ($K = 44$) that the NEs
-reported are stable to grid refinement, so we report them as representative
-of the continuous-action equilibrium.
-
-\paragraph{Scenarios.} Unless stated, all experiments use $n$ symmetric
-groups of $|G_g| = 5000$ samples each, expected batch size $E_b = 128$,
-$5$ epochs of training, $B_i = C_i = 1$, and $V(\sigma) = 1/(1+\sigma^2)$.
+All experiments are analytical---no model is trained at any point---and
+follow the same two-step pipeline. We first solve for the mechanism's
+parameters by bisecting on $\sigma$ until the batch-size constraint
+\textnormal{(C2)} is met, with each per-group sampling rate chosen to make
+the \textnormal{(C1)} R\'enyi-DP constraint
+bind~\cite{mironov2017renyi}; profiles in which any $p_i$ falls below a
+small participation threshold are flagged as infeasible per
+\cref{ass:participation}. We then compute each realised $A_i$ exactly from
+the privacy profile of the $I$-fold $(p_i, \sigma)$-subsampled Gaussian via
+PLD accounting~\cite{google-dp-accounting}, recovering~\eqref{eq:adv}. The
+action space is the log-spaced grid $\mathcal{A}_K \subset [0.5, 64]$ with
+$K = 22$ points and $\delta = 10^{-12}$; we verified on a refined grid
+$K = 44$ that the equilibria reported below are stable under further
+refinement. Unless otherwise noted each experiment uses symmetric groups of
+$|G_g| = 5000$ samples, expected batch size $E_b = 128$, $5$ epochs of
+training, $B_i = C_i = 1$, and $V(\sigma) = 1/(1+\sigma^2)$.
 These choices broadly mirror the empirical iDP scenarios of
-\cite{kaiser2026your, boenisch2023have}.
+\citet{kaiser2026your, boenisch2023have}.
 
 \input{tex/table_NE_v2}
 
@@ -57,24 +50,36 @@ These choices broadly mirror the empirical iDP scenarios of
 \subsection{C1 --- Does the symmetric 2-player game admit a symmetric NE?}
 \label{sec:C1}
 
-\paragraph{Setup.} Two players, equal group sizes
-$|G_1|=|G_2|=5000$. Sweep both players' $\eps$ over the dense
-log-spaced grid; brute-force search for all pure NEs.
+For our first experiment we consider the cleanest possible setting: two
+players with identical group sizes, identical preference weights, and a
+full sweep of both $\eps$'s over the log-spaced grid. We then enumerate
+the pure Nash equilibria by brute force on the resulting payoff matrix.
 
-\paragraph{Finding.} \emph{No.} The BR correspondences cross at \emph{eight}
-points, all off the diagonal (\cref{fig:C1}, centre; \cref{tab:NE}). The
-pairs $(0.79, 5.04), (1.26, 6.35), (1.59, 8.00), (2.52, 3.17)$ and their
-swaps are pure NEs; the realised $A$ at these equilibria ranges from
+The result is striking. The best-response correspondences cross at
+\emph{eight} distinct points (\cref{fig:C1}, centre; \cref{tab:NE}), and
+all eight sit off the diagonal of the action grid. They fall in four
+mirror-image pairs: $(0.79, 5.04)$ and its swap, $(1.26, 6.35)$ and its
+swap, $(1.59, 8.00)$ and its swap, and $(2.52, 3.17)$ and its swap. The
+realised MIA advantages at these equilibria range from
 $(A_1, A_2) = (0.001, 0.202)$ at the most asymmetric pair down to
-$(0.081, 0.120)$ at the closest-to-symmetric pair. No NE sits on the
-diagonal.
+$(0.081, 0.120)$ at the closest-to-symmetric pair. No equilibrium lies on
+the diagonal: in this symmetric game the players do \emph{not} settle on
+a profile in which both choose the same $\eps$.
 
-\paragraph{Implication.} Even when the game is fully symmetric in players,
-group sizes, and weights, \emph{the equilibrium breaks symmetry}. The
-intuition is in \cref{lem:externality}: at any symmetric profile both
-players face an identical incentive to deviate downward in $\eps$; only an
-off-diagonal profile resolves the deadlock by having one player carry $V$
-and the other carry low $A$.
+This breaks symmetry by necessity rather than by chance. At any
+hypothetical symmetric profile $(\eps,\eps)$, both players face an
+identical incentive to deviate downward in $\eps$ (the externality on each
+is identical, and lowering own $\eps$ raises own $V$ while shifting cost
+to the other). Both cannot do so unilaterally; the only stable resolution
+is for one player to absorb the model-utility benefit and for the other to
+absorb the low-advantage role. This is the mechanism's content of
+\cref{lem:externality} made explicit: the externality
+\emph{must} be carried by someone, and at equilibrium it is carried
+asymmetrically. The social optimum on the same grid sits at $(5.04,
+25.40)$, even more extreme, with $A = 0.535$ for one player and $A =
+0.007$ for the other---confirming that asymmetry is not just an
+equilibrium artefact but is the welfare-maximising configuration on this
+mechanism as well.
 
 \begin{figure*}[!t]
 \centering
@@ -90,25 +95,30 @@ diagonal.}
 \subsection{C2 --- Who absorbs the externality when groups differ in size?}
 \label{sec:C2}
 
-\paragraph{Setup.} Two players, dataset size ratio $|G_1|/|G_2| \in
-\{0.1, 0.25, 0.5, 1, 2, 4, 10\}$ at fixed total $M=10000$, fixed batch
-$E_b{=}128$. Full grid sweep at each ratio; for each ratio we report the
-pure NE with the largest asymmetry in realised $A$.
+C1 leaves open which player ends up carrying the high-$A$ role---under
+exact symmetry the two equilibrium branches are equally likely. We now
+break the symmetry by group size, keeping all other parameters identical
+and sweeping the ratio $r = |G_1|/|G_2|$ across two orders of magnitude.
 
-\paragraph{Finding.} \emph{The minority always plays the lower $\eps$ and
-absorbs less of the realised vulnerability.} \cref{fig:C2}: for $r < 1$
-(group 1 smaller) the equilibrium has $\eps_1^* \in [1.5, 3]$ and
-$\eps_2^* \approx 10$, giving $A_1^* < 0.01$ and $A_2^* \in [0.24, 0.32]$.
-For $r > 1$ the pattern flips by symmetry. At $r{=}1$ the C1 NE structure
-is recovered.
+A clear pattern emerges. Across every ratio, \emph{the smaller group
+plays the smaller equilibrium budget and absorbs the smaller realised
+MIA advantage} (\cref{fig:C2}). When player $1$ is the minority ($r < 1$)
+the equilibrium has $\eps_1^* \in [1.5, 3]$ and $\eps_2^* \approx 10$,
+producing $A_1^* < 0.01$ against $A_2^* \in [0.24, 0.32]$; when player
+$1$ becomes the majority ($r > 1$) the pattern flips by symmetry. The
+equal-size case $r = 1$ recovers the multiplicity of asymmetric NEs from
+C1.
 
-\paragraph{Implication.} The externality has a \emph{group-size sign}.
-Because (C2) enforces a fixed expected batch, a small-group player who
-demands strong privacy contributes little to the batch and forces the
-large-group player's $p$ upward; the latter therefore carries the realised
-$A$. This is a privacy analogue of a free-riding result: small groups
-gain disproportionately from the externality and large groups pay
-disproportionately for it.
+The mechanism is straightforward to read off the (C2) constraint. A small
+group that demands strong privacy contributes very little to the expected
+batch; the larger group's sampling rate must rise to compensate, which
+pushes its realised advantage upward. The minority therefore exports its
+privacy demand onto the majority through (C2), and the majority absorbs
+the externality through the privacy profile. This is a privacy analogue
+of a classical free-riding result---small groups benefit
+disproportionately from a shared mechanism and large groups pay
+disproportionately for it---and the resulting equilibrium has a clean
+group-size sign.
 
 \begin{figure*}[!t]
 \centering
@@ -125,35 +135,45 @@ which the minority/majority labels exchange.}
 \subsection{C4 --- How severe does the attack get under coordination?}
 \label{sec:C4}
 
-\paragraph{Setup.} Five symmetric players, all with $|G_g|=5000$. Player $0$
-is the target with $\eps_t = 32$. The remaining $n-1=4$ players are
-partitioned into a coalition $C$ of size $k$ (varied) and a non-coalition
-fixed at $\eps = 32$. The coalition picks the action that maximises $A_t$
-(Stackelberg leader, $\lambda \to \infty$).
+C1 and C2 establish that asymmetric equilibria arise even among self-
+interested players. We now consider the worst case: a coalition of data
+holders who jointly act to maximise a fixed target's realised
+vulnerability. We take five symmetric players, designate player $0$ as
+the target with $\eps_t = 32$, and let a subset of the remaining four
+players coordinate. The non-coalition members are held at $\eps = 32$ as
+a passive baseline; the coalition picks the single $\eps_C$ that
+maximises the target's realised MIA advantage---a Stackelberg leader with
+$\lambda \to \infty$ in \cref{def:coalition}.
 
-\paragraph{Finding.} \emph{$A_t$ is monotone-increasing in $k$, with a
-non-trivial optimal coalition budget.} \cref{fig:C4}: baseline $A_t = 0.442$
-(no coalition) rises to $0.483$ at $k{=}1$, $0.531$ at $k{=}2$, $0.607$ at
-$k{=}3$, and $0.728$ at $k{=}4$. The optimum coalition budget is
-$\eps^\star \approx 6.8$ for $k \in \{1,2,3\}$ and drops to $\eps^\star
-\approx 3.2$ at $k = 4$: the participation-preserving minimum decreases
-as the coalition grows because more colluders can absorb the same
-externality between them while keeping each $p_i > 0$.
+The target's advantage rises monotonically and rapidly with the coalition
+size~$k$ (\cref{fig:C4}). With no coalition, $A_t = 0.442$; adding a
+single colluder takes it to $0.483$; two colluders push it to $0.531$;
+three to $0.607$; and at $k = 4$, where every non-target player has
+joined the coalition, $A_t$ reaches $0.728$---a $65\%$ inflation over
+baseline. The optimal coalition budget shifts predictably with $k$: at
+$k \in \{1, 2, 3\}$ the coalition picks $\eps_C \approx 6.8$, but at
+$k = 4$ it can afford to drop to $\eps_C \approx 3.2$ while still
+keeping every $p_i > 0$. The participation-preserving minimum of
+\cref{prop:coalition-attack} relaxes as more colluders join because the
+collective constraint slackens.
 
-\paragraph{Implication.} The budget-manipulation attack of
-\citet{kaiser2026your} is the rational best response of a coordinated
-subset of data holders in the PEG. The empirical $62\%$ attack-success
-rate reported in their work corresponds to the same equilibrium our
-framework predicts; \cref{fig:C4} traces its severity as a function of the
-coordinated coalition's size.
+The strategic content of this experiment is the recovery of an empirical
+phenomenon as the rational equilibrium of the game we have defined. The
+budget-manipulation attack of \citet{kaiser2026your}, reported there as a
+$62\%$ success rate against a target across diverse datasets, is what a
+coalition of aware iDP participants would naturally do without any
+adversarial intent---it is the best response in our PEG. The framework
+therefore predicts not merely that such an attack is possible but that it
+is the equilibrium of a benign decentralised game with a coordinating
+subset.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_C4_coalition.pdf}
 \caption{\textbf{C4.} Target's realised MIA advantage as a function of
-coalition size $k$, with the coalition playing its target-maximising joint
-action. Annotations show the optimal coalition budget $\eps^\star$ at each
-$k$.}
+coalition size $k$, with the coalition playing its target-maximising
+joint action. Annotations show the optimal coalition budget $\eps^\star$
+at each $k$.}
 \label{fig:C4}
 \end{figure}
 
@@ -161,38 +181,43 @@ $k$.}
 \subsection{C5 --- What is the functional form of the externality?}
 \label{sec:C5}
 
-\paragraph{Setup.} Two groups, target with budget $\eps_T \in \{4, 16\}$
-fixed, others' budget $\eps_O$ swept over the log-spaced grid. The other
-group's proportion of the total dataset is varied over
-$\{0.2, 0.4, 0.6, 0.8\}$ at fixed total size $M = 10000$. This isolates the
-target's vulnerability as a pure function of (a) what the others choose
-and (b) how many of them there are.
+The previous three experiments all use \emph{equilibrium} budgets; we now
+strip away the strategic layer to inspect the externality alone. Two
+groups, target with budget $\eps_T$ fixed at either $4$ or $16$, and
+others' budget $\eps_O$ swept across the log-spaced grid. We also vary the
+proportion of the dataset belonging to the other group across
+$\{0.2, 0.4, 0.6, 0.8\}$ at fixed total size $M = 10000$. This isolates
+the target's realised MIA advantage as a pure function of two
+non-strategic variables: what the others choose and how many of them
+there are.
 
-\paragraph{Finding.} \emph{$A_t$ is monotone-decreasing in $\eps_O$; the
-proportion-curves cross exactly at $\eps_O = \eps_T$.} \cref{fig:C5}: at
-$\eps_T = 4$, $A_t$ ranges from $\approx 0.20$ (others at $\eps_O = 0.5$)
-to $\approx 0$ (others at $\eps_O = 64$). At $\eps_T = 16$, the range is
-$0.55$ down to $\approx 0.05$. For $\eps_O < \eps_T$ a larger proportion
-of others raises $A_t$; for $\eps_O > \eps_T$ a larger proportion of
-others lowers $A_t$. The crossover at $\eps_O = \eps_T$ is the regime in
-which the others' choice and the target's choice contribute identically
-to $\sigma$.
+The dependence is monotone and smooth (\cref{fig:C5}). At $\eps_T = 4$
+the target's advantage ranges from roughly $0.20$ when others have tight
+privacy ($\eps_O = 0.5$) down to approximately zero when others are
+loose ($\eps_O = 64$). At $\eps_T = 16$ the range is from $0.55$ down to
+$0.05$. Across both targets, larger proportions of the other group
+amplify the externality below the crossover and suppress it above; the
+curves all meet at $\eps_O = \eps_T$, which is the regime in which the
+others' choice and the target's choice contribute identically to $\sigma$
+through (C2).
 
-\paragraph{Implication.} This isolates the externality as a pure mechanism
-effect, independent of any strategic choice. The shape mirrors Figure~3 of
-\citet{kaiser2026your}, who showed the same dependence empirically through
-the iDP-SGD trade-off function. C5 confirms that the externality lemma
-(\cref{lem:externality}) is not just empirically monotone but
-\emph{quantitatively} so: each unit decrease in others' $\eps$ corresponds
-to a smooth, predictable increase in the target's realised $A$.
+This isolates the externality as a pure mechanism effect, independent of
+any strategic choice. The shape mirrors Figure~3 of
+\citet{kaiser2026your}, who showed the same dependence empirically
+through the iDP-SGD trade-off function. C5 therefore confirms that the
+externality lemma (\cref{lem:externality}) is not just empirically
+monotone but \emph{quantitatively} so: each unit decrease in others' $\eps$
+corresponds to a smooth, predictable increase in the target's realised
+$A$, and the proportion-weighted dependence the lemma predicts is borne
+out exactly.
 
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_C5_surface.pdf}
-\caption{\textbf{C5.} Target's realised MIA advantage as a function of the
-other group's budget $\eps_O$ and proportion, at two fixed target budgets
-$\eps_T \in \{4, 16\}$. The curves cross at $\eps_O = \eps_T$. Below
-crossover, larger proportions raise $A_t$; above crossover, larger
+\caption{\textbf{C5.} Target's realised MIA advantage as a function of
+the other group's budget $\eps_O$ and proportion, at two fixed target
+budgets $\eps_T \in \{4, 16\}$. The curves cross at $\eps_O = \eps_T$.
+Below crossover, larger proportions raise $A_t$; above crossover, larger
 proportions lower it.}
 \label{fig:C5}
 \end{figure*}
