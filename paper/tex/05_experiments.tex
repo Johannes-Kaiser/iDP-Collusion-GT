@@ -7,7 +7,7 @@ gives a one-line preview of each before we develop them in turn.
 
 \begin{table}[t]
 \centering
-\caption{Overview of the four numerical experiments.}
+\caption{Overview of the numerical experiments.}
 \label{tab:experiments-overview}
 \small
 \begin{tabular}{lp{1.7cm}p{2.5cm}p{1.8cm}}
@@ -18,6 +18,9 @@ C1 & Symmetric equilibrium? & 2 equal-size groups, full $\boldsymbol{\eps}$-grid
 C2 & Effect of size asymmetry & 2 groups, size ratio $r \in [0.1, 10]$ & Minority plays low $\eps$, majority absorbs $A$ (\cref{fig:C2}) \\
 C4 & How bad under coordination? & $n{=}5$, target $\eps_t{=}32$, coalition of size $k$ & $A_t$ monotone in $k$; $+65\%$ at $k{=}4$ (\cref{fig:C4}) \\
 C5 & Functional form of the externality & 2-group, vary $\eps_O$ and proportion at fixed $\eps_T$ & $A_t$ monotone in $\eps_O$, crossover at $\eps_O{=}\eps_T$ (\cref{fig:C5}) \\
+C6 & Grid-refinement of the NE locus & C1 at $K=44$ (double resolution) & NE locus is a smooth 1-D curve (\cref{fig:C6}) \\
+C7 & Sensitivity to $B/C$ ratio (symmetric) & $B/C \in [0.25, 8]$, $K=22$ & Asymmetric NEs in $B/C \in [0.5, 4]$; collapse to diagonal at extremes (\cref{fig:C7}) \\
+C8 & Asymmetric privacy weights & $C_1/C_2 \in [0.25, 4]$, $K=22$ & NE locus migrates: more-sensitive player takes the low-$\eps$ role (\cref{fig:C8}) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -221,3 +224,123 @@ Below crossover, larger proportions raise $A_t$; above crossover, larger
 proportions lower it.}
 \label{fig:C5}
 \end{figure*}
+
+% =====================================================================
+\subsection{C6 --- Where does the NE locus live in $(\eps_1, \eps_2)$ space?}
+\label{sec:C6}
+
+The eight pure NEs of C1 sit at discrete grid points; the underlying
+question is whether they sample an analytical curve in
+$(\eps_1, \eps_2)$-space or whether the grid resolution itself is generating
+their multiplicity. The implicit first-order condition~\eqref{eq:foc}
+defines two BR loci---one per player---whose intersection \emph{is} the NE
+set; under symmetric players the two loci are reflections across the
+diagonal. There is no closed form for either curve because $A_i$ has none,
+but the curve is a one-dimensional locus and its shape is testable by grid
+refinement.
+
+We rerun C1 at $K = 44$ on the same $[\eps^{\min},\eps^{\max}]$ interval,
+doubling the resolution along each axis. \cref{fig:C6} reports the
+resulting BR loci with the pure NEs marked. The two curves
+trace smooth, monotone-decreasing loci in the lower-left quadrant; their
+intersections (the pure NEs) lie on a curved 1-D set off the diagonal. At
+$K = 44$ we recover the same qualitative structure as at $K = 22$, but the
+NEs become denser along the curve---each $K = 22$ NE has neighbours at
+$K = 44$ that fall on the same curve. The asymmetric-pure-NE structure is
+therefore not a grid artefact; it is the discrete sampling of a smooth
+1-D locus in the action plane.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_C6_locus_K44.pdf}
+\caption{\textbf{C6.} BR loci and pure NEs (left) and the $u_1$ surface
+with NEs marked (right) at the refined resolution $K = 44$. The NE locus
+in $(\eps_1, \eps_2)$ space is a smooth 1-D curve off the diagonal; doubled
+grid resolution refines but does not change its shape.}
+\label{fig:C6}
+\end{figure*}
+
+% =====================================================================
+\subsection{C7 --- How does the NE locus respond to a shift in the
+benefit/cost ratio?}
+\label{sec:C7}
+
+The implicit-curve characterisation of~\eqref{eq:foc} says the BR is
+parametrised by the ratio $B_i / C_i$; we now sweep this ratio
+\emph{symmetrically} across both players from $0.25$ (privacy-heavy) to
+$8$ (utility-heavy) and read off how the NE locus moves.
+\cref{fig:C7} reports the union of pure NEs across all six ratios on a
+single plot.
+
+The number of pure NEs and their locations vary systematically with
+$B/C$. At the privacy-heavy end ($B/C = 0.25$), only a single pure NE
+exists, and it lies on the diagonal at $(\eps^{\min}, \eps^{\min}) =
+(0.5, 0.5)$: both players race to the strongest privacy that the
+participation constraint admits. As $B/C$ grows the diagonal NE
+fragments. At $B/C = 0.5$ we count three pure NEs; at $B/C = 1$ the
+familiar eight from C1; at $B/C = 2$ and $4$ the count holds at six but
+the cloud shifts outward (toward higher $\eps$ on both axes); at $B/C =
+8$ only two pure NEs remain, both at the upper-right corner near
+$(\eps^{\max}, \eps^{\max})$, where utility dominates and the
+externality is negligible.
+
+Two readings of this. First, the asymmetric-NE phenomenon of C1 is not
+fragile: it persists across roughly an order of magnitude of $B/C$,
+roughly $B/C \in [0.5, 4]$. Second, the asymmetric NEs disappear at both
+extremes and are replaced by a single diagonal NE---privacy-heavy
+players coordinate on minimum $\eps$, utility-heavy players coordinate on
+maximum $\eps$. The middle regime is the one in which the externality
+matters strategically; the extremes wash it out.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_C7_BC_ratio.pdf}
+\caption{\textbf{C7.} Pure NE locations across symmetric $B/C$ ratios
+$\in \{0.25, 0.5, 1, 2, 4, 8\}$ at $K = 22$. The dashed diagonal is for
+reference. NEs are asymmetric for $B/C \in [0.5, 4]$ and collapse to the
+diagonal at the privacy-heavy and utility-heavy extremes.}
+\label{fig:C7}
+\end{figure}
+
+% =====================================================================
+\subsection{C8 --- What happens under asymmetric privacy preferences?}
+\label{sec:C8}
+
+C7 sweeps $B/C$ symmetrically across both players. We now break the
+preference symmetry: we fix $C_2 = 1$ and vary $C_1 \in \{0.25, 0.5, 1,
+2, 4\}$ with $B_1 = B_2 = 1$. Player $1$ is therefore four times more
+privacy-sensitive than player $2$ at one extreme and four times less
+sensitive at the other. \cref{fig:C8} plots the resulting NEs.
+
+The NE locus shifts smoothly. When $C_1 \ll C_2$ (player $1$ values
+privacy less), pure NEs sit in the lower-right region of the action
+plane---player $1$ plays high $\eps$ (it doesn't mind the realised
+advantage) and player $2$ plays low $\eps$ (it does). As $C_1/C_2$
+crosses unity the NEs move through the symmetric configuration of
+\cref{sec:C1} and continue past it: at $C_1 \gg C_2$ the locus has
+flipped to the upper-left region, with player $1$ now in the low-$\eps$
+role. The structure of the externality therefore makes the
+\emph{more} privacy-sensitive player carry the lower $\eps$ at the
+equilibrium and the realised advantage on the less-sensitive player.
+
+This is unintuitive at first reading but is exactly what the
+externality lemma predicts. The player who values privacy more is willing
+to give up more model utility to suppress their own $A$; doing so pushes
+$\sigma$ upward and the other player's $p$ upward, leaving the
+less-sensitive player to absorb the realised advantage. Asymmetric
+\emph{preferences} therefore amplify the equilibrium asymmetry rather
+than dampening it: a population of players with heterogeneous privacy
+weights does not converge to a compromise on the diagonal but instead
+splits, with each player ending up in the role for which their weight is
+best suited.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_C8_asymmetric_C.pdf}
+\caption{\textbf{C8.} Pure NE locations under asymmetric privacy weights
+$C_1/C_2 \in \{0.25, 0.5, 1, 2, 4\}$ at $K = 22$ and $B_1 = B_2 = 1$. As
+$C_1/C_2$ grows (player $1$ more privacy-sensitive), the NE cloud
+migrates from the lower-right region to the upper-left region of the
+action plane.}
+\label{fig:C8}
+\end{figure}
