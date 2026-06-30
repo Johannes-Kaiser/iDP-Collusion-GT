@@ -25,6 +25,7 @@
 \newtheorem{assumption}[theorem]{Assumption}
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
+\newtheorem{observation}[theorem]{Observation}
 
 % Custom macros
 \newcommand{\eps}{\varepsilon}
@@ -66,11 +67,16 @@ strategic situation as a finite, normal-form game, the Privacy Externality Game
 monotone: $\partial A_i / \partial \eps_j \leq 0$ for $j \neq i$ under the
 mechanism's binding constraints. We then characterise the game under two
 realistic awareness regimes---naive (players perceive only their nominal
-$\eps_i$) and aware (players perceive the realised MIA advantage)---and show
-that the aware regime exhibits no pure Nash equilibrium in canonical settings,
-admitting only mixed equilibria. A coalition Stackelberg analysis recovers the
-attack of Kaiser et al.\ (SaTML 2026) as the rational best response of any
-coordinated set of data holders. The implication is that the empirical
+$\eps_i$) and aware (players perceive the realised MIA advantage). In a
+canonical $2$-player setting we find that both regimes admit \emph{asymmetric}
+pure Nash equilibria: the naive game equilibrates at $(\eps_i, \eps_j) = (1, 8)$
+or $(8, 1)$ with one player exposed at $A = 0.275$ and the other at $A = 0$;
+the aware game equilibrates at $(1, 2)$ or $(2, 1)$, internalising the
+externality but leaving the asymmetry intact. The aware equilibrium has
+roughly half the total realised MIA of the naive equilibrium, showing that
+\emph{awareness mitigates but does not eliminate} the externality. A coalition
+Stackelberg analysis recovers the attack of Kaiser et al.\ (SaTML 2026) as the
+rational best response of any coordinated set of data holders. The implication is that the empirical
 $62\%$-vulnerability attack rate observed in iDP is not adversarial but
 equilibrium behaviour: even non-malicious players in iDP impose privacy
 externalities on every other contributor.

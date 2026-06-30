@@ -1,16 +1,16 @@
 \begin{table}[t]
 \centering
-\caption{Pure Nash equilibria of the symmetric 2-player PEG (action grid $\mathcal{A} = \{1, 2, 4, 8, 16, 32, 64\}$, $|G_1|=|G_2|=5000$, $E_b=128$, $5$ epochs, $\delta=10^{-12}$). $\PoEV$ is computed against a uniform baseline at $\eps_1 = \eps_2 = 8$.}
+\caption{Pure Nash equilibria of the symmetric 2-player PEG (action grid $\mathcal{A} = \{1, 2, 4, 8, 16, 32, 64\}$, $|G_1|=|G_2|=5000$, $E_b=128$, $5$ epochs, $\delta=10^{-12}$, $B_i = C_i = 1$, $V(\sigma) = 1/(1+\sigma)$). $A_i$ is the realised MIA advantage of player $i$ at the equilibrium and $A^{\textrm{opt}}$ is the realised MIA advantage at the social-optimum profile $\boldsymbol{\eps}^{\textrm{opt}}$.}
 \label{tab:NE}
 \begin{tabular}{lccccc}
 \toprule
-Regime & $(\eps_1^*, \eps_2^*)$ & $A_1$ & $A_2$ & $\PoEV$ \\
+Regime & $(\eps_1^*, \eps_2^*)$ & $A_1$ & $A_2$ & $\boldsymbol{\eps}^{\textrm{opt}}$ & $A^{\textrm{opt}}$ \\
 \midrule
-Aware & (1, 2) & 0.033 & 0.098 & -0.66 \\
-Aware & (2, 1) & 0.098 & 0.033 & -0.66 \\
-Naive & (1, 8) & 0.000 & 0.275 & -0.28 \\
-Naive & (4, 4) & 0.123 & 0.123 & -0.36 \\
-Naive & (8, 1) & 0.275 & 0.000 & -0.28 \\
+Aware & (1, 2) & 0.033 & 0.098 & $(4, 8)$ & 0.146 \\
+Aware & (2, 1) & 0.098 & 0.033 & $(4, 8)$ & 0.146 \\
+Naive & (1, 8) & 0.000 & 0.275 & $(1, 16)$ & 0.205 \\
+Naive & (4, 4) & 0.123 & 0.123 & $(1, 16)$ & 0.205 \\
+Naive & (8, 1) & 0.275 & 0.000 & $(1, 16)$ & 0.205 \\
 \bottomrule
 \end{tabular}
 \end{table}

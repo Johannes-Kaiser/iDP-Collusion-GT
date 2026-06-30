@@ -36,26 +36,33 @@ def main():
     actions = d["actions"]
     K = len(actions)
 
-    # Uniform baseline: every player at the middle of the grid
-    mid = K // 2
-    base_idx = (mid, mid)
-
+    # Find the social optimum (maximises total utility) for each regime
     rows = []
     for reg, U, A in [("Aware", d["U_aw"], d["A_aw"]),
-                       ("Naive", d["U_nv"], d["A_aw"])]:  # A is the same physically
+                       ("Naive", d["U_nv"], d["A_aw"])]:  # A is physically the same
         nes = find_pure_nes_2p(U, actions)
-        A_base = float(np.nanmean(A[base_idx[0], base_idx[1], :]))
+        total_u = U[:, :, 0] + U[:, :, 1]
+        # Mask infeasible
+        total_u = np.where(np.isnan(total_u), -np.inf, total_u)
+        i_opt, j_opt = np.unravel_index(np.argmax(total_u), total_u.shape)
+        A_opt = float(np.nanmean(A[i_opt, j_opt, :]))
+        # If A_opt = 0 (degenerate), fall back to a large value
+        A_opt_safe = max(A_opt, 1e-3)
         if not nes:
-            rows.append(dict(regime=reg, ne_text="(no pure NE)",
-                             A1=None, A2=None, PoEV=None, sigma=None))
+            rows.append(dict(
+                regime=reg, ne_text="(no pure NE)",
+                A1=None, A2=None, PoEV=None, sigma=None,
+                A_opt=A_opt, opt=(float(actions[i_opt]), float(actions[j_opt])),
+            ))
         for (i, j) in nes:
             A_avg = float(np.nanmean(A[i, j, :]))
-            poev = (A_avg - A_base) / max(A_base, 1e-9)
+            poev = (A_avg - A_opt) / A_opt_safe
             rows.append(dict(
                 regime=reg, ne_text=f"({actions[i]:g}, {actions[j]:g})",
                 A1=float(A[i, j, 0]), A2=float(A[i, j, 1]),
                 PoEV=poev, sigma=float(d["S_aw"][i, j])
                                   if reg == "Aware" else None,
+                A_opt=A_opt, opt=(float(actions[i_opt]), float(actions[j_opt])),
             ))
     # Write LaTeX table
     lines = [
@@ -63,21 +70,26 @@ def main():
         r"\centering",
         r"\caption{Pure Nash equilibria of the symmetric 2-player PEG (action grid "
         r"$\mathcal{A} = \{1, 2, 4, 8, 16, 32, 64\}$, $|G_1|=|G_2|=5000$, $E_b=128$, "
-        r"$5$ epochs, $\delta=10^{-12}$). $\PoEV$ is computed against a uniform "
-        r"baseline at $\eps_1 = \eps_2 = 8$.}",
+        r"$5$ epochs, $\delta=10^{-12}$, $B_i = C_i = 1$, $V(\sigma) = 1/(1+\sigma)$). "
+        r"$A_i$ is the realised MIA advantage of player $i$ at the equilibrium and "
+        r"$A^{\textrm{opt}}$ is the realised MIA advantage at the social-optimum "
+        r"profile $\boldsymbol{\eps}^{\textrm{opt}}$.}",
         r"\label{tab:NE}",
         r"\begin{tabular}{lccccc}",
         r"\toprule",
-        r"Regime & $(\eps_1^*, \eps_2^*)$ & $A_1$ & $A_2$ & $\PoEV$ \\",
+        r"Regime & $(\eps_1^*, \eps_2^*)$ & $A_1$ & $A_2$ & "
+        r"$\boldsymbol{\eps}^{\textrm{opt}}$ & $A^{\textrm{opt}}$ \\",
         r"\midrule",
     ]
     for r in rows:
         if r["A1"] is None:
-            lines.append(rf"{r['regime']} & {r['ne_text']} & --- & --- & --- \\")
+            lines.append(rf"{r['regime']} & {r['ne_text']} & --- & --- & --- & --- \\")
         else:
+            opt_eps = r["opt"]
             lines.append(
                 rf"{r['regime']} & {r['ne_text']} & {r['A1']:.3f} & "
-                rf"{r['A2']:.3f} & {r['PoEV']:+.2f} \\"
+                rf"{r['A2']:.3f} & "
+                rf"$({opt_eps[0]:g}, {opt_eps[1]:g})$ & {r['A_opt']:.3f} \\"
             )
     lines += [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     out_path = TEX_DIR / "table_NE.tex"

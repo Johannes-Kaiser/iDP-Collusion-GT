@@ -140,16 +140,30 @@ externality.
 Fix a target $t$ and a coalition $C$ of size $k = |C|$, with $\lambda \to
 \infty$ in Definition~\ref{def:coalition} (the coalition cares only about
 maximising the target's vulnerability). The coalition's best response is
-$\eps_i = \eps^{\min}$ for every $i \in C$, and the target's MIA advantage
-$A_t$ is monotone-increasing in $k$.
+$\eps_i = \eps^{\star}$ for every $i \in C$, where $\eps^{\star}$ is the
+\emph{participation-preserving minimum}---i.e., the smallest admissible
+$\eps$ for which the mechanism solution still has $p_i > 0$ for every $i \in
+C$. Furthermore, the target's MIA advantage $A_t$ is monotone-increasing in
+$k$.
 \end{proposition}
 
 \begin{proof}[Proof sketch]
 By Lemma~\ref{lem:externality}, $\partial A_t / \partial \eps_i \leq 0$ for
-every $i \in C$. Setting every $\eps_i$ as low as feasible maximises $A_t$
-pointwise on $\mathcal{A}^{k}$. The monotonicity in $k$ is the same
-lemma applied to adding a member to $C$: doing so strictly enlarges the set of
-budgets that pull $\sigma$ upward, raising $A_t$.
+every $i \in C$ along the feasible region in which $p_i > 0$. Setting every
+$\eps_i$ as low as that region admits maximises $A_t$ pointwise on
+$\mathcal{A}^{k}$. The participation-preserving qualifier is necessary: at
+extremely low $\eps_i$, the mechanism may set $p_i = 0$ (i.e., the colluder
+effectively drops out of training), at which point colluder $i$ no longer
+constrains $\sigma$ via (C2) and the externality on the target vanishes.
+The optimal coalition $\eps^{\star}$ may therefore lie one or two grid steps
+above $\eps_{\min}$ when $k$ is large (so that several small budgets risk
+pushing the mechanism to $p_i = 0$) and at $\eps_{\min}$ when $k$ is small.
+
+The monotonicity in $k$ follows from the same lemma applied to adding a
+member to $C$: doing so strictly enlarges the set of budgets pulling $\sigma$
+downward, raising $A_t$. \Cref{fig:E4} confirms this empirically: $A_t$
+rises from $0.48$ at $k = 1$ to $0.73$ at $k = 4$ in our canonical $n = 5$
+setting.
 \end{proof}
 
 Proposition~\ref{prop:coalition-attack} establishes that the budget-

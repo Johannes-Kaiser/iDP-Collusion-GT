@@ -64,16 +64,18 @@ awareness.}
 \label{sec:E2}
 
 \Cref{fig:E2} reports the equilibrium budget and the realised MIA advantage
-as a function of the dataset size ratio $|G_1|/|G_2|$. Because best-response
-dynamics cycles in the aware regime, we report the time-average over the
-last 5 iterations of best-response dynamics as the equilibrium proxy. Two
-findings emerge. First, the minority group (lower $|G_g|$) consistently
-suffers a higher realised MIA advantage, because its sampling rate $p_g$ is
-pushed upward by the (C2) batch-size constraint when its own population is
-small. Second, the equilibrium choice of $\eps$ depends on the relative
-position in the dataset: a minority player has a strong incentive to declare
-\emph{more} privacy (lower $\eps$), yet this drives the larger group's
-sampling rate even higher, increasing the larger group's externality cost.
+as a function of the dataset size ratio $|G_1|/|G_2|$. A striking pattern
+emerges: \emph{the minority group always plays the lower $\eps$ at the
+equilibrium}. For $r < 1$ (player~$1$ is the minority), player~$1$ chooses
+$\bar\eps_1 \approx 3.3$ while player~$2$ chooses up to $\bar\eps_2 \approx
+8$; for $r > 1$ the pattern flips by symmetry. In every case, the
+\emph{majority} bears the externality cost: their realised MIA advantage is
+$2$--$3\times$ that of the minority. The minority has a strategic
+advantage: by declaring low $\eps$, they push the majority's sampling rate
+upward via the (C2) batch-size constraint, transferring the realised
+vulnerability to the more populous group. This is a privacy analogue of
+free-riding: small groups exploit the externality and large groups pay the
+cost.
 
 \begin{figure*}[!t]
 \centering
@@ -88,10 +90,16 @@ function of dataset size ratio $|G_1|/|G_2|$, in the aware regime.}
 
 We extend to $n \in \{2,3,4,5\}$ symmetric aware players. \Cref{fig:E3}
 reports the mean equilibrium budget and the mean realised MIA advantage at
-the equilibrium. The mean realised advantage rises with $n$: more players
-means more independent strategic interactions through the shared $\sigma$,
-and the equilibrium drifts toward lower $\eps$ for everyone, raising
-$\sigma$ but also raising each $p_g$ (by (C2)).
+the equilibrium. For $n = 2$ the equilibrium is the asymmetric anti-
+coordination NE of \cref{obs:aware-ne}. For $n \geq 3$, the symmetric
+$2$-player anti-coordination dissolves: best-response dynamics settles into a
+symmetric cycle whose time-average is the same per-player $\bar\eps$ and the
+same per-player realised MIA $\bar A$. The mean realised vulnerability
+remains roughly constant in $n$ in this regime ($\bar A \approx 0.10$--$0.11$),
+because the per-group constraint scaling balances the externality with the
+additional players' budget contributions. Larger-scale settings (more
+iterations, larger total dataset) admit a more pronounced trend, which we
+report in \cref{fig:E6}.
 
 \begin{figure*}[!t]
 \centering
@@ -127,12 +135,17 @@ manipulation attack of Kaiser et al.~\cite{kaiser2026your}.}
 \label{sec:E5}
 
 \Cref{fig:E5} reports the equilibrium budget and the equilibrium MIA advantage
-across $n \in \{2,3,4,5\}$ in both regimes. The naive regime delivers a higher
-realised MIA advantage at every $n$: naive players ignore the externality,
-and their best response is to declare a low $\eps$ which makes everyone less
-private. Aware players partially internalise this externality and so the
-equilibrium MIA advantage is lower (though not zero, since the externality is
-still mediated by every individual player's own model-utility incentive).
+across $n \in \{2,3,4,5\}$ in both regimes. The qualitative comparison
+depends on the number of players. At $n = 2$, the aware regime materially
+mitigates the externality: $\bar A_{\text{aware}} \approx 0.11$ versus
+$\bar A_{\text{naive}} \approx 0.16$, a $30\%$ reduction. For $n \geq 3$,
+however, the BR-cycles of the two regimes converge in this symmetric coarse-grid
+setting: both regimes equilibrate at $\bar\eps \approx 4$ and $\bar A \approx
+0.10$. The naive regime's tendency to choose smaller nominal $\eps$ is dominated
+by the shared model-utility term $V(\sigma)$, which both regimes value equally.
+In settings with stronger heterogeneity (\cref{fig:E6}) or larger composition
+counts (the credit-card-like scenario of~\cite{kaiser2026your}), the divergence
+between naive and aware reappears and grows with $n$.
 
 \begin{figure*}[!t]
 \centering

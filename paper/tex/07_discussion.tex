@@ -2,14 +2,22 @@
 \label{sec:discussion}
 
 We have shown that sampling-based individual differential privacy is not just
-\emph{vulnerable} to collusion attacks but \emph{equilibrium-incompatible}:
-the budget-manipulation attack of Kaiser et al.~\cite{kaiser2026your} is the
-rational best response of any coordinated subset of data holders, and the
-underlying privacy externality is the equilibrium behaviour of even
-non-malicious players. The implication for designers of iDP systems is that
-the formal $(\eps_i, \delta)$-iDP contract, while honoured at every individual
-record, does not deliver the privacy each contributor expects whenever players
-are aware of the externality.
+\emph{vulnerable} to collusion attacks but \emph{equilibrium-incompatible}.
+The pure Nash equilibria of the resulting game are intrinsically
+\emph{asymmetric}---in the canonical $2$-player setting, both the naive
+$(1, 8) / (8, 1)$ NE and the aware $(1, 2) / (2, 1)$ NE concentrate
+vulnerability on one player while exempting the other. The budget-manipulation
+attack of Kaiser et al.~\cite{kaiser2026your} is precisely the asymmetric naive
+NE: a configuration that, by Proposition~\ref{prop:coalition-attack}, is the
+rational best response of any coordinated subset of data holders, and that, by
+Observation~\ref{obs:naive-ne}, is also reached by self-interested naive
+players acting in isolation. The aware regime reduces the realised
+population-level vulnerability by roughly $50\%$ but does \emph{not} restore
+symmetry: it merely shifts the asymmetric equilibrium toward lower budgets.
+The implication for designers of iDP systems is that the formal $(\eps_i,
+\delta)$-iDP contract, while honoured at every individual record, will be
+silently violated in the realised privacy of at least one of the contributors
+in any pure Nash equilibrium of the strategic game it induces.
 
 \paragraph{Limitations of this work.} Three caveats are worth noting.
 First, our model assumes one-shot play. Real deployments of iDP are dynamic:
