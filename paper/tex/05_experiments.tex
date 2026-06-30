@@ -18,7 +18,7 @@ C1 & Symmetric equilibrium? & 2 equal-size groups, full $\boldsymbol{\eps}$-grid
 C2 & Effect of size asymmetry & 2 groups, size ratio $r \in [0.1, 10]$ & Minority plays low $\eps$, majority absorbs $A$ (\cref{fig:C2}) \\
 C4 & How bad under coordination? & $n{=}5$, target $\eps_t{=}32$, coalition of size $k$ & $A_t$ monotone in $k$; $+65\%$ at $k{=}4$ (\cref{fig:C4}) \\
 C5 & Functional form of the externality & 2-group, vary $\eps_O$ and proportion at fixed $\eps_T$ & $A_t$ monotone in $\eps_O$, crossover at $\eps_O{=}\eps_T$ (\cref{fig:C5}) \\
-C6 & Grid-refinement of the NE locus & C1 at $K=44$ (double resolution) & NE locus is a smooth 1-D curve (\cref{fig:C6}) \\
+C6 & Grid-refinement of the NE set & C1 at $K=44$ (double resolution) & Same 8 isolated NEs (\cref{fig:C6}) \\
 C7 & Sensitivity to $B/C$ ratio (symmetric) & $B/C \in [0.25, 8]$, $K=22$ & Asymmetric NEs in $B/C \in [0.5, 4]$; collapse to diagonal at extremes (\cref{fig:C7}) \\
 C8 & Asymmetric privacy weights & $C_1/C_2 \in [0.25, 4]$, $K=22$ & NE locus migrates: more-sensitive player takes the low-$\eps$ role (\cref{fig:C8}) \\
 \bottomrule
@@ -230,33 +230,33 @@ proportions lower it.}
 \label{sec:C6}
 
 The eight pure NEs of C1 sit at discrete grid points; the underlying
-question is whether they sample an analytical curve in
-$(\eps_1, \eps_2)$-space or whether the grid resolution itself is generating
-their multiplicity. The implicit first-order condition~\eqref{eq:foc}
-defines two BR loci---one per player---whose intersection \emph{is} the NE
-set; under symmetric players the two loci are reflections across the
-diagonal. There is no closed form for either curve because $A_i$ has none,
-but the curve is a one-dimensional locus and its shape is testable by grid
-refinement.
+question is whether they are an artefact of the grid resolution or whether
+they reflect a smaller stable set of isolated equilibria of the continuous
+game. The implicit first-order condition~\eqref{eq:foc} defines two BR
+loci---one per player, each a one-dimensional curve in
+$(\eps_1, \eps_2)$-space---whose intersections \emph{are} the pure NEs.
+Under symmetric players the two loci are reflections across the diagonal.
+The number of intersections depends on how the curves bend through each
+other, and need not grow with the grid resolution.
 
-We rerun C1 at $K = 44$ on the same $[\eps^{\min},\eps^{\max}]$ interval,
-doubling the resolution along each axis. \cref{fig:C6} reports the
-resulting BR loci with the pure NEs marked. The two curves
-trace smooth, monotone-decreasing loci in the lower-left quadrant; their
-intersections (the pure NEs) lie on a curved 1-D set off the diagonal. At
-$K = 44$ we recover the same qualitative structure as at $K = 22$, but the
-NEs become denser along the curve---each $K = 22$ NE has neighbours at
-$K = 44$ that fall on the same curve. The asymmetric-pure-NE structure is
-therefore not a grid artefact; it is the discrete sampling of a smooth
-1-D locus in the action plane.
+We re-run C1 at $K = 44$, doubling the resolution along each axis from $K
+= 22$ (so the grid is now four times denser). \cref{fig:C6} reports the
+resulting BR loci with the pure NEs marked. The BR curves are clearly
+visible as one-dimensional stepped loci, and they cross at \emph{eight}
+distinct points---the same count as at $K = 22$. The crossings sit at
+nearly identical $(\eps_1, \eps_2)$ values to those at the coarse
+resolution, modulo grid quantisation. The asymmetric pure NEs are
+therefore a finite set of isolated equilibria of the continuous game, not
+a one-parameter family; the discrete grid samples them faithfully.
 
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_C6_locus_K44.pdf}
 \caption{\textbf{C6.} BR loci and pure NEs (left) and the $u_1$ surface
-with NEs marked (right) at the refined resolution $K = 44$. The NE locus
-in $(\eps_1, \eps_2)$ space is a smooth 1-D curve off the diagonal; doubled
-grid resolution refines but does not change its shape.}
+with NEs marked (right) at the refined resolution $K = 44$. The two BR
+correspondences are one-dimensional stepped curves in the action plane;
+they cross at exactly eight isolated points (the same count as at $K =
+22$), confirming that the asymmetric NE set is finite.}
 \label{fig:C6}
 \end{figure*}
 
