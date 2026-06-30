@@ -12,8 +12,7 @@ players' utility weights: the NE set is finite and stable under grid
 refinement (\cref{sec:C6}), the asymmetric multiplicity survives across
 a wide range of benefit-to-cost weights (\cref{sec:C7}), heterogeneous
 privacy preferences amplify the asymmetry rather than dampen it
-(\cref{sec:C8}), and the two preference asymmetries combine essentially
-independently (\cref{sec:C9}).
+(\cref{sec:C8}).
 
 \subsection{Common setup}
 \label{sec:setup}
@@ -335,60 +334,3 @@ action plane.}
 \label{fig:C8}
 \end{figure}
 
-% =====================================================================
-\subsection{C9 --- How does the NE locus respond to joint asymmetry in
-both $B$ and $C$?}
-\label{sec:C9}
-
-C7 and C8 each break one symmetry at a time. To see how the two
-asymmetries interact, we sweep them jointly: $B_1/B_2 \in \{0.5, 1, 2\}$
-crossed with $C_1/C_2 \in \{0.5, 1, 2\}$, with $B_2 = C_2 = 1$ throughout
-and the rest of the canonical setup unchanged. The result is a
-four-dimensional dependence---two ratios in, two equilibrium budgets
-out---which we display in two complementary ways.
-
-\Cref{fig:C9-grid} shows nine small-multiples scatter plots, one per
-$(B_1/B_2, C_1/C_2)$ pair, of the pure NEs in the $(\eps_1, \eps_2)$
-plane. The qualitative shifts are visible directly: when $B_1/B_2$ rises
-the NE cloud migrates to the lower-right region (player~$1$ now values
-model utility more and therefore takes the high-$\eps$ role), and when
-$C_1/C_2$ rises the cloud migrates to the upper-left region (player~$1$
-now values privacy more and therefore takes the low-$\eps$ role). The
-two ratios act roughly independently: the upper-right cell ($B_1/B_2 =
-0.5$, $C_1/C_2 = 2$) and the lower-left cell ($B_1/B_2 = 2$, $C_1/C_2 =
-0.5$) are mirror images, as the underlying symmetry of the game requires.
-
-\cref{fig:C9-heatmap} collapses the same data onto two scalar summaries
-defined per $(B_1/B_2, C_1/C_2)$ cell: the mean log-asymmetry of the NE
-locations, $\langle |\log(\eps_1^*/\eps_2^*)| \rangle$, and the mean
-realised-vulnerability gap, $\langle |A_1^* - A_2^*| \rangle$, with the
-NE count annotated in each cell. The asymmetry index is dominated by
-$C_1/C_2$: rows do not vary much, columns do. The realised-vulnerability
-gap, in contrast, is jointly steered by both ratios---highest in the
-top-left corner ($B_1/B_2 = 2$, $C_1/C_2 = 0.5$, where player~$1$
-combines high utility weight with low privacy weight and therefore
-accepts the largest realised $A_1$) and gentle along the diagonal where
-the two asymmetries roughly cancel. The four-dimensional dependence is
-therefore well-summarised by these two scalar fields.
-
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C9_smallmultiples.pdf}
-\caption{\textbf{C9 (small multiples).} Pure NE locations in $(\eps_1,
-\eps_2)$ as the player asymmetries $B_1/B_2$ and $C_1/C_2$ are swept
-jointly. Each cell of the $3 \times 3$ grid shows the NEs at one
-$(B_1/B_2, C_1/C_2)$ combination; the dashed reference is the diagonal
-$\eps_1 = \eps_2$.}
-\label{fig:C9-grid}
-\end{figure*}
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C9_heatmap.pdf}
-\caption{\textbf{C9 (scalar summaries).} Two-scalar projection of the
-four-dimensional NE dependence: the mean log-asymmetry of the NE
-locations (left, blue) and the mean realised-vulnerability gap
-between the two players (right, orange). Annotations give the number of
-pure NEs in each cell.}
-\label{fig:C9-heatmap}
-\end{figure}
