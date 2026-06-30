@@ -13,12 +13,17 @@ and \cref{prop:coalition-attack} shows this is the rational best response of
 \emph{any} coordinated subset of data holders.
 
 \paragraph{Limitations of this work.} Three caveats are worth noting.
-First, our model assumes one-shot play. Real deployments of iDP are dynamic:
-contributors join and leave; budgets are re-negotiated; trainers re-train.
-A repeated-game extension is the natural next step, since the asymmetric
-equilibrium we observe could in principle be averaged out across rounds (or
-exacerbated, as a player who is repeatedly assigned the high-$A$ role would
-exit the system).
+First, our model assumes one-shot full-information play. Real
+deployments of iDP are dynamic: contributors join and leave; budgets are
+re-negotiated; trainers re-train. A natural extension is a repeated game
+in which the players also have private preference types and learn about
+one another across rounds. \cref{app:bayesian} sketches such a game ---
+the \emph{Bayesian Repeated PEG} --- as a direct instance of the
+Stackelberg-learning template of \citet{letchford2009learning,
+blum2014learning, balcan2015commitment} applied to the iDP mechanism,
+together with a small simulation. We treat it as a brief extension here
+and do not pursue regret bounds or the fully two-sided repeated game
+of \citet{aumann1995repeated}.
 Second, we assume full information about other players' actions. Real
 contracts may keep budgets private, and \cref{rem:awareness} already
 distinguishes between fully aware players and players who only see their
