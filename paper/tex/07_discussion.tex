@@ -1,61 +1,93 @@
 \section{Discussion and Conclusion}
 \label{sec:discussion}
 
-We have shown that sampling-based individual differential privacy is not just
-\emph{vulnerable} to collusion attacks but \emph{equilibrium-incompatible}.
-The pure Nash equilibria of the resulting game are intrinsically
-\emph{asymmetric}---in the canonical $2$-player setting, both the naive
-$(1, 8) / (8, 1)$ NE and the aware $(1, 2) / (2, 1)$ NE concentrate
-vulnerability on one player while exempting the other. The budget-manipulation
-attack of Kaiser et al.~\cite{kaiser2026your} is precisely the asymmetric naive
-NE: a configuration that, by Proposition~\ref{prop:coalition-attack}, is the
-rational best response of any coordinated subset of data holders, and that, by
-Observation~\ref{obs:naive-ne}, is also reached by self-interested naive
-players acting in isolation. The aware regime reduces the realised
-population-level vulnerability by roughly $50\%$ but does \emph{not} restore
-symmetry: it merely shifts the asymmetric equilibrium toward lower budgets.
-The implication for designers of iDP systems is that the formal $(\eps_i,
-\delta)$-iDP contract, while honoured at every individual record, will be
-silently violated in the realised privacy of at least one of the contributors
-in any pure Nash equilibrium of the strategic game it induces.
+We have shown that sampling-based individual differential privacy is not
+just \emph{vulnerable} to collusion attacks but \emph{equilibrium-asymmetric}.
+The pure Nash equilibria of the Privacy Externality Game, when they exist on
+the dense action grid, sit \emph{off the diagonal}: one player accepts a
+higher realised MIA advantage and is compensated by a higher model-utility
+benefit; the other absorbs the opposite trade. The budget-manipulation
+attack of \citet{kaiser2026your} is precisely the asymmetric equilibrium
+played by a coalition that weights the target's harm in its joint utility,
+and \cref{prop:coalition-attack} shows this is the rational best response of
+\emph{any} coordinated subset of data holders.
 
 \paragraph{Limitations of this work.} Three caveats are worth noting.
 First, our model assumes one-shot play. Real deployments of iDP are dynamic:
-contributors join and leave; budgets can be re-negotiated; trainers
-re-train. The repeated-game extension is the natural next step.
-Second, we assume full information about other players' actions.
-Real contracts may keep budgets private, so a Bayesian variant of the PEG
-with private types is a natural and important direction. Third, our
-analysis is restricted to the sampling-based realisation of iDP; the
-\emph{sensitivity-based} realisation~\cite{boenisch2023have} adjusts per-sample
-clipping bounds rather than per-sample sampling rates and does not exhibit the
-same externality (the noise-to-sensitivity ratio is preserved by construction,
-so privacy profiles are unaffected by the budget distribution). Our framework
-specialises to that case as the trivial PEG in which the externality vanishes.
+contributors join and leave; budgets are re-negotiated; trainers re-train.
+A repeated-game extension is the natural next step, since the asymmetric
+equilibrium we observe could in principle be averaged out across rounds (or
+exacerbated, as a player who is repeatedly assigned the high-$A$ role would
+exit the system).
+Second, we assume full information about other players' actions. Real
+contracts may keep budgets private, and \cref{rem:awareness} already
+distinguishes between fully aware players and players who only see their
+nominal $(\eps_i,\delta)$ contract. A Bayesian PEG that treats $\eps_i$ as
+a private type drawn from a known distribution is a natural and important
+extension.
+Third, our analysis is restricted to the sampling-based realisation of iDP.
+The sensitivity-based realisation~\cite{boenisch2023have} adjusts per-sample
+clipping bounds rather than per-sample sampling rates and does not exhibit
+the same externality (the noise-to-sensitivity ratio is preserved by
+construction). Our framework specialises to that case as the trivial PEG in
+which the externality vanishes.
+
+\paragraph{The role of the model-utility function $V$.} Our choice $V(\sigma)
+= 1/(1+\sigma^2)$ is motivated by the convex DP-ERM excess-risk bound of
+\citet{bassily2014private}, and we use it as a directional proxy in our
+possibly non-convex setting. The qualitative findings---existence of
+asymmetric NEs, monotone coalition attack, externality lemma---do not depend
+on the precise shape of $V$; they require only that $V$ is continuous,
+monotone-decreasing in $\sigma$, and bounded. We expect the same qualitative
+picture under any utility function with these three properties.
 
 \paragraph{Mitigation.} The natural mitigation is to make the contract
-internalise the externality. The $(\eps_i, \delta, \Delta)$-iDP formulation of
-Kaiser et al.~\cite{kaiser2026your, kaissis2024beyond} adds a $\Delta$-divergence
-bound on the realised vulnerability, restricting the action space of the PEG
-to profiles that satisfy a per-record bound on excess advantage. We expect
-this restriction to admit a unique equilibrium and to drive the Price of
-Excess Vulnerability to zero (by definition). Characterising the constrained
-PEG and identifying its equilibrium is a clean extension of this work.
+internalise the externality. The $(\eps_i, \delta, \Delta)$-iDP formulation
+of \citet{kaissis2024beyond} adds a $\Delta$-divergence bound on the realised
+vulnerability, restricting the action space of the PEG to profiles that
+satisfy a per-record bound on excess advantage. We expect this restriction
+to admit a unique equilibrium and to drive the realised advantage gap
+between players to within $\Delta$ by definition. A clean
+characterisation of the constrained PEG is left to future work.
 
-\paragraph{Wider lesson.} The wider lesson of this paper is that an
-\emph{individual} privacy contract is incomplete: it does not pin down the
-collective dynamics. Where individuals interact strategically (in a single
-machine-learning training, in a federated round, in any future composition of
-the iDP mechanism), the contract must also constrain their joint behaviour or
-the equilibrium will quietly violate every participant's expectations while
-preserving every formal guarantee. The Privacy Externality Game makes this
-gap explicit, formalises the equilibrium, and clarifies what an iDP contract
-must do to close it.
+\paragraph{Open questions.} The following questions naturally arise from
+this work but lie outside its scope:
+\begin{enumerate}
+\item Does a pure-strategy NE always survive on the continuous action space
+under the coupled cost, and does a $\Delta$-bound on the slack suffice for
+existence?
+\item Is the PEG a potential game in the sense of \cite{monderer1996potential}?
+PoP's analysis was a potential game because the privacy cost was
+separable; the externality term breaks this directly. Conditions on the
+cross-partial of $A_i$ that recover the potential structure would unify
+the two settings.
+\item What is the sign of the externality across composition regimes
+(minority vs majority weak-privacy)? Our experiments suggest the smaller
+group is favoured, but the analytic dependence on $|G_g|$ deserves a
+closed-form characterisation.
+\item What is the appropriate player granularity (single sample versus
+silo) in the FL setting, and how does the granularity change the
+equilibria?
+\item Worst-case (analytical) vs realised (empirical) cost---which should
+the contract be written against, and how large is the gap in practice
+across deep-learning workloads?
+\item Is the $(\eps_i, \delta, \Delta)$-iDP contract by itself sufficient
+as a collusion-resistant mechanism, or are sensitivity-based iDP or
+public-data padding needed when the slack is exceeded?
+\end{enumerate}
+
+\paragraph{Wider lesson.} The wider lesson is that an \emph{individual}
+privacy contract is incomplete: it does not pin down the collective
+dynamics. Where individuals interact strategically (in a single
+machine-learning training, in a federated round, in any future composition
+of the iDP mechanism), the contract must also constrain their joint
+behaviour or the equilibrium will quietly violate at least one
+participant's expectations while preserving every formal guarantee.
 
 \paragraph{Conclusion.} The promise of iDP---that every data contributor
-controls her own privacy---is broken by the privacy externality of sampling-
-based mechanisms. We formalised the strategic situation faced by iDP data
-contributors as the Privacy Externality Game, proved monotonicity of the
-externality and characterised the equilibria. The result is that the
-collusion attack on iDP is not adversarial but \emph{rational}, and the
+controls her own privacy---is broken by the privacy externality of
+sampling-based mechanisms. We formalised the strategic situation faced by
+iDP data contributors as the Privacy Externality Game, proved monotonicity
+of the externality and characterised the equilibria. The result is that
+the collusion attack on iDP is not adversarial but \emph{rational}, and the
 remedy must operate at the level of the contract.

@@ -59,6 +59,9 @@ J.~F. Nash, ``Equilibrium points in $n$-person games,'' \emph{Proceedings of the
 \bibitem{koutsoupias1999worst}
 E.~Koutsoupias and C.~Papadimitriou, ``Worst-case equilibria,'' in \emph{Symposium on Theoretical Aspects of Computer Science (STACS)}, 1999, pp. 404--413.
 
+\bibitem{hayes2024bullseye}
+J.~Hayes, S.~Mahloujifar, N.~Carlini, and F.~Tramer, ``Bullseye polytope: A scalable clean-label poisoning attack with improved transferability,'' in \emph{IEEE Symposium on Security and Privacy (S\&P)}, 2024.
+
 \bibitem{monderer1996potential}
 D.~Monderer and L.~S. Shapley, ``Potential games,'' \emph{Games and Economic Behavior}, vol.~14, no.~1, pp. 124--143, 1996.
 

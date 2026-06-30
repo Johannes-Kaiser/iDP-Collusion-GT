@@ -99,6 +99,7 @@ def solve_mechanism(
     steps: int,
     delta: float = 1e-12,
     sigma_range: Tuple[float, float] = (0.3, 200.0),
+    min_sample_rate: float = 1e-5,
 ) -> MechanismResult:
     eps_target = np.asarray(eps_target, dtype=float)
     group_sizes = np.asarray(group_sizes, dtype=float)
@@ -140,11 +141,16 @@ def solve_mechanism(
     sigma_star = math.sqrt(lo * hi)
     _, rates_star = realised_batch(sigma_star)
     eps_per_g = np.array([epsilon_rdp(sigma_star, float(r), steps, delta) for r in rates_star])
+    # Feasibility: every group must have a non-degenerate sampling rate.
+    # Otherwise the (eps_g, delta)-iDP guarantee is trivially satisfied by
+    # the group simply not participating in training, which is not a
+    # meaningful instance of the mechanism (cf. Boenisch et al. 2023, Def. 4).
+    participates = np.all(rates_star >= min_sample_rate)
     return MechanismResult(
         sigma=sigma_star, sample_rates=rates_star, eps_per_group=eps_per_g,
         steps=steps, delta=delta, eps_target=eps_target,
         group_sizes=group_sizes.astype(int), expected_batch_size=int(target_B),
-        feasible=True,
+        feasible=bool(participates),
     )
 
 

@@ -4,89 +4,97 @@
 Differential privacy~\cite{dwork2006calibrating} is widely regarded as the
 canonical formal guarantee for privacy-preserving machine learning. In its
 classical form, a single privacy budget $(\eps, \delta)$ is shared by every
-record in the database, and every record is protected to exactly the same
-extent. Yet privacy preferences are heterogeneous: a clinical patient and a
-casual user contributing data to the same model often place very different
-values on their privacy. Recognising this, \emph{individual differential
-privacy} (iDP) replaces the single $(\eps,\delta)$ guarantee with a per-record
-contract $(\eps_i,\delta)$, and a number of mechanisms have been proposed to
-deliver such per-record contracts in deep
-learning~\cite{boenisch2023have,jorgensen2015conservative,feldman2021individual}.
-The most widely-adopted realisation, sampling-based iDP introduced by
-Boenisch et al.~\cite{boenisch2023have}, achieves heterogeneous budgets by
-calibrating each record's Poisson inclusion probability $p_i$ against a single
-shared noise multiplier $\sigma$ so that, for fixed batch size and iteration
-count, every group of records satisfies its own $(\eps_g, \delta)$-DP bound.
+record, and every record receives the same protection. Yet privacy
+preferences are heterogeneous: a clinical patient and a casual user
+contributing data to the same model often place very different values on
+their privacy. \emph{Individual differential privacy} (iDP) replaces the
+single $(\eps,\delta)$ guarantee with a per-record contract
+$(\eps_i,\delta)$, and several mechanisms have been proposed to deliver such
+per-record contracts in deep
+learning~\cite{boenisch2023have, jorgensen2015conservative, feldman2021individual}.
+The most widely-adopted realisation in DP-SGD is sampling-based iDP, due to
+\citet{boenisch2023have}: heterogeneous budgets are achieved by calibrating
+each record's Poisson inclusion probability $p_i$ against a single shared
+noise multiplier $\sigma$ so that, for fixed batch size and iteration count,
+every group of records satisfies its own $(\eps_g, \delta)$-DP bound.
 
-We focus on a fundamental and overlooked feature of this realisation.
-\emph{Because every record shares the same noise multiplier and a common
-expected batch size, each record's sampling rate is mechanically coupled to
-every other record's chosen budget.} Concretely, lowering one's own $\eps_i$
-forces other contributors' sampling rates upward to keep the expected batch size
-fixed---which, as recent empirical work has shown~\cite{kaiser2026your},
-inflates their membership-inference (MIA) advantage even though every
-formal $(\eps_g,\delta)$-iDP guarantee continues to hold. The promise of
-individual control is therefore broken in a structural sense: an individual's
+We focus on a fundamental, overlooked feature of this realisation. Because
+every record shares the same noise multiplier and a common expected batch
+size, each record's sampling rate is mechanically coupled to every other
+record's chosen budget. Lowering one's own $\eps_i$ forces other
+contributors' sampling rates upward to keep the expected batch size fixed---
+which, as recent empirical work has shown~\cite{kaiser2026your}, inflates
+their realised membership-inference (MIA) advantage even though every formal
+$(\eps_g,\delta)$-iDP guarantee continues to hold. The promise of individual
+privacy control is therefore broken in a structural sense: an individual's
 \emph{actual} privacy risk depends not on her own choice but on the joint
 choice of the entire population.
 
 \paragraph{Our viewpoint: this is a game.}
-The natural framing for any choice problem whose outcome is determined by the
-choices of multiple self-interested parties is game theory. Pej\'o et
-al.~\cite{pejo2019together} introduced a two-player game on the
-privacy-accuracy plane (the \emph{Price of Privacy}), but they were studying a
-mechanism in which a player's privacy choice affected only her \emph{own}
-accuracy. The novel feature of sampling-based iDP is that every player's
-privacy choice affects every other player's \emph{privacy}, a far stronger and
-qualitatively different coupling. We call this the \emph{privacy externality},
-and the game it gives rise to the \emph{Privacy Externality Game} (PEG).
+The natural framing for any choice problem whose outcome is determined by
+the choices of multiple self-interested parties is game theory.
+\citet{pejo2019together} introduced a two-player game on the privacy-accuracy
+plane (the \emph{Price of Privacy}), but they were studying a mechanism in
+which a player's privacy choice affected only her \emph{own} accuracy. The
+novel feature of sampling-based iDP is that every player's privacy choice
+affects every other player's \emph{privacy}, a far stronger and qualitatively
+different coupling. We call this the \emph{privacy externality}, and the
+game it gives rise to the \emph{Privacy Externality Game} (PEG).
 
 \paragraph{Contributions.}
 This paper makes the following contributions.
 \begin{enumerate}
 \item \textbf{Formalisation.} We define the $n$-player Privacy Externality
-Game (PEG) in which each player picks a per-group budget $\eps_i$ and the
-sampling-based iDP mechanism then determines the noise multiplier $\sigma$ and
-the per-group sampling rates $p_g$. We split player utility into two awareness
-regimes that capture realistic contracting situations: \emph{naive}
-players, who price privacy via their nominal $\eps_i$, and
-\emph{aware} players, who price privacy via the realised MIA advantage
-$A_i(\boldsymbol{\eps})$.
+  Game on a continuous action space. Each player chooses a per-group budget
+  $\eps_i \in [\eps^{\min}, \eps^{\max}]$; the sampling-based iDP mechanism
+  then determines the noise multiplier $\sigma$ and the per-group sampling
+  rates $p_g$, and each player's utility is the canonical scalar
+  $u_i = B_i V(\sigma) - C_i A_i(\boldsymbol{\eps})$ trading off model
+  quality against the realised MIA advantage on the player's own data.
+  We motivate the functional form of $V$ via the excess-empirical-risk bound
+  of \citet{bassily2014private} for convex DP-ERM, noting the directional
+  caveat as we use it in the (potentially non-convex) deep-learning regime.
+
 \item \textbf{Externality lemma.} We prove that the externality is monotone:
-under the binding constraints of the mechanism, $\partial A_i / \partial \eps_j
-\leq 0$ for every $j \neq i$. Lowering any other player's budget never reduces
-my realised vulnerability.
-\item \textbf{Equilibrium characterisation.} We compute pure Nash equilibria
-in both regimes and observe that, in the canonical symmetric $2$-player
-setting, both regimes admit only \emph{asymmetric} pure NE. In the naive
-regime the asymmetric equilibrium $(\eps_i, \eps_j) = (1, 8)$ leaves one
-player exposed at $A = 0.275$ and the other at $A = 0$; the symmetric
-equilibrium $(4, 4)$ yields $A_1 = A_2 = 0.123$. In the aware regime, both
-players' equilibrium budgets drop and the asymmetric NE $(1, 2)$ has roughly
-\emph{half} the total realised MIA advantage of the naive symmetric NE. The
-aware regime mitigates but does not eliminate the externality.
-\item \textbf{Coalition Stackelberg.} We model a colluding subset of data
-holders as a Stackelberg leader maximising a target's realised MIA advantage.
-We show this exactly recovers the budget-manipulation attack of Kaiser et
-al.~\cite{kaiser2026your} as a one-step best response.
-\item \textbf{Empirical evaluation.} We numerically evaluate the game in a
-range of small but representative scenarios that mirror Kaiser et al.'s
-empirical setup. We report the equilibrium budgets, the equilibrium MIA
-advantage, and the realised externality across coalition sizes.
+  $\partial A_i / \partial \eps_j \leq 0$ for every pair $i \neq j$ on the
+  binding feasible region of the mechanism (Lemma~\ref{lem:externality}).
+  Lowering any other player's budget never reduces my realised vulnerability.
+
+\item \textbf{Equilibrium characterisation.} We show numerically on a dense
+  log-spaced action grid that the symmetric 2-player PEG admits only
+  \emph{asymmetric} pure Nash equilibria: at any symmetric profile, both
+  players have an incentive to deviate in the same direction, and the
+  equilibrium settles with one player carrying a higher realised $A$ in
+  exchange for a higher $V$. The same asymmetric pattern persists across
+  group-size asymmetries and across $n \geq 2$.
+
+\item \textbf{Coalition Stackelberg recovers the attack.} A coalition of
+  data holders maximising the target's realised MIA advantage picks the
+  participation-preserving minimum $\eps^{\star}$, and the target's $A_t$ is
+  monotone-increasing in coalition size $k$
+  (Proposition~\ref{prop:coalition-attack}). This exactly recovers the
+  budget-manipulation attack of \citet{kaiser2026your} as the rational best
+  response of any coordinated set of data holders. In our $n=5$ canonical
+  setting the target's $A_t$ exceeds $0.7$ at $k=4$.
+
+\item \textbf{Empirical evaluation.} We numerically evaluate the game on a
+  range of small but representative scenarios mirroring
+  \cite{kaiser2026your}. We report equilibrium budgets, realised MIA
+  advantages, and the coalition-attack curve.
 \end{enumerate}
 
 \paragraph{Implication.}
-The previous attack literature on iDP frames excess vulnerability as a
+The prior attack literature on iDP frames the excess vulnerability as a
 \emph{vulnerability}---something a malicious party exploits. We argue the
-opposite. Under sampling-based iDP, the externality is the equilibrium
-behaviour of rational players, malicious or not. Mitigation therefore cannot
-proceed by detecting attackers; it must proceed by changing the contract so
-that the underlying game ceases to admit harmful equilibria.
+opposite. Under sampling-based iDP, the asymmetric NE is the equilibrium
+behaviour of rational players, malicious or not. Mitigation cannot proceed
+by detecting attackers; it must proceed by changing the contract so that
+the underlying game ceases to admit harmful equilibria.
 
-The paper is organised as follows. \Cref{sec:background} reviews the necessary
-notions from differential privacy, the sampling-based iDP mechanism, MIA
-advantage, and game theory. \Cref{sec:game} formalises the Privacy
-Externality Game. \Cref{sec:analysis} proves the externality lemma and
-characterises equilibrium properties.  \Cref{sec:experiments} reports the
-numerical evaluation. \Cref{sec:related} reviews related work and
-\cref{sec:discussion} concludes.
+The paper is organised as follows. \Cref{sec:background} reviews
+differential privacy, sampling-based iDP, MIA advantage, and basic game
+theory. \Cref{sec:game} formalises the Privacy Externality Game.
+\Cref{sec:analysis} proves the externality lemma and the
+coalition-attack recovery and characterises equilibrium structure.
+\Cref{sec:experiments} reports the numerical evaluation. \Cref{sec:related}
+reviews related work and \cref{sec:discussion} concludes.

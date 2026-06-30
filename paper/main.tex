@@ -42,6 +42,9 @@
 \newcommand{\MIA}{\mathrm{MIA}}
 \newcommand{\GS}[1]{|G_{#1}|}
 
+% natbib-style citet via cite package fallback:
+\providecommand{\citet}[1]{\cite{#1}}
+
 % Title and authors
 \title{The Privacy Externality Game:\\
 Strategic Budget Choices in Sampling-Based Individual Differential Privacy}
@@ -57,29 +60,28 @@ Strategic Budget Choices in Sampling-Based Individual Differential Privacy}
 Individual differential privacy (iDP) gives each data contributor a personal
 privacy budget. The currently dominant realisation---sampling-based iDP---turns
 each contributor's chosen budget into a per-sample inclusion rate, with a single
-noise multiplier shared across the dataset. We show that this realisation creates
-a privacy externality: lowering one's own budget mechanically raises the membership-
-inference (MIA) advantage on every other data point. Although every individual
-$(\eps_i, \delta)$-iDP guarantee is honoured, the realised privacy of any one
-contributor is determined by the choices of all others. We model the resulting
-strategic situation as a finite, normal-form game, the Privacy Externality Game
-(PEG), and study its equilibria. We prove that the privacy externality is
-monotone: $\partial A_i / \partial \eps_j \leq 0$ for $j \neq i$ under the
-mechanism's binding constraints. We then characterise the game under two
-realistic awareness regimes---naive (players perceive only their nominal
-$\eps_i$) and aware (players perceive the realised MIA advantage). In a
-canonical $2$-player setting we find that both regimes admit \emph{asymmetric}
-pure Nash equilibria: the naive game equilibrates at $(\eps_i, \eps_j) = (1, 8)$
-or $(8, 1)$ with one player exposed at $A = 0.275$ and the other at $A = 0$;
-the aware game equilibrates at $(1, 2)$ or $(2, 1)$, internalising the
-externality but leaving the asymmetry intact. The aware equilibrium has
-roughly half the total realised MIA of the naive equilibrium, showing that
-\emph{awareness mitigates but does not eliminate} the externality. A coalition
-Stackelberg analysis recovers the attack of Kaiser et al.\ (SaTML 2026) as the
-rational best response of any coordinated set of data holders. The implication is that the empirical
-$62\%$-vulnerability attack rate observed in iDP is not adversarial but
-equilibrium behaviour: even non-malicious players in iDP impose privacy
-externalities on every other contributor.
+noise multiplier shared across the dataset. We show that this realisation
+creates a privacy externality: lowering one's own budget mechanically raises
+the realised membership-inference (MIA) advantage on every other data point,
+even though every individual $(\eps_i, \delta)$-iDP guarantee continues to
+hold. We model the resulting strategic situation as a normal-form
+\emph{Privacy Externality Game} on a continuous action space, with each
+player's utility trading off a shared model-quality term $V(\sigma)$ against
+their own realised MIA advantage $A_i(\boldsymbol{\eps})$. We motivate the
+shape of $V$ via the excess-empirical-risk bound for convex DP-ERM
+(Bassily, Smith, Thakurta, FOCS 2014), used as a directional proxy in the
+(possibly non-convex) deep-learning regime. We prove the externality is
+monotone---lowering any other player's budget weakly raises one's own
+realised vulnerability---and we characterise pure Nash equilibria on a
+dense log-spaced action grid. In the symmetric $2$-player setting the pure
+NEs are \emph{asymmetric}: at any symmetric profile both players have a
+deviation incentive in the same direction, and the equilibrium settles with
+one player carrying a higher realised $A$ in exchange for a higher $V$.
+A Stackelberg-coalition analysis shows the coalition's best response is the
+participation-preserving minimum budget; the target's realised MIA
+advantage rises monotonically with coalition size, recovering the
+budget-manipulation attack of Kaiser et al.\ (SaTML 2026) as the rational
+best response of any coordinated set of data holders.
 \end{abstract}
 
 \begin{IEEEkeywords}

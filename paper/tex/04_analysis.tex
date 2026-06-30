@@ -1,174 +1,172 @@
 \section{Equilibrium Analysis}
 \label{sec:analysis}
 
-\subsection{Monotonicity of the externality}
+We characterise the equilibria of the Privacy Externality Game using three
+results: the externality lemma (a monotonicity property of the mechanism), an
+existence statement on the discretised game, and the coalition-attack
+recovery (the rational best response of any coordinated set of players).
 
-The privacy externality of sampling-based iDP is monotone in every other
-player's budget under the binding mechanism constraints.
+\subsection{Monotonicity of the externality}
 
 \begin{lemma}[Privacy externality]
 \label{lem:externality}
 Consider the sampling-based iDP mechanism of \cref{def:sampling-idp} on a
-profile $\boldsymbol{\eps} \in \mathcal{F}$ at which constraints (C1) bind
-for every group and (C2) binds at $E_b$. Then for every $i \neq j$,
+feasible profile $\boldsymbol{\eps}$ at which constraints (C1) bind for every
+group and (C2) binds at $E_b$. Then for every pair $i \neq j$,
 \begin{equation}
-\frac{\partial A_i(\boldsymbol{\eps})}{\partial \eps_j} \;\leq\; 0.
+\frac{\partial A_i(\boldsymbol{\eps})}{\partial \eps_j} \;\leq\; 0,
 \label{eq:externality-lemma}
 \end{equation}
-That is, lowering the budget of any other group $j$ (a more privacy-conscious
-peer) weakly raises group $i$'s realised MIA advantage.
+with equality iff group $i$'s sampling rate $p_i$ does not respond to a
+change in $\eps_j$.
 \end{lemma}
 
-\begin{proof}[Proof sketch]
-We work with the R\'enyi-DP form of (C1), in which $\rho_g = 2 I \alpha\,
-p_g^2 / \sigma^2$ at a chosen order $\alpha$. Since $\rho_g$ is monotone-
-increasing in $\eps_g$, $p_g$ is determined by $\sigma$ and $\eps_g$ via $p_g
-= (\sigma/\sqrt{2I\alpha})\,\sqrt{\rho_g(\eps_g)}$. Substituting into (C2),
+\begin{proof}
+Work in the R\'enyi-DP form of (C1) of \citet{mironov2017renyi}: at order
+$\alpha$, the RDP of an $I$-fold $(p_g,\sigma)$-subsampled Gaussian is at
+most $\rho_g = 2I\alpha\, p_g^2/\sigma^2$, with equality up to higher-order
+terms when $p_g$ is small (Mironov, Theorem~5). Setting this equal to the
+target RDP $\rho_g(\eps_g, \delta)$ gives
+\[
+p_g \;=\; \frac{\sigma}{\sqrt{2I\alpha}}\,\sqrt{\rho_g(\eps_g, \delta)}.
+\]
+Substituting into (C2) yields the implicit equation for $\sigma$:
 \begin{equation}
-\sum_g \frac{|G_g|}{M}\,\frac{\sigma}{\sqrt{2I\alpha}}\,
-\sqrt{\rho_g(\eps_g)} \;=\; \frac{E_b}{M},
+\sum_{g}\, \frac{|G_g|}{M}\,\frac{\sigma}{\sqrt{2I\alpha}}\,
+\sqrt{\rho_g(\eps_g,\delta)} \;=\; \frac{E_b}{M}.
+\label{eq:sigma-implicit}
 \end{equation}
-which gives $\sigma$ as a continuously differentiable, monotone-decreasing
-function of any single $\rho_g$ (and so of any single $\eps_g$). Implicit
-differentiation yields, for every $i \neq j$,
-\(
-\partial \sigma / \partial \eps_j \;<\; 0
-\)
-and
-\(
-\partial p_i / \partial \eps_j \;>\; 0,
-\)
-because if $\eps_j$ falls then $\sigma$ rises and so does $p_i$ via the (C1)
-relation at fixed $\eps_i$.
+Since $\rho_g(\cdot, \delta)$ is monotone-decreasing in $\eps_g$ (smaller
+budget = smaller RDP), the left-hand side is decreasing in $\sigma$ at fixed
+$\eps_g$ if and only if it is increasing in any $\eps_j$. Implicit
+differentiation gives $\partial \sigma / \partial \eps_j > 0$ when (C2)
+binds. Recall that $p_i$ is increasing in $\sigma$ at fixed $\eps_i$.
+Consequently $\partial p_i / \partial \eps_j > 0$ whenever group $i$ is
+non-degenerate.
 
-The MIA advantage $A_i = \Adv(\mathcal{M}_{p_i,\sigma,I})$ is, for the
-$I$-fold subsampled Gaussian, increasing in $p_i$ and decreasing in $\sigma$
-along the privacy-profile envelope (this is exactly the statement that the
-trade-off function of the subsampled Gaussian is sharper for larger sampling
-rate or smaller noise multiplier~\cite{balle2020privacy, dong2022gaussian}).
-The compound effect of $\partial \eps_j$ on $A_i$ via $(\sigma, p_i)$ along
-the binding constraint surface is therefore non-positive, which is
-\eqref{eq:externality-lemma}.
+The MIA advantage of an $I$-fold $(p_i,\sigma)$-subsampled Gaussian is
+non-decreasing in $p_i$ (more sampling exposes more data) and non-increasing
+in $\sigma$ (more noise hides more), as is the privacy profile of the
+subsampled Gaussian \cite{balle2020privacy, dong2022gaussian}. Lowering
+$\eps_j$ reverses the signs: $\partial \sigma / \partial \eps_j < 0$ and
+$\partial p_i / \partial \eps_j < 0$. Net effect on $A_i$ along the feasible
+surface is non-positive, which is~\eqref{eq:externality-lemma}.
 \end{proof}
 
-\Cref{lem:externality} is the formal expression of the empirical finding of
-Kaiser et al.~\cite{kaiser2026your}: choosing a low budget for oneself
-mechanically inflates the realised privacy risk of every other contributor.
-This monotonicity makes the strategic situation we analyse one of negative
-externalities: every additional unit of privacy demanded by one player imposes
-a non-negative cost on every other player.
+\Cref{lem:externality} formalises the empirical observation of
+\citet{kaiser2026your}: when any player tightens their iDP budget, the
+mechanism's noise multiplier $\sigma$ shifts to keep (C2) binding, and every
+other player's realised vulnerability $A_i$ rises. The externality is
+\emph{monotone} in every other player's budget.
 
-\subsection{Nash equilibria in the naive regime}
+In the decomposition of \cref{sec:decomposition}, the lemma equivalently
+states that \emph{the slack $\bar c(\eps_i) - A_i(\boldsymbol{\eps})$
+shrinks in every other player's $\eps_j$}. In words, the
+$(\eps_i,\delta)$-DP worst-case ceiling $\bar c(\eps_i)$ is unchanged
+(it depends only on $\eps_i$), but the realised advantage $A_i$ climbs
+toward that ceiling as others tighten their budgets. This is the
+quantity that the proposed $(\eps_i, \delta, \Delta)$-iDP
+contract~\cite{kaiser2026your, kaissis2024beyond} would cap, and our
+Lemma motivates such a cap formally: without it, $\mathrm{slack}_i$ has no
+floor and the externality can drive any player's realised advantage
+arbitrarily close to the worst case.
 
-A naive player's utility~\eqref{eq:utility-naive} depends on
-$\boldsymbol{\eps}_{-i}$ only through $\sigma(\boldsymbol{\eps})$. Each player
-therefore trades off the linear cost $\eps_i / \eps_i^{\max}$ against the
-indirect effect of $\eps_i$ on the shared $\sigma$. In the symmetric setting
-we observe three pure Nash equilibria.
+\paragraph{Minority and majority intuition.}
+The externality has an asymmetric \emph{group-size} structure. Because (C2)
+enforces a fixed expected batch size, a player with small $|G_i|$ but
+small $\eps_i$ contributes little to the batch and forces the
+larger-$|G_j|$ players' sampling rates upward. The minority therefore
+\emph{exports} its privacy demand onto the majority. This is the formal
+content of the empirical observation in \cite{kaiser2026your}
+that ``the proportion of low-budget players matters as much as their
+$\eps$''.
 
-\begin{observation}[Naive equilibria]
-\label{obs:naive-ne}
-For the symmetric $2$-player aware PEG with $B_i = C_i = 1$, $\eps^{\max}=64$,
-the action grid $\mathcal{A} = \{1,2,4,8,16,32,64\}$, $|G_1|=|G_2|=5000$,
-$E_b=128$, $I=390$, $\delta=10^{-12}$ and $V(\sigma) = 1/(1+\sigma)$, the
-naive-regime PEG admits three pure Nash equilibria:
-\[
-\boldsymbol{\eps}^*_{\text{naive}} \in \{(1, 8),\,(4, 4),\,(8, 1)\}.
-\]
-The symmetric equilibrium $(4,4)$ has realised $A_1 = A_2 = 0.123$. The
-asymmetric equilibria have one player at $A = 0$ and the other at $A = 0.275$
-\textnormal{(see Table~\ref{tab:NE})}.
-\end{observation}
+\subsection{Existence and structure of pure Nash equilibria}
 
-The presence of asymmetric equilibria is the formal expression of the
-budget-manipulation attack: the configuration $(1, 8)$ is exactly the
-``one player sacrifices privacy for the other'' regime. The asymmetry is
-self-stabilising---neither player has a profitable unilateral deviation,
-because the high-$\eps$ player gains both model utility \emph{and} no
-externality cost (the nominal-cost-only utility~\eqref{eq:utility-naive} does
-not see the realised $A_2$).
+\begin{proposition}[NE existence on the discretised game]
+\label{prop:existence}
+The discretised PEG on the action grid $\mathcal{A}_K =
+\{\eps^{\min},\dots,\eps^{\max}\}\subset[\eps^{\min},\eps^{\max}]$
+with utilities~\eqref{eq:utility} is a finite normal-form game restricted to
+the (closed) feasible set. By the Nash existence
+theorem~\cite{nash1950equilibrium}, every such game admits at least one
+mixed-strategy NE. Pure NE may or may not exist, depending on
+$(B_i, C_i, |G_i|, V, K)$.
+\end{proposition}
 
-\subsection{Equilibria in the aware regime}
+We do not claim existence on the continuous action space without further
+quasi-concavity assumptions; in particular, our utility~\eqref{eq:utility}
+is not generally concave in $\eps_i$ because $A_i$ is the trade-off
+function of a subsampled Gaussian, whose dependence on $\eps_i$ through
+$(\sigma, p_i)$ is non-trivial. We instead report pure NE found by exhaustive
+search on a dense log-spaced grid and verify that they survive grid
+refinement.
 
-The aware regime internalises the realised advantage through
-$A_i(\boldsymbol{\eps})$. The resulting game has a qualitatively different
-structure: in the same symmetric setting as Observation~\ref{obs:naive-ne}, all
-pure Nash equilibria lie at low budgets and are asymmetric by one grid step.
+\paragraph{What the externality lemma implies for NE structure.}
+Lemma~\ref{lem:externality} says lowering another player's budget weakly
+raises one's own realised vulnerability. If players' utilities place
+non-trivial weight on $A_i$ ($C_i > 0$), each player has an incentive to
+\emph{shift the externality onto others} by lowering their own budget---an
+incentive that is intrinsic to the mechanism. The opposing incentive comes
+from $V(\sigma)$: lowering own $\eps$ pushes $\sigma$ upward, lowering the
+model utility for everyone (including oneself). The equilibrium balances
+these two incentives.
 
-\begin{observation}[Aware equilibria]
-\label{obs:aware-ne}
-Under the same parameters as Observation~\ref{obs:naive-ne}, the aware-regime
-PEG admits two pure Nash equilibria:
-\[
-\boldsymbol{\eps}^*_{\text{aware}} \in \{(1, 2),\,(2, 1)\}.
-\]
-Both equilibria are asymmetric by exactly one grid step, yield $A_1 + A_2
-\approx 0.131$, and dominate the naive symmetric equilibrium $(4, 4)$ in
-total realised MIA: aware players reach an equilibrium with roughly half the
-realised population-level vulnerability of naive players
-\textnormal{(see Table~\ref{tab:NE})}.
-\end{observation}
-
-The picture is the following. Both aware players have the incentive to pick a
-small $\eps$ for their own realised privacy, but they cannot both pick the
-smallest grid value $\eps = 1$: at the symmetric point $(1, 1)$, $\sigma$
-explodes (very small $\eps$ everywhere) and the model-utility term $V(\sigma)$
-collapses. Each player's best response is therefore to deviate \emph{upward}
-by one grid step, recovering model utility while shifting the externality onto
-the other player. The result is an anti-coordination equilibrium: one player
-plays $\eps = 1$, the other plays $\eps = 2$, and the realised advantages
-$(A_1, A_2)$ are unequal but small in aggregate. Crucially, both equilibria
-are at the low end of the action grid---aware players move \emph{toward}
-privacy at the equilibrium, not away from it.
-
-\begin{remark}
-Observations~\ref{obs:naive-ne} and~\ref{obs:aware-ne} together imply that the
-attack on iDP of Kaiser et al.~\cite{kaiser2026your} is precisely the
-asymmetric naive equilibrium $(1, 8)$ or $(8, 1)$. The asymmetric equilibrium
-is rational, not adversarial: any naive player who consults their iDP contract
-and sees only $(\eps_i, \delta)$ will gladly accept a low $\eps_i$ and is
-indifferent to the realised $A_j$ on their peer. The aware regime is the only
-way to internalise the externality, and even then the equilibrium remains
-asymmetric---i.e., the aware regime mitigates but does not eliminate the
-externality.
-\end{remark}
+We observe in our experiments (\cref{sec:experiments}) that the resulting
+balance is typically \emph{asymmetric}: in the symmetric 2-player setting,
+pure NEs sit off the diagonal of the action grid. The intuition is the
+externality lemma's converse: at any symmetric profile $(\eps,\eps)$, both
+players face an identical incentive to deviate; since both deviations cannot
+be unilaterally absorbed, the equilibrium is at an asymmetric profile where
+one player carries a higher $A$ in exchange for a higher $V$.
 
 \subsection{Coalition Stackelberg and the attack recovery}
 
 \begin{proposition}[Coalition best response recovers the attack]
 \label{prop:coalition-attack}
-Fix a target $t$ and a coalition $C$ of size $k = |C|$, with $\lambda \to
-\infty$ in Definition~\ref{def:coalition} (the coalition cares only about
-maximising the target's vulnerability). The coalition's best response is
-$\eps_i = \eps^{\star}$ for every $i \in C$, where $\eps^{\star}$ is the
-\emph{participation-preserving minimum}---i.e., the smallest admissible
-$\eps$ for which the mechanism solution still has $p_i > 0$ for every $i \in
-C$. Furthermore, the target's MIA advantage $A_t$ is monotone-increasing in
-$k$.
+Fix a target $t$ and a coalition $C$ of size $k$, with $\lambda \to \infty$
+in Definition~\ref{def:coalition} (the coalition cares only about the
+target's vulnerability). The coalition's best response is $\eps_i =
+\eps^{\star}_k$ for every $i \in C$, where $\eps^{\star}_k$ is the smallest
+admissible budget that keeps the coalition's mechanism solution feasible
+(i.e., $p_i > 0$ for every $i \in C$). Furthermore, the target's MIA
+advantage $A_t$ is non-decreasing in $k$.
 \end{proposition}
 
 \begin{proof}[Proof sketch]
-By Lemma~\ref{lem:externality}, $\partial A_t / \partial \eps_i \leq 0$ for
-every $i \in C$ along the feasible region in which $p_i > 0$. Setting every
-$\eps_i$ as low as that region admits maximises $A_t$ pointwise on
-$\mathcal{A}^{k}$. The participation-preserving qualifier is necessary: at
-extremely low $\eps_i$, the mechanism may set $p_i = 0$ (i.e., the colluder
-effectively drops out of training), at which point colluder $i$ no longer
-constrains $\sigma$ via (C2) and the externality on the target vanishes.
-The optimal coalition $\eps^{\star}$ may therefore lie one or two grid steps
-above $\eps_{\min}$ when $k$ is large (so that several small budgets risk
-pushing the mechanism to $p_i = 0$) and at $\eps_{\min}$ when $k$ is small.
-
-The monotonicity in $k$ follows from the same lemma applied to adding a
-member to $C$: doing so strictly enlarges the set of budgets pulling $\sigma$
-downward, raising $A_t$. \Cref{fig:E4} confirms this empirically: $A_t$
-rises from $0.48$ at $k = 1$ to $0.73$ at $k = 4$ in our canonical $n = 5$
-setting.
+By \cref{lem:externality}, $\partial A_t / \partial \eps_i \leq 0$ for every
+$i \in C$ on the feasible region. Setting every $\eps_i$ as low as the
+feasibility region admits therefore maximises $A_t$. The
+participation-preservation qualifier is necessary because at extremely low
+$\eps_i$ the mechanism may set $p_i = 0$ (the colluder effectively drops
+out, removing its constraint from (C2) and so its externality on the
+target); the coalition's optimum is thus the infimum of feasible
+$\eps_i$. Monotonicity in $k$ is the same lemma applied to adding a member
+to $C$: doing so strictly enlarges the set of budgets that pull $\sigma$
+downward, raising $A_t$.
 \end{proof}
 
 Proposition~\ref{prop:coalition-attack} establishes that the budget-
-manipulation attack of Kaiser et al.~\cite{kaiser2026your} is precisely the
+manipulation attack of \citet{kaiser2026your} is precisely the
 \emph{rational} best response of any coordinated subset of data holders,
-regardless of intent. Whether the coalition is malicious is irrelevant: any
-group of aware players whose joint utility weights their target's harm equally
-to their own utility will pick the same action vector.
+regardless of malicious intent. Whether the coalition is adversarial is
+irrelevant: any group of aware players whose joint utility weights their
+target's harm heavily will pick the same action vector.
+
+\subsection{An aside on awareness}
+
+\Cref{lem:externality} requires that players compute (or approximate) the
+realised $A_i$. A natural question is: what about a player whose only
+information is the formal $(\eps_i, \delta)$-iDP contract? Such a player
+treats $\eps_i$ as a direct privacy proxy and plays the budget that
+maximises $V(\sigma) - g(\eps_i)$ for some monotone $g$. Their best response
+does not depend on $\eps_{-i}$ at all (the externality is invisible), so
+their action is mechanically the smallest $\eps_i$ that does not break
+their own $V$. This is the \emph{rational} action of a naive player, and it
+is precisely the configuration in which the attack of
+\citet{kaiser2026your} succeeds against them: by Lemma~\ref{lem:externality},
+naive players' choices feed the externality on everyone else without their
+realising. The contribution of this paper is to show that even
+\emph{aware} players---those who can compute $A_i$ explicitly---arrive at
+asymmetric equilibria that concentrate vulnerability on a subset of players.
+The externality cannot be undone by individual rationality alone.

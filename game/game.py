@@ -25,7 +25,7 @@ logging.getLogger("absl").setLevel(logging.ERROR)
 
 from .mechanism import solve_mechanism_cached, MechanismResult
 from .advantage import mia_advantage_subsampled_gaussian
-from .utility import PlayerProfile, default_value
+from .utility import PlayerProfile, utility as compute_utility, value_fn
 
 
 @dataclass
@@ -80,12 +80,7 @@ class Game:
             for p in res.sample_rates
         ])
         utils = np.array([
-            p.utility(
-                sigma=float(res.sigma),
-                A_self=float(advs[i]),
-                eps_self=float(key[i]),
-                value_fn=default_value,
-            )
+            compute_utility(p, sigma=float(res.sigma), A_self=float(advs[i]))
             for i, p in enumerate(self.cfg.players)
         ])
         out = ProfileEvaluation(
