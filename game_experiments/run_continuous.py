@@ -51,7 +51,7 @@ apply_paper_style()
 DELTA = 1e-12
 EPS_MIN, EPS_MAX = 0.5, 64.0
 KGRID = 22       # used for the heavy C1 sweep (already cached)
-KGRID_FAST = 14  # used for multi-ratio sweeps where many sweeps are repeated
+KGRID_FAST = 9   # used for multi-ratio sweeps (no cross-ratio cache reuse)
 
 
 def make_2player(group_sizes=(5000, 5000), B=(1.0, 1.0), C=(1.0, 1.0),

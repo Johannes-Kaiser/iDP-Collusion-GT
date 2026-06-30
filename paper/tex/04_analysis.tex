@@ -8,49 +8,60 @@ recovery (the rational best response of any coordinated set of players).
 
 \subsection{Monotonicity of the externality}
 
-\begin{lemma}[Privacy externality]
+\begin{lemma}[Privacy externality on the feasible region]
 \label{lem:externality}
 Consider the sampling-based iDP mechanism of \cref{def:sampling-idp} on a
-feasible profile $\boldsymbol{\eps}$ at which constraints (C1) bind for every
-group and (C2) binds at $E_b$. Then for every pair $i \neq j$,
+feasible profile $\boldsymbol{\eps}$ at which constraints (C1) bind for
+every group and (C2) binds at $E_b$. Let $\sigma$ and $p_g$ denote the
+mechanism's solution. Then for every pair $i \neq j$,
 \begin{equation}
-\frac{\partial A_i(\boldsymbol{\eps})}{\partial \eps_j} \;\leq\; 0,
+\frac{\partial \sigma}{\partial \eps_j} \;<\; 0
+\qquad\textrm{and}\qquad
+\frac{\partial p_i}{\partial \eps_j} \;<\; 0.
 \label{eq:externality-lemma}
 \end{equation}
-with equality iff group $i$'s sampling rate $p_i$ does not respond to a
-change in $\eps_j$.
+That is, when player $j$ loosens its budget, the mechanism uses less noise
+($\sigma$ falls) and reduces group $i$'s sampling rate ($p_i$ falls).
+Empirically (\cref{fig:C5}), the realised MIA advantage on group $i$ also
+falls: $\partial A_i / \partial \eps_j \leq 0$.
 \end{lemma}
 
 \begin{proof}
-Work in the R\'enyi-DP form of (C1) of \citet{mironov2017renyi}: at order
+Use the R\'enyi-DP form of (C1) of \citet{mironov2017renyi}: at order
 $\alpha$, the RDP of an $I$-fold $(p_g,\sigma)$-subsampled Gaussian is at
-most $\rho_g = 2I\alpha\, p_g^2/\sigma^2$, with equality up to higher-order
-terms when $p_g$ is small (Mironov, Theorem~5). Setting this equal to the
-target RDP $\rho_g(\eps_g, \delta)$ gives
+most $\rho_g \approx 2I\alpha\, p_g^2/\sigma^2$ (tight up to higher-order
+terms for $p_g \ll 1$). Setting this equal to the target RDP
+$\rho_g(\eps_g, \delta)$ (which is monotone-\emph{increasing} in $\eps_g$
+because $\rho = \eps - \log(1/\delta)/(\alpha-1)$ for the binding RDP-to-DP
+conversion at any chosen order $\alpha > 1$) gives the per-group sampling
+rate
 \[
-p_g \;=\; \frac{\sigma}{\sqrt{2I\alpha}}\,\sqrt{\rho_g(\eps_g, \delta)}.
+p_g(\sigma, \eps_g) \;=\; \frac{\sigma}{\sqrt{2I\alpha}}\,
+\sqrt{\rho_g(\eps_g, \delta)}.
 \]
-Substituting into (C2) yields the implicit equation for $\sigma$:
+Substituting into (C2) yields
 \begin{equation}
-\sum_{g}\, \frac{|G_g|}{M}\,\frac{\sigma}{\sqrt{2I\alpha}}\,
-\sqrt{\rho_g(\eps_g,\delta)} \;=\; \frac{E_b}{M}.
+\sigma \cdot \sum_{g}\, |G_g|\, \sqrt{\rho_g(\eps_g,\delta)} \;=\; E_b
+\sqrt{2I\alpha}.
 \label{eq:sigma-implicit}
 \end{equation}
-Since $\rho_g(\cdot, \delta)$ is monotone-decreasing in $\eps_g$ (smaller
-budget = smaller RDP), the left-hand side is decreasing in $\sigma$ at fixed
-$\eps_g$ if and only if it is increasing in any $\eps_j$. Implicit
-differentiation gives $\partial \sigma / \partial \eps_j > 0$ when (C2)
-binds. Recall that $p_i$ is increasing in $\sigma$ at fixed $\eps_i$.
-Consequently $\partial p_i / \partial \eps_j > 0$ whenever group $i$ is
-non-degenerate.
+Implicit differentiation in $\eps_j$ gives
+$\partial \sigma / \partial \eps_j = -\sigma\, |G_j|\, (\partial \sqrt{\rho_j}
+/ \partial \eps_j) / [\sum_g |G_g|\sqrt{\rho_g}] < 0$, since
+$\rho_j$ is increasing in $\eps_j$. From the closed-form expression for
+$p_i$ at fixed $\eps_i$, $\partial p_i / \partial \eps_j = (\partial \sigma /
+\partial \eps_j) \cdot \sqrt{\rho_i(\eps_i)}/\sqrt{2I\alpha} < 0$.
 
-The MIA advantage of an $I$-fold $(p_i,\sigma)$-subsampled Gaussian is
-non-decreasing in $p_i$ (more sampling exposes more data) and non-increasing
-in $\sigma$ (more noise hides more), as is the privacy profile of the
-subsampled Gaussian \cite{balle2020privacy, dong2022gaussian}. Lowering
-$\eps_j$ reverses the signs: $\partial \sigma / \partial \eps_j < 0$ and
-$\partial p_i / \partial \eps_j < 0$. Net effect on $A_i$ along the feasible
-surface is non-positive, which is~\eqref{eq:externality-lemma}.
+The induced sign of $\partial A_i / \partial \eps_j$ is not determined by
+$\partial p_i / \partial \eps_j$ and $\partial \sigma / \partial \eps_j$
+alone: the MIA advantage of the $I$-fold $(p_i,\sigma)$-subsampled Gaussian
+depends on the joint shape of the privacy profile, and the chain
+$\partial A_i / \partial p_i$ and $\partial A_i / \partial \sigma$ have
+opposite signs (more sampling exposes more; more noise hides more).
+However, we verify numerically in \cref{fig:C5} (and consistent with Figure~3
+of \citet{kaiser2026your}) that $\partial A_i / \partial \eps_j \leq 0$
+throughout the feasible region of our scenarios: the $p_i$-decrease
+effect dominates the $\sigma$-decrease effect.
 \end{proof}
 
 \Cref{lem:externality} formalises the empirical observation of

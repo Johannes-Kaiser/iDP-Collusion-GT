@@ -40,7 +40,12 @@ These choices broadly mirror the empirical iDP scenarios of
 (left), the players' best-response correspondences and pure NEs (centre),
 and the realised MIA advantage $A_1(\eps_1, \eps_2)$ (right) on the log-
 spaced action grid. The infeasible region (where at least one $p_i$ falls
-below the participation threshold) is masked white.
+below the participation threshold) is masked white. The best-response
+correspondences are not single-valued functions in a neighbourhood of the
+upper-utility ridge: the utility surface has multiple local maxima along
+each column, producing the step-like jumps in the BR curves visible in the
+centre panel. Pure NEs occur at every point where the two BR curves
+intersect.
 
 On the canonical symmetric setting, the BR curves of the two players
 intersect at \emph{eight} distinct points, all asymmetric, falling in four
@@ -73,15 +78,13 @@ not exist in this canonical setting.}
 
 \subsection{C2: 2-player asymmetric group sizes}
 
-\Cref{fig:C2} reports the equilibrium budget and the realised MIA advantage
-as a function of the dataset size ratio $|G_1|/|G_2|$. The pattern is
-qualitatively unchanged from the symmetric case: the equilibrium is
-asymmetric. Quantitatively, the smaller group consistently plays a smaller
-equilibrium budget. The mechanism then assigns it a smaller sampling rate,
-forcing the larger group to compensate (via (C2)) with a higher sampling
-rate and hence a higher realised $A$. This is the privacy analogue of a
-classical free-riding result: small groups exploit the (C2) externality and
-large groups absorb the realised vulnerability.
+\Cref{fig:C2} reports the equilibrium structure as a function of the
+dataset size ratio $|G_1|/|G_2|$. We report the pure NE with the largest
+asymmetry in realised advantage at each size ratio (other NEs may exist).
+The pattern is qualitatively unchanged from the symmetric case: pure NEs
+are off the diagonal of the action grid. Quantitative trends in the
+realised $A_i$ and equilibrium budgets across size ratios are reported in
+the figure; we defer a closed-form characterisation to future work.
 
 \begin{figure*}[!t]
 \centering
