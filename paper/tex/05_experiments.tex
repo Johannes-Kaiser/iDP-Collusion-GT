@@ -78,13 +78,18 @@ not exist in this canonical setting.}
 
 \subsection{C2: 2-player asymmetric group sizes}
 
-\Cref{fig:C2} reports the equilibrium structure as a function of the
-dataset size ratio $|G_1|/|G_2|$. We report the pure NE with the largest
-asymmetry in realised advantage at each size ratio (other NEs may exist).
-The pattern is qualitatively unchanged from the symmetric case: pure NEs
-are off the diagonal of the action grid. Quantitative trends in the
-realised $A_i$ and equilibrium budgets across size ratios are reported in
-the figure; we defer a closed-form characterisation to future work.
+\Cref{fig:C2} reports the equilibrium structure across dataset size ratios
+$|G_1|/|G_2| \in \{0.1, 0.25, 0.5, 1, 2, 4, 10\}$. For each ratio we report
+the pure NE with the largest asymmetry in realised advantage. Across every
+ratio, \emph{the smaller group plays the smaller equilibrium budget}. For
+$r < 1$ (group 1 smaller), $\eps_1^* \approx 1.5$--$3$ and $\eps_2^*
+\approx 10$, with realised $A_1^* < 0.01$ and $A_2^* \in [0.24, 0.32]$. For
+$r > 1$ the roles flip exactly by symmetry. The minority's privacy
+demand exports onto the majority via the (C2) constraint: smaller $|G_g|$
+with smaller $\eps_g$ contributes little to the expected batch, so the
+larger group's $p_g$ rises to compensate, raising its realised $A$. At
+$r = 1$ multiple NEs of roughly symmetric magnitude exist, with the pure
+NE structure of \cref{fig:C1}.
 
 \begin{figure*}[!t]
 \centering
@@ -102,11 +107,14 @@ We fix $n = 5$ symmetric players. Player $0$ is designated as the target
 with $\eps_t = 32$; the remaining $n-1$ players potentially form a coalition
 $C$ of size $k$. Non-coalition players are fixed at $\eps = 32$.
 \Cref{fig:C4} reports the target's realised MIA advantage at the coalition's
-worst-case (target-vulnerability-maximising) joint action. Consistent with
-Proposition~\ref{prop:coalition-attack}, $A_t$ is monotone-increasing in $k$
-and the optimal coalition $\eps^{\star}_k$ is the participation-preserving
-minimum---the smallest feasible $\eps$ that does not push the coalition's
-$p_i$ below the participation threshold.
+target-vulnerability-maximising joint action. The baseline (no coalition,
+$k = 0$, all five players at $\eps = 32$) gives $A_t \approx 0.442$. Adding
+one colluder raises $A_t$ to $0.483$; two colluders to $0.531$; three to
+$0.607$; four to $0.728$, a $65\%$ inflation over the no-coalition baseline.
+At $k \in \{1, 2, 3\}$ the optimal coalition budget is $\eps^\star \approx
+6.8$; at $k = 4$ the coalition can drop to $\eps^\star \approx 3.2$ while
+keeping the mechanism feasible. These numbers are monotone-increasing in
+$k$ as predicted by Proposition~\ref{prop:coalition-attack}.
 
 \begin{figure}[!t]
 \centering
