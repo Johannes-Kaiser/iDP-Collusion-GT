@@ -131,6 +131,35 @@ players face an identical incentive to deviate; since both deviations cannot
 be unilaterally absorbed, the equilibrium is at an asymmetric profile where
 one player carries a higher $A$ in exchange for a higher $V$.
 
+\paragraph{Locus of NEs.}
+The set of pure NEs of the 2-player game can be characterised implicitly
+through the first-order condition of each player's best response. Writing
+out the partial derivative of~\eqref{eq:utility} and using the
+parametrisation of the mechanism in the proof of
+Lemma~\ref{lem:externality},
+\[
+\frac{\partial u_i}{\partial \eps_i} \;=\;
+B_i\, V'(\sigma)\, \frac{\partial \sigma}{\partial \eps_i}
+\;-\; C_i\, \frac{\partial A_i}{\partial \eps_i}
+\;=\; 0,
+\]
+i.e.~at the BR
+\begin{equation}
+\frac{B_i}{C_i}
+\;=\; \frac{ (\partial A_i / \partial \eps_i) }
+          { V'(\sigma)\,(\partial \sigma / \partial \eps_i) }
+\;\;\;\Big|_{\boldsymbol{\eps}}.
+\label{eq:foc}
+\end{equation}
+For each fixed $(B_i,C_i)$, equation~\eqref{eq:foc} defines an implicit
+curve $\mathrm{BR}_i$ in the $(\eps_1, \eps_2)$-plane; the pure NEs are
+the intersections of $\mathrm{BR}_1$ and $\mathrm{BR}_2$. The two
+quantities on the right-hand side of~\eqref{eq:foc} are not available in
+closed form (the dependence of $A_i$ on $(\sigma, p_i)$ has no closed
+form), but each is computable numerically by a single PLD-accounting
+evaluation. We use this in \cref{sec:experiments} to trace both BR loci
+on a fine grid and identify their intersections.
+
 \subsection{Coalition Stackelberg and the attack recovery}
 
 \begin{proposition}[Coalition best response recovers the attack]
