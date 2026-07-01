@@ -12,23 +12,41 @@ single $(\eps,\delta)$ guarantee with a per-record contract
 $(\eps_i,\delta)$, and several mechanisms have been proposed to deliver such
 per-record contracts in deep
 learning~\cite{boenisch2023have, jorgensen2015conservative, feldman2021individual}.
-The most widely-adopted realisation in DP-SGD is sampling-based iDP, due to
-\citet{boenisch2023have}: heterogeneous budgets are achieved by calibrating
-each record's Poisson inclusion probability $p_i$ against a single shared
-noise multiplier $\sigma$ so that, for fixed batch size and iteration count,
-every group of records satisfies its own $(\eps_g, \delta)$-DP bound.
 
-We focus on a fundamental, overlooked feature of this realisation. Because
-every record shares the same noise multiplier and a common expected batch
-size, each record's sampling rate is mechanically coupled to every other
-record's chosen budget. Lowering one's own $\eps_i$ forces other
-contributors' sampling rates upward to keep the expected batch size fixed---
-which, as recent empirical work has shown~\cite{kaiser2026your}, inflates
-their realised membership-inference (MIA) advantage even though every formal
-$(\eps_g,\delta)$-iDP guarantee continues to hold. The promise of individual
-privacy control is therefore broken in a structural sense: an individual's
-\emph{actual} privacy risk depends not on her own choice but on the joint
-choice of the entire population.
+Heterogeneous privacy budgets have a natural home in
+\emph{federated learning}~\cite{mcmahan2017communication,
+kairouz2021advances}, where the data contributors are already separately
+identifiable entities---silos in a hospital consortium, clients of a
+mobile keyboard, banks in a fraud-detection coalition---and it is exactly
+these entities that hold heterogeneous preferences about how much
+protection they demand. Cross-silo federated learning with per-silo (or
+per-record) personalised DP is now an active research
+programme~\cite{liu2024crosssilo}, and the setting we study should be
+read as its strategic component: contributors declare heterogeneous
+budgets to a coordinator, the coordinator reconciles them through a
+single mechanism, and the resulting per-contributor risk depends on the
+budget vector of the whole population. The most widely-adopted way of
+doing this reconciliation in DP-SGD is the sampling-based iDP of
+\citet{boenisch2023have}, which calibrates each record's Poisson
+inclusion probability $p_i$ against a single shared noise multiplier
+$\sigma$ so that, for fixed batch size and iteration count, every group
+of records satisfies its own $(\eps_g, \delta)$-DP bound. We build the
+formal development on this mechanism because it is the empirical
+canonical case, but the strategic phenomena we identify apply to any
+budget-coordination scheme that jointly solves for
+$(\sigma, p_g)$ from a public budget vector (\cref{sec:related}).
+
+Because every record shares the same noise multiplier and a common
+expected batch size, each record's sampling rate is mechanically coupled
+to every other record's chosen budget. Lowering one's own $\eps_i$
+forces other contributors' sampling rates upward to keep the expected
+batch size fixed---which, as recent empirical work has
+shown~\cite{kaiser2026your}, inflates their realised membership-inference
+(MIA) advantage even though every formal $(\eps_g,\delta)$-iDP guarantee
+continues to hold. The promise of individual privacy control is
+therefore broken in a structural sense: an individual's \emph{actual}
+privacy risk depends not on her own choice but on the joint choice of
+the entire population.
 
 \paragraph{Our viewpoint: this is a game.}
 The natural framing for any choice problem whose outcome is determined by
