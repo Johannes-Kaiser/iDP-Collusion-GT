@@ -1,0 +1,100 @@
+\section{Background}
+\label{sec:background}
+
+\subsection{Differential privacy and Gaussian mechanisms}
+
+We use the standard definition of approximate differential
+privacy~\cite{dwork2006calibrating}: a randomised mechanism
+$\mathcal{M}\colon \mathcal{Z}^* \to \mathcal{O}$ satisfies $(\eps,
+\delta)$-differential privacy ($(\eps, \delta)$-DP) if, for any pair of
+adjacent databases $D \sim D'$ (differing on a single record) and every
+measurable $S \subseteq \mathcal{O}$,
+\[
+\Pr[\mathcal{M}(D) \in S] \;\leq\; e^\eps \Pr[\mathcal{M}(D') \in S] + \delta.
+\]
+A single $(\eps, \delta)$-pair is only a single point of the underlying
+\emph{privacy profile} $\{(\eps,\delta(\eps)) : \eps \geq 0\}$~\cite{balle2020privacy,
+kaissis2024beyond}, and mechanisms calibrated to the same point can have
+substantially different profiles and so substantially different realised
+adversarial risk. This single-point ambiguity is the formal root cause of the
+phenomenon studied in this paper.
+
+The \emph{Gaussian mechanism}, $\mathcal{M}(D) = f(D) + \mathcal{N}(0,\sigma^2 I)$
+for a query $f$ of $L_2$ sensitivity $\Delta f$, satisfies $(\eps,\delta)$-DP
+for all $(\eps, \delta)$ such that
+$\Phi(\Delta f / 2\sigma - \eps\sigma/\Delta f) - e^\eps
+\Phi(-\Delta f/2\sigma - \eps\sigma/\Delta f) \leq \delta$,
+where $\Phi$ is the standard-normal CDF.
+For training neural networks under DP, the standard procedure is DP-SGD with
+Poisson subsampling~\cite{abadi2016deep}, in which each data point is included
+in each minibatch independently with probability $p$, providing the well-known
+\emph{subsampling amplification} of DP.
+
+\subsection{Individual differential privacy and the sampling-based realisation}
+\label{sec:idp}
+
+\emph{Individual differential privacy}~\cite{jorgensen2015conservative}
+relaxes the uniform $(\eps,\delta)$ guarantee to a per-record contract
+$(\eps_i,\delta)$: the resulting algorithm must satisfy $(\eps_i,\delta)$-DP
+\emph{with respect to record~$i$} for every $i$. Boenisch et
+al.~\cite{boenisch2023have} translate per-record contracts into per-record
+Poisson sampling probabilities while keeping a single noise multiplier $\sigma$
+and a fixed expected batch size, which is the configuration we study.
+
+\begin{definition}[Sampling-based iDP-SGD~\cite{boenisch2023have}]
+\label{def:sampling-idp}
+Let the dataset of size $M$ partition into $G$ \emph{privacy groups}
+$\{G_1,\dots,G_G\}$ with sizes $|G_g|$. Each group has a target
+$(\eps_g,\delta)$-DP budget. The mechanism trains by Poisson-subsampled
+DP-SGD for $I$ iterations, where the noise multiplier $\sigma$ and the per-group
+sampling rates $p_1,\dots,p_G$ are chosen such that
+\begin{align}
+\textnormal{(C1) for every } g, \quad
+& \textnormal{the } I\textnormal{-fold } (p_g,\sigma)\textnormal{-subsampled} \notag\\
+& \textnormal{Gaussian satisfies } (\eps_g,\delta)\textnormal{-DP at equality.} \notag\\
+\textnormal{(C2)} \quad
+& \sum_{g=1}^G \frac{|G_g|}{M}\,p_g \;=\; \frac{E_b}{M}, \label{eq:batch}
+\end{align}
+where $E_b$ is the desired expected batch size. We refer to $(\sigma,
+p_1,\dots,p_G)$ as the \emph{mechanism solution} for the budget vector
+$\boldsymbol{\eps} = (\eps_1,\dots,\eps_G)$.
+\end{definition}
+
+The single shared $\sigma$ in (C1) is the source of the privacy externality.
+For any candidate $\sigma$, the largest sampling rate that keeps group $g$ at
+its budget is a monotone-increasing function of $\sigma$ (more noise $\Rightarrow$
+more room for sampling); the batch-size constraint (C2) then determines $\sigma$
+as the unique value at which the per-group rates sum to $E_b$.  As a corollary,
+the rate $p_g$ that group $g$ obtains is determined by the entire vector
+$\boldsymbol{\eps}$, not by $\eps_g$ alone.
+
+\subsection{MIA advantage and the privacy profile}
+
+For a privacy-preserving mechanism $\mathcal{M}$ with trade-off function $T$
+(equivalently, an $f$-DP function~\cite{dong2022gaussian}), the membership
+inference advantage of the optimal Bayes-aware adversary
+is~\cite{kaiser2026your}
+\begin{equation}
+\Adv(\mathcal{M}) \;=\; \sup_{\alpha \in [0,1]} \;\bigl(\,1 - \alpha - T(\alpha)\,\bigr),
+\label{eq:adv}
+\end{equation}
+i.e.~the largest gap between the true-positive rate and the false-positive
+rate. For the $I$-fold $(p, \sigma)$-subsampled Gaussian, $T$ can be
+computed numerically by privacy-loss-distribution (PLD)
+accounting~\cite{google-dp-accounting}, which is what we use throughout.
+Crucially, $\Adv$ is determined by the \emph{full privacy profile}, not by any
+single $(\eps,\delta)$ point.
+
+\subsection{Game-theoretic terminology}
+
+A finite normal-form game is a tuple
+$\langle N, \Sigma, U\rangle$ with $N = \{1,\dots,n\}$ players, action sets
+$\Sigma = \{S_1, \dots, S_n\}$, and payoff functions $U = \{u_1,\dots,u_n\}$.
+A \emph{Nash equilibrium} (NE) is an action profile $\boldsymbol{s}^*$ such
+that no player profits from a unilateral deviation:
+$u_i(s_i^*,\boldsymbol{s}_{-i}^*) \geq u_i(s_i,\boldsymbol{s}_{-i}^*)$ for every
+$s_i \in S_i$~\cite{nash1950equilibrium}. A \emph{best response} is the
+utility-maximising action against a fixed strategy of the others. The
+\emph{price of anarchy}~\cite{koutsoupias1999worst} compares the welfare of the
+worst NE to the social optimum. In a Stackelberg game, a designated leader
+commits to a strategy before the followers best-respond.

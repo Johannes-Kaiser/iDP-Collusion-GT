@@ -70,7 +70,7 @@ def main():
         r"\centering",
         r"\caption{Pure Nash equilibria of the symmetric 2-player PEG (action grid "
         r"$\mathcal{A} = \{1, 2, 4, 8, 16, 32, 64\}$, $|G_1|=|G_2|=5000$, $E_b=128$, "
-        r"$5$ epochs, $\delta=10^{-12}$, $B_i = C_i = 1$, $V(\sigma) = 1/(1+\sigma)$). "
+        r"$5$ epochs, $\delta=10^{-12}$, $w_i = 1$, $V(\sigma) = 1/(1+\sigma)$). "
         r"$A_i$ is the realised MIA advantage of player $i$ at the equilibrium and "
         r"$A^{\textrm{opt}}$ is the realised MIA advantage at the social-optimum "
         r"profile $\boldsymbol{\eps}^{\textrm{opt}}$.}",

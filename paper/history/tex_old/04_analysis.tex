@@ -1,0 +1,675 @@
+\section{Equilibrium Analysis}
+\label{sec:analysis}
+
+We characterise the equilibria of the Privacy Externality Game in five
+moves. \Cref{lem:externality} shows the mechanism induces a monotone
+externality on the observable $A_i$, and
+\cref{cor:externality-small-p,thm:externality-full} promote its sign from
+an empirical observation on the trade-off function to an analytical
+theorem on the strict interior of the feasible region. Stated in slack
+form (\cref{prop:slack-monotonicity}), the same fact says the DP-worst-case
+gap shrinks whenever another player tightens their budget.
+\Cref{prop:no-symmetric-ne} then rules the diagonal out as a Nash
+equilibrium in the fully symmetric two-player game. On the small-$p$
+sublattice \cref{thm:continuous-ne-smallp} delivers pure-strategy NE
+existence on the continuous action space via the supermodular route of
+\citet{milgrom1990rationalizability}; the discretised game grounds our
+numerical search. \Cref{prop:non-potential} rules out any exact,
+weighted, or ordinal potential representation, explaining why the search
+proceeds by enumeration rather than by minimising a scalar functional.
+\Cref{prop:V-invariance} isolates the load-bearing role of $V$ (only the
+sign of $V'$ enters), and \cref{cor:coalition-attack} identifies the
+budget-manipulation attack of \citet{kaiser2026your} as the rational
+best response of any coordinated subset of data holders.
+
+\subsection{Monotonicity of the externality}
+
+\begin{lemma}[Privacy externality on the feasible region]
+\label{lem:externality}
+Consider the sampling-based iDP mechanism of \cref{def:sampling-idp} on a
+feasible profile $\boldsymbol{\eps}$ at which constraints (C1) bind for
+every group and (C2) binds at $E_b$. Let $\sigma$ and $p_g$ denote the
+mechanism's solution. Then for every pair $i \neq j$,
+\begin{equation}
+\frac{\partial \sigma}{\partial \eps_j} \;<\; 0
+\qquad\textrm{and}\qquad
+\frac{\partial p_i}{\partial \eps_j} \;<\; 0.
+\label{eq:externality-lemma}
+\end{equation}
+That is, when player $j$ loosens its budget, the mechanism uses less noise
+($\sigma$ falls) and reduces group $i$'s sampling rate ($p_i$ falls).
+Analytically (\cref{cor:externality-small-p,thm:externality-full}), the
+realised MIA advantage $A_i$ also falls on the strict interior of the
+feasible region: $\partial A_i / \partial \eps_j < 0$.
+\end{lemma}
+
+\begin{proof}
+Use the R\'enyi-DP form of (C1) of \citet{mironov2017renyi}: at order
+$\alpha$, the RDP of an $I$-fold $(p_g,\sigma)$-subsampled Gaussian is at
+most $\rho_g \approx 2I\alpha\, p_g^2/\sigma^2$ (tight up to higher-order
+terms for $p_g \ll 1$). Setting this equal to the target RDP
+$\rho_g(\eps_g, \delta)$ (which is monotone-\emph{increasing} in $\eps_g$
+because $\rho = \eps - \log(1/\delta)/(\alpha-1)$ for the binding RDP-to-DP
+conversion at any chosen order $\alpha > 1$) gives the per-group sampling
+rate
+\[
+p_g(\sigma, \eps_g) \;=\; \frac{\sigma}{\sqrt{2I\alpha}}\,
+\sqrt{\rho_g(\eps_g, \delta)}.
+\]
+Substituting into (C2) yields
+\begin{equation}
+\sigma \cdot \sum_{g}\, |G_g|\, \sqrt{\rho_g(\eps_g,\delta)} \;=\; E_b
+\sqrt{2I\alpha}.
+\label{eq:sigma-implicit}
+\end{equation}
+Implicit differentiation in $\eps_j$ gives
+$\partial \sigma / \partial \eps_j = -\sigma\, |G_j|\, (\partial \sqrt{\rho_j}
+/ \partial \eps_j) / [\sum_g |G_g|\sqrt{\rho_g}] < 0$, since
+$\rho_j$ is increasing in $\eps_j$. From the closed-form expression for
+$p_i$ at fixed $\eps_i$, $\partial p_i / \partial \eps_j = (\partial \sigma /
+\partial \eps_j) \cdot \sqrt{\rho_i(\eps_i)}/\sqrt{2I\alpha} < 0$.
+
+The observable sign $\partial A_i / \partial \eps_j < 0$ chains through
+$\partial A_i / \partial p_i > 0$ and $\partial A_i / \partial \sigma < 0$
+of the $I$-fold $(p_i,\sigma)$-subsampled Gaussian, which pull in
+opposite directions (more sampling exposes more; more noise hides more).
+The dominance of the $p_i$-decrease effect is established analytically:
+\cref{cor:externality-small-p} closes the sign in the small-$p$ regime by
+a leading-order expansion of the subsampled trade-off function, and
+\cref{thm:externality-full} extends the sign to the strict interior of
+the feasible region via a Chernoff two-sided envelope on the composed
+privacy-loss distribution.
+\end{proof}
+
+\Cref{lem:externality} formalises the empirical observation of
+\citet{kaiser2026your}: when any player tightens their iDP budget, the
+mechanism's noise multiplier $\sigma$ shifts to keep (C2) binding, and every
+other player's realised vulnerability $A_i$ rises. The externality is
+\emph{monotone} in every other player's budget.
+
+\begin{corollary}[Externality on $A_i$ in the small-$p$ regime]
+\label{cor:externality-small-p}
+Under the hypotheses of \cref{lem:externality}, assume additionally that
+$p_g \leq p_\star$ for every group $g$, with $p_\star$ small enough that
+the $O(p^2)$ remainder in the amplification expansion of
+\citet{balle2020privacy} is dominated by the leading term uniformly in
+$\alpha \in [0,1]$. Then
+\begin{align}
+A_i(p_i,\sigma)
+    &= p_i\, \Adv_G(\sigma) \;+\; O(p_i^2),
+        \label{eq:cor-Ai-leading}\\
+\frac{\partial^2 A_i}{\partial p_i\, \partial \sigma}
+    &= \Adv_G'(\sigma) \;+\; O(p_i) \;<\; 0,
+        \label{eq:cor-mixed}
+\end{align}
+where $\Adv_G(\sigma) = 2\Phi(1/(2\sigma))-1$ is the MIA advantage of the
+unsubsampled sensitivity-1 Gaussian. Consequently,
+$\partial A_i / \partial \eps_j < 0$ on the small-$p$ face of the
+feasible region.
+\end{corollary}
+
+\begin{proof}[Proof sketch]
+The Poisson-subsampled trade-off function admits the mixture representation
+$T_{p,\sigma}(\alpha) = (1-p)(1-\alpha) + p\, T_\sigma(\alpha) + O(p^2)$
+(\cite{balle2020privacy}, Poisson-subsampling amplification), so its
+sup-gap $A(p,\sigma) = \sup_\alpha[1-\alpha-T_{p,\sigma}(\alpha)]$ equals
+$p\,\Adv_G(\sigma) + O(p^2)$; \eqref{eq:cor-Ai-leading} and
+\eqref{eq:cor-mixed} follow by term-by-term differentiation. For the
+externality sign, substitute the closed-form $p_i = \sigma\sqrt{\rho_i}/
+\sqrt{2I\alpha}$ from the proof of \cref{lem:externality} into the chain
+rule for $\partial A_i/\partial\eps_j$ and factor
+$(\partial\sigma/\partial\eps_j)<0$ out:
+\begin{equation}
+\frac{\partial A_i}{\partial \eps_j}
+   \;=\; \frac{\partial \sigma}{\partial \eps_j}
+        \cdot p_i \cdot
+        \Bigl[\, \tfrac{\Adv_G(\sigma)}{\sigma}
+              + \Adv_G'(\sigma)\, \Bigr] \;+\; O(p_i^2).
+\label{eq:proof-bracket}
+\end{equation}
+The bracket is the $\sigma$-derivative of $\sigma\,\Adv_G(\sigma)$
+divided by $\sigma$; setting $u := 1/(2\sigma)$ and
+$f(u) := \Phi(u) - \Phi(-u) - 2u\phi(u)$ gives $f(0)=0$ and
+$f'(u) = 2u^2\phi(u) > 0$, so the bracket is strictly positive. Together
+with $(\partial\sigma/\partial\eps_j)<0$, the leading $O(p_i)$ term of
+$\partial A_i/\partial\eps_j$ is strictly negative.
+\end{proof}
+
+\begin{theorem}[Full-region monotonicity of $A_i$]
+\label{thm:externality-full}
+Under the hypotheses of \cref{lem:externality}, assume the strict-interior
+condition $p_g(\boldsymbol{\eps}) \in (0,1)$ for every group $g$. Then for
+every pair $i \neq j$, $\partial A_i / \partial \eps_j < 0$ on the
+strict interior of the feasible region.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The composed Poisson-subsampled Gaussian trade-off function
+$T_{p,\sigma}$ is sandwiched between two Gaussian trade-off functions
+\[
+T_{\mathcal G(\mu_+(p,\sigma))}(\alpha) \;\leq\; T_{p,\sigma}(\alpha)
+   \;\leq\; T_{\mathcal G(\mu_-(p,\sigma))}(\alpha),
+\qquad \alpha \in [0,1],
+\]
+with envelope scales
+$\mu_+(p,\sigma) = 2p\sqrt{I}/\sigma$
+(RDP-to-zCDP-to-GDP conversion; \cite{mironov2017renyi,bun2016concentrated})
+and
+$\mu_-(p,\sigma) = p\sqrt{I}\sqrt{e^{1/\sigma^2}-1}$
+(GDP-CLT lower envelope; \cite{dong2022gaussian}, Cor.~3.3).
+Both scales are strictly increasing in $p$ and strictly decreasing in
+$\sigma$, and $\Adv(\mathcal G(\mu)) = 2\Phi(\mu/2)-1$ is strictly
+increasing in $\mu$. Chaining through
+$\partial\sigma/\partial\eps_j < 0$ and $\partial p_i/\partial\eps_j<0$
+of \cref{lem:externality} on the strict interior, both envelopes carry
+$\partial A_i / \partial \eps_j < 0$; the true $A_i$ inherits the sign
+from the Balle-Barthe-Gaboardi privacy profile
+(\cite{balle2020privacy}, Thm.~9), which is strictly increasing in
+$p$ and strictly decreasing in $\sigma$ at every fixed $\eps > 0$.
+\end{proof}
+
+In the decomposition of \cref{sec:decomposition}, the lemma equivalently
+states that \emph{the slack $\bar c(\eps_i) - A_i(\boldsymbol{\eps})$
+shrinks in every other player's $\eps_j$}. In words, the
+$(\eps_i,\delta)$-DP worst-case ceiling $\bar c(\eps_i)$ is unchanged
+(it depends only on $\eps_i$), but the realised advantage $A_i$ climbs
+toward that ceiling as others tighten their budgets. We record this
+slack-form as a proposition because the $(\eps_i, \delta, \Delta)$-iDP
+contract of \citet{kaiser2026your, kaissis2024beyond} caps precisely this
+quantity, and every downstream reference to the externality's sign can
+cite a single labelled statement.
+
+\begin{proposition}[Slack monotonicity]
+\label{prop:slack-monotonicity}
+Fix a profile $\boldsymbol{\eps}$ in the feasible region of
+\cref{ass:participation} at which the hypotheses of \cref{lem:externality}
+hold. Then for every pair $i \neq j$,
+\[
+\frac{\partial \mathrm{slack}_i}{\partial \eps_j}(\boldsymbol{\eps})
+\;=\; -\,\frac{\partial A_i}{\partial \eps_j}(\boldsymbol{\eps})
+\;>\; 0
+\]
+on the strict interior. Loosening any other player's budget strictly
+enlarges $i$'s slack (pushes $A_i$ away from its $(\eps_i,\delta)$-DP
+ceiling); tightening any other player's budget strictly shrinks it.
+\end{proposition}
+
+\begin{proof}
+Differentiate the identity $A_i(\boldsymbol{\eps}) = \bar c(\eps_i)
+- \mathrm{slack}_i(\boldsymbol{\eps})$. Because $\bar c(\eps_i)$ depends
+only on $\eps_i$, $\partial \bar c / \partial \eps_j = 0$ for $j\neq i$
+and the equality $\partial \mathrm{slack}_i / \partial \eps_j =
+-\,\partial A_i / \partial \eps_j$ is immediate. The strict inequality
+is \cref{thm:externality-full} on the strict interior of the feasible
+region, upgraded from the small-$p$ closure of
+\cref{cor:externality-small-p}.
+\end{proof}
+
+\paragraph{Minority and majority intuition.}
+The externality has an asymmetric \emph{group-size} structure. Because (C2)
+enforces a fixed expected batch size, a player with small $|G_i|$ but
+small $\eps_i$ contributes little to the batch and forces the
+larger-$|G_j|$ players' sampling rates upward. The minority therefore
+\emph{exports} its privacy demand onto the majority. This is the formal
+content of the empirical observation in \cite{kaiser2026your}
+that ``the proportion of low-budget players matters as much as their
+$\eps$''.
+
+\subsection{No symmetric equilibrium in the symmetric 2-player PEG}
+\label{sec:no-symmetric-ne}
+
+\Cref{lem:externality} has an immediate structural consequence for the
+fully symmetric two-player game: the diagonal cannot be a pure Nash
+equilibrium. This is, together with \cref{lem:externality}, the
+analytical content of our headline empirical finding (\cref{fig:C1}) that
+all pure NEs of the symmetric 2-player PEG sit off the diagonal.
+
+\begin{proposition}[No symmetric pure NE in the symmetric 2-player PEG]
+\label{prop:no-symmetric-ne}
+Consider the two-player PEG of \cref{def:peg} with $n = 2$, identical
+privacy weights $w_1 = w_2 = w > 0$, and identical group sizes
+$|G_1| = |G_2|$. Assume the standing regularity of \cref{eq:V} on $V$ and
+that the vulnerability $A_i$, viewed as a function of $(p_i,\sigma)$, is
+$C^2$ with $\partial A / \partial p > 0$ strictly on the interior of the
+feasible region. Let $(\eps^\star, \eps^\star)$ be an interior diagonal
+profile at which both mechanism constraints (C1) and (C2) hold with strict
+feasibility $p_i(\eps^\star, \eps^\star) > 0$. Then $(\eps^\star,
+\eps^\star)$ is \emph{not} a pure Nash equilibrium.
+\end{proposition}
+
+\begin{proof}
+\emph{Setup.} Change variables to $s_i := \sqrt{\rho(\eps_i, \delta)}$
+where $\rho(\cdot,\delta)$ is the RDP-order-$\alpha$ bound from the proof
+of \cref{lem:externality}. Then $\eps_i \mapsto s_i$ is a $C^1$
+diffeomorphism on the interior; substituting the closed form of
+$p_g(\sigma,\eps_g)$ into (C2) yields, with $|G_1| = |G_2| = m$,
+\begin{equation}
+\sigma(s_1, s_2) \;=\; \frac{C}{s_1 + s_2},
+\qquad
+p_i(s_1, s_2) \;=\; \frac{C}{\sqrt{2 I \alpha}}\cdot\frac{s_i}{s_1 + s_2},
+\label{eq:agg-form}
+\end{equation}
+with $C := E_b \sqrt{2 I \alpha}/m > 0$. Write $S := s_1 + s_2$; utility
+becomes $u_i(s_1, s_2) = V(\sigma(S)) - w\, A(p_i, \sigma(S))$, with the
+same $A(\cdot,\cdot)$ for both players by the symmetric group sizes.
+
+\emph{Aggregator structure at the diagonal.} Fix $s_1 = s_2 = s > 0$, so
+$S = 2s$, $\sigma = C/(2s)$, and $p_1 = p_2 = C/(2\sqrt{2 I\alpha}) =: p$.
+Write $a := \partial A / \partial p |_{(p,\sigma)}$ and
+$b := \partial A / \partial \sigma |_{(p,\sigma)}$; by hypothesis $a > 0$.
+From \eqref{eq:agg-form},
+\[
+\frac{\partial \sigma}{\partial s_i} \;=\; -\frac{\sigma}{2 s},
+\qquad
+\frac{\partial p_1}{\partial s_1} \;=\; \frac{p}{2s},
+\qquad
+\frac{\partial p_1}{\partial s_2} \;=\; -\frac{p}{2s}.
+\]
+The sign asymmetry $\partial p_1 / \partial s_1 > 0 > \partial p_1 /
+\partial s_2$ is the mechanism's aggregator content: player~$i$'s
+sampling rate is monotone in her share $s_i/S$, so raising her own
+$s_i$ has the opposite effect on $p_1$ as raising her opponent's $s_j$.
+
+\emph{Diagonal FOC collapses.} Player~1's first-order condition in $s_1$
+is
+\begin{equation}
+\frac{\partial u_1}{\partial s_1}
+\;=\; \bigl[V'(\sigma) - w b\bigr] \Bigl(-\tfrac{\sigma}{2 s}\Bigr)
+    \;-\; w a \,\tfrac{p}{2 s}
+\;=\; 0.
+\label{eq:foc-diagonal}
+\end{equation}
+By the symmetric relabelling $1\leftrightarrow 2$, $\partial u_2 /
+\partial s_2$ at $(s,s)$ is the identical expression: the two FOCs
+coincide, and any diagonal candidate is characterised by the one scalar
+equation \eqref{eq:foc-diagonal}.
+
+\emph{Sign of the cross-partial.} Player~1's marginal utility with respect
+to \emph{player~2's} action at the diagonal is
+\[
+\frac{\partial u_1}{\partial s_2}
+\;=\; \frac{\partial u_1}{\partial s_1}
+   \;+\; w a\, \Bigl(\frac{\partial p_1}{\partial s_1} - \frac{\partial
+   p_1}{\partial s_2}\Bigr)
+\;=\; 0 \;+\; w a \cdot \frac{p}{s}
+\;>\; 0,
+\]
+using \eqref{eq:foc-diagonal} in the first line and the aggregator
+identity in the second. The strict inequality relies only on $w,a,p,s>0$.
+
+\emph{Second-order test in own action.} Because $\sigma$ depends on
+$(s_1,s_2)$ only through the aggregate $S = s_1 + s_2$, the shared-$V$
+and $\sigma$-derivative contributions to $\partial^2 u_1/\partial s_1^2$
+and $\partial^2 u_1 / (\partial s_1 \partial s_2)$ are identical and
+cancel in their difference. Only the $p_1$-derivative terms survive; a
+direct computation from \eqref{eq:agg-form} (writing $a_{pp} :=
+\partial^2 A / \partial p^2$ at $(p,\sigma)$) gives, at the diagonal,
+\begin{equation}
+\frac{\partial^2 u_1}{\partial s_1^2}
+\;-\;
+\frac{\partial^2 u_1}{\partial s_1 \partial s_2}
+\;=\; \frac{w\, p}{2\, s^2}\,\bigl(a \;-\; a_{pp}\, p\bigr).
+\label{eq:soc-difference}
+\end{equation}
+The mixed partial $\partial^2 u_1 / (\partial s_1 \partial s_2)$ is the
+derivative along $s_1$ of the strictly positive quantity $\partial u_1
+/ \partial s_2 = w a p / s$ evaluated at the FOC; the aggregator
+representation makes it non-negative at $(s^\star, s^\star)$ (raising
+$s_1$ towards $s_2$'s value leaves $\partial u_1 / \partial s_2$
+weakly increasing on the diagonal ray). Under the sign condition
+\begin{equation}
+a \;-\; a_{pp}\, p \;>\; 0
+\qquad\text{at }(p,\sigma) \;=\; \bigl(C/(2\sqrt{2I\alpha}),\, C/(2 s^\star)\bigr),
+\label{eq:sign-condition}
+\end{equation}
+\eqref{eq:soc-difference} is strictly positive, so $\partial^2 u_1 /
+\partial s_1^2 > 0$ strictly at the diagonal FOC: the profile $(s^\star,
+s^\star)$ is a strict interior \emph{minimum} of $u_1(\cdot, s^\star)$
+in $s_1$, not a maximum.
+
+Condition \eqref{eq:sign-condition} asserts that the vulnerability
+$A(p,\sigma)$ is more responsive to $p$ than a log-linear (constant
+elasticity) function would predict at the diagonal operating point. It
+holds throughout the mechanism-solver caches used in
+\cref{sec:experiments} (verified numerically on every diagonal profile
+of the C1 and C2 grids and symbolically for the leading-order
+$A(p,\sigma) = p\,\Adv_G(\sigma) + O(p^2)$ expansion of
+\cref{cor:externality-small-p}, where $a - a_{pp}\,p = \Adv_G(\sigma) +
+O(p) > 0$).
+
+\emph{Conclusion.} At the diagonal FOC candidate $(s^\star, s^\star)$,
+$\partial u_1/\partial s_1 = 0$ and $\partial^2 u_1/\partial s_1^2 > 0$
+strictly, so
+\[
+u_1(s^\star + t, s^\star) - u_1(s^\star, s^\star)
+\;=\; \tfrac{1}{2}\,\frac{\partial^2 u_1}{\partial s_1^2}\bigg|_{(s^\star, s^\star)}\, t^2
+\;+\; O(t^3)
+\;>\; 0
+\]
+for all sufficiently small $t \neq 0$: player~1 has a strictly
+profitable unilateral deviation in either direction. Non-FOC diagonal
+profiles fail the first-order test directly. By the $C^1$
+diffeomorphism $\eps_i \mapsto s_i$, no interior diagonal profile
+$(\eps^\star, \eps^\star)$ is a pure Nash equilibrium.
+\end{proof}
+
+\Cref{prop:no-symmetric-ne} is a purely negative statement: the diagonal
+is ruled out. It does not claim that a pure NE exists at any asymmetric
+profile; positive existence on the continuous action space is the content
+of \cref{thm:continuous-ne-smallp} below. The proposition also does not
+rely on the specific closed form $V(\sigma) = 1/(1+\sigma^2)$: the only
+property of $V$ used is $V'(\sigma) < 0$ strictly, so the analogous
+statement holds for every $V$ satisfying \cref{ass:V-admissible}.
+
+\subsection{Existence and structure of pure Nash equilibria}
+\label{sec:existence}
+
+\paragraph{Scaffolding: existence on the discretised game.}
+The discretised PEG on the log-spaced action grid $\mathcal{A}_K
+\subset [\eps^{\min},\eps^{\max}]$ (\cref{sec:experiments}) with
+utilities~\eqref{eq:utility} is a finite normal-form game restricted to
+the (closed) feasible region of \cref{ass:participation}, so a
+mixed-strategy NE exists by~\cite{nash1950equilibrium}. This grounds the
+numerical search: the exhaustive-enumeration procedure of
+\cref{sec:experiments} has at least one fixed point to find, and
+restricting attention to $\mathcal{A}_K$ is warranted. Pure NE on
+$\mathcal{A}_K$ need not exist and depend on $(w_i, |G_i|, V, K)$; we
+enumerate them by brute force and verify stability under grid refinement.
+
+Existence on the continuous action space is not automatic---the utility
+\eqref{eq:utility} is not generally concave in $\eps_i$ because $A_i$ is
+the tight trade-off function of an $I$-fold subsampled Gaussian, whose
+dependence on $\eps_i$ through $(\sigma, p_i)$ has no closed form, so the
+standard Debreu-Fan-Glicksberg quasi-concavity route does not apply.
+The order-theoretic route of \citet{topkis1979equilibrium,
+milgrom1990rationalizability} does, on the small-$p$ sublattice:
+
+\begin{theorem}[Pure-strategy NE existence on the small-$p$ sublattice]
+\label{thm:continuous-ne-smallp}
+Let $\mathcal F_\star \subseteq \mathcal F$ be the closure of the set of
+feasible profiles at which $p_g(\boldsymbol{\eps}) \leq p_\star$ and
+$\sigma(\boldsymbol{\eps}) \geq 1/\sqrt 3$ for every group $g$, with
+$p_\star$ chosen as in \cref{cor:externality-small-p}. Under the
+reversed-$\eps$ product order, $\mathcal F_\star$ is a compact sublattice
+of $\Sigma$, and the $n$-player PEG restricted to $\mathcal F_\star$
+admits a non-empty complete lattice of pure-strategy Nash equilibria; in
+particular there exist a largest and a smallest NE
+$\boldsymbol{\eps}^{\mathrm{sup}}, \boldsymbol{\eps}^{\mathrm{inf}}
+\in \mathcal F_\star$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Expand $\partial^2 u_i / (\partial \eps_i \partial \eps_j)$ by chain
+rule; the shared-$V$ contribution
+$V''(\sigma)\,\sigma_i\sigma_j + V'(\sigma)\,\sigma_{ij}$ carries a
+non-negative sign once $\sigma \geq 1/\sqrt 3$, while the $-w_i A_i$
+contribution's dominant $O(1)$ terms in the small-$p$ regime are
+$-w_i A_{i,p\sigma}\,(p_{i,i}\sigma_j + p_{i,j}\sigma_i)$ with
+$A_{i,p\sigma} = \Adv_G'(\sigma) + O(p_i) < 0$
+(\cref{cor:externality-small-p}). The bracket has the sign of
+$\Adv_G(\sigma)/\sigma + \Adv_G'(\sigma)$, negative on the interior
+(\eqref{eq:proof-bracket}), so the full term is negative and dominates
+subleading $O(p_i)$ contributions. Therefore
+$\partial^2 u_i / (\partial \eps_i \partial \eps_j) \leq 0$ on
+$\mathcal F_\star$, i.e.\ $u_i$ has increasing differences under the
+reversed-$\eps$ order. The mechanism-solver monotonicity of \cref{lem:externality}
+in each coordinate gives that componentwise meet and join in the
+reversed-$\eps$ order preserve feasibility, so $\mathcal F_\star$ is a
+compact sublattice. Milgrom-Roberts Theorem~5
+\cite{milgrom1990rationalizability} then delivers a non-empty complete
+lattice of pure NEs with a largest and a smallest element.
+\end{proof}
+
+The condition $\sigma \geq 1/\sqrt 3$ is a mild restriction (the K=200
+mechanism-grid cache confirms $\sigma \in [0.5, 5]$ throughout the
+paper's operating region), and the small-$p$ sublattice covers the
+DP-SGD-motivated sampling rates $p \sim 10^{-4}$ to $10^{-2}$ used in
+every scenario reported in \cref{sec:experiments}. Existence on the
+full closed feasible region (including the $p_g \to 1$ saturation corner
+and the feasibility edge) is not proven analytically; we rely on the
+exhaustive grid enumeration of \cref{sec:experiments} to certify the
+remaining region.
+
+\paragraph{What the externality lemma implies for NE structure.}
+\Cref{lem:externality} says lowering another player's budget weakly
+raises one's own realised vulnerability. If a player's utility places
+non-trivial weight on $A_i$ ($w_i > 0$), she has an incentive to
+\emph{shift the externality onto others} by lowering her own budget---an
+incentive that is intrinsic to the mechanism. The opposing incentive comes
+from $V(\sigma)$: lowering one's own $\eps$ pushes $\sigma$ upward,
+lowering the model utility for everyone (herself included). The
+equilibrium balances these two incentives.
+
+\Cref{prop:no-symmetric-ne} pins the qualitative structure of that
+balance in the symmetric two-player game: no interior profile
+$(\eps,\eps)$ is a pure NE. Our numerical evaluation (\cref{sec:experiments})
+confirms that the pure NEs found by exhaustive search all sit off the
+diagonal, and are located at profiles where one player carries a higher
+$A$ in exchange for a higher $V$-contribution.
+
+\paragraph{Locus of NEs.}
+The set of pure NEs of the 2-player game can be characterised implicitly
+through the first-order condition of each player's best response. Writing
+out the partial derivative of~\eqref{eq:utility} and using the
+parametrisation of the mechanism in the proof of \cref{lem:externality},
+\[
+\frac{\partial u_i}{\partial \eps_i} \;=\;
+V'(\sigma)\, \frac{\partial \sigma}{\partial \eps_i}
+\;-\; w_i\, \frac{\partial A_i}{\partial \eps_i}
+\;=\; 0,
+\]
+i.e.\ at the BR
+\begin{equation}
+\frac{1}{w_i}
+\;=\; \frac{ (\partial A_i / \partial \eps_i) }
+          { V'(\sigma)\,(\partial \sigma / \partial \eps_i) }
+\;\;\;\Big|_{\boldsymbol{\eps}}.
+\label{eq:foc}
+\end{equation}
+For each fixed $w_i$, \cref{eq:foc} defines an implicit curve
+$\mathrm{BR}_i$ in the $(\eps_1, \eps_2)$-plane; the pure NEs are the
+intersections of $\mathrm{BR}_1$ and $\mathrm{BR}_2$. The two quantities
+on the right-hand side of~\eqref{eq:foc} are not available in closed form
+(the dependence of $A_i$ on $(\sigma, p_i)$ has no closed form), but each
+is computable numerically by a single PLD-accounting evaluation. We use
+this in \cref{sec:experiments} to trace both BR loci on a fine grid and
+identify their intersections.
+
+\paragraph{Non-potential structure.}
+The Pejo et al.\ Price-of-Privacy game~\cite{pejo2019together} was a
+potential game because its privacy cost was separable across players,
+reducing equilibrium computation to minimising a single scalar potential.
+The PEG's cost, coupled through the mechanism's shared $(\sigma, p_i)$,
+breaks that reduction.
+
+\begin{proposition}[Non-potential game]
+\label{prop:non-potential}
+Under the utility form \eqref{eq:utility} and the mechanism of
+\cref{def:sampling-idp}, the PEG is neither an exact, weighted, nor
+ordinal potential game in the sense of \citet{monderer1996potential}:
+\begin{enumerate}
+  \item[\rm(i)] there exist no positive weights $\{\eta_i\}_{i=1}^n$
+        and no twice-differentiable $\Phi:\prod_i\Sigma_i \to \R$
+        satisfying $u_i(\eps_i,\boldsymbol{\eps}_{-i}) -
+        u_i(\eps_i',\boldsymbol{\eps}_{-i}) = \eta_i\bigl(
+        \Phi(\eps_i,\boldsymbol{\eps}_{-i}) -
+        \Phi(\eps_i',\boldsymbol{\eps}_{-i})\bigr)$
+        on the interior of the feasible region;
+  \item[\rm(ii)] and there exists a length-four cycle of strict
+        unilateral improvements on the discretised feasible grid,
+        precluding any ordinal potential (\cite{monderer1996potential},
+        Lemma~2.5).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+\emph{(i) Cardinal potentials.} Implicit differentiation of
+\eqref{eq:sigma-implicit} gives
+$\sigma_{ij} := \partial^2\sigma/(\partial\eps_i\partial\eps_j)
+= 2\sigma\,|G_i||G_j|(r')^2/(rN)^2$
+at the symmetric-budget reference, where $r := \sqrt{\rho}$ and
+$N := \sum_g|G_g|$; the shared-$V$ contribution
+$V''(\sigma)\sigma_i\sigma_j + V'(\sigma)\sigma_{ij}$ is therefore
+symmetric under $i\leftrightarrow j$ and cancels on both sides of the
+Monderer-Shapley cross-partial condition
+$\eta_j\, \partial^2 u_i / \partial\eps_i\partial\eps_j
+= \eta_i\, \partial^2 u_j / \partial\eps_i\partial\eps_j$. What remains
+is the $A_i$-contribution, which, after expanding
+$p_{i,ij} = (\sigma_{ij} r_i + \sigma_j r_i')/\sqrt{2 I \alpha}$ and
+substituting, reduces the residual to
+$\eta_j w_i |G_j|(2|G_i| - N) = \eta_i w_j |G_i|(2|G_j| - N)$ at every
+symmetric profile. For heterogeneous groups $|G_i|\neq|G_j|$ this
+equation has no solution with positive $(\eta_i, \eta_j)$; for the fully
+symmetric case the residual carries the $V$-contribution
+$(\eta_j - \eta_i)\,d^2 V$, which is nonconstant along the feasible
+interval and cannot be zeroed uniformly by any positive
+$(\eta_1,\eta_2)$ with $\eta_1 \neq \eta_2$.
+
+\emph{(ii) Ordinal potentials.} By \citet{monderer1996potential},
+Lemma~2.5, a game admits an ordinal potential iff it has no strict
+improvement cycle. On the C1 discretisation ($w_1=w_2=1$, $|G_1|=|G_2|=5000$,
+$K=22$ log-spaced budget grid on $[0.5,64]$), the profile sequence
+$(\eps_1,\eps_2) = (1.587,5.040) \to (2.000,5.040) \to (2.000,4.000)
+\to (1.587,4.000) \to (1.587,5.040)$ has each step strictly improving
+for the deviating player (unilateral-utility gaps $7.3\!\times\!10^{-7}$,
+$1.5\!\times\!10^{-3}$, $3.0\!\times\!10^{-3}$, $2.8\!\times\!10^{-3}$),
+so no ordinal potential exists. Together, (i) and (ii) rule out the
+hierarchy of exact, weighted, and ordinal potentials.
+\end{proof}
+
+\Cref{prop:non-potential} explains why our equilibrium analysis proceeds
+by discretised NE search (\cref{sec:experiments}) rather than by
+minimising a closed-form potential: neither Monderer-Shapley
+best-response dynamics nor the finite-improvement property is available.
+The existence route we do use---order-theoretic supermodularity on the
+small-$p$ sublattice (\cref{thm:continuous-ne-smallp})---trades concavity
+for monotonicity, which is why the sign analysis of
+$\partial A_i / \partial \eps_j$
+(\cref{cor:externality-small-p,thm:externality-full})
+is the load-bearing input.
+
+\subsection{Coalition Stackelberg recovers the attack}
+
+\Cref{lem:externality} applied to the coalition variant of
+\cref{def:coalition} pins the malice-maximising coalition's Stackelberg
+action down to a single point: the participation-preserving minimum
+budget. We record this as a corollary.
+
+\begin{corollary}[Coalition best response recovers the attack]
+\label{cor:coalition-attack}
+Fix a target $t \in N$, a coalition $C \subseteq N \setminus \{t\}$ of
+size $k$, and any profile $\boldsymbol{\eps}_{-C} \in \prod_{j \notin C}
+\Sigma_j$ for the non-coalition players. Let $\lambda \to \infty$ in
+\cref{def:coalition}, so the coalition maximises $A_t$ alone. Then the
+coalition's Stackelberg best response is the coalition-symmetric profile
+$\eps_i = \eps^{\star}_k(\boldsymbol{\eps}_{-C})$ for every $i \in C$,
+where $\eps^{\star}_k(\boldsymbol{\eps}_{-C})$ is the infimum of the
+coalition-symmetric budgets at which the induced profile is feasible in
+the sense of \cref{ass:participation}. Furthermore, holding
+$\boldsymbol{\eps}_{-C}$ fixed, the induced target advantage
+$A_t(\eps^{\star}_k, \boldsymbol{\eps}_{-C})$ is non-decreasing in $k$.
+\end{corollary}
+
+\begin{proof}[Proof sketch]
+By \cref{lem:externality} (strict form on the interior via
+\cref{thm:externality-full}), $\partial A_t / \partial \eps_i < 0$ for
+every $i \in C$ on the feasible region. Setting every $\eps_i$ as low as
+the feasibility region admits therefore maximises $A_t$. The
+participation-preservation qualifier is necessary because at extremely
+low $\eps_i$ the mechanism may set $p_i = 0$ (the colluder effectively
+drops out, removing its constraint from (C2) and so its externality on
+the target); the coalition's optimum is thus the infimum of feasible
+$\eps_i$. Monotonicity in $k$ is the same lemma applied to adding a
+member to $C$: doing so strictly enlarges the set of budgets that pull
+$\sigma$ downward, raising $A_t$.
+\end{proof}
+
+\Cref{cor:coalition-attack} identifies the budget-manipulation attack
+of \citet{kaiser2026your} as the coalition's equilibrium best response:
+its contribution is the game-theoretic mapping, not an empirical
+strengthening of that work. Whether the coalition is adversarial is
+irrelevant, since any group of aware players whose joint utility weights
+their target's harm heavily picks the same action vector as a rational
+best response.
+
+\subsection{Qualitative invariance of the model-utility function}
+\label{sec:V-invariance}
+
+The equilibrium results above are developed with the specific proxy
+$V(\sigma) = 1/(1+\sigma^2)$ (\cref{eq:V}), motivated by the convex-DP-ERM
+excess-risk bound of \citet{bassily2014private}. A natural question is
+whether they hinge on that closed form. They do not: only the sign of
+$V'$, not its shape or magnitude, enters the load-bearing arguments. We
+isolate the load-bearing class.
+
+\begin{assumption}[Admissible model-utility function]
+\label{ass:V-admissible}
+Let $\mathcal S := \sigma(\mathcal F) \subset \R_{>0}$ be the range of
+noise multipliers taken by the mechanism on the feasible region. A
+function $V \colon \mathcal S \to \R$ is \emph{admissible} iff
+\begin{enumerate}
+\item[\rm(A1)] $V$ is continuous on $\mathcal S$;
+\item[\rm(A2)] $V$ is strictly decreasing on $\mathcal S$;
+\item[\rm(A3)] $V$ is bounded on $\mathcal S$.
+\end{enumerate}
+\end{assumption}
+
+\begin{proposition}[Qualitative invariance in $V$]
+\label{prop:V-invariance}
+Under \cref{ass:V-admissible}, for every admissible $V$:
+\begin{enumerate}
+\item[\rm(i)] the externality signs of \cref{lem:externality},
+      \cref{cor:externality-small-p}, and \cref{thm:externality-full}
+      hold on the feasible region;
+\item[\rm(ii)] the coalition-Stackelberg conclusion of
+      \cref{cor:coalition-attack} holds; and
+\item[\rm(iii)] at any interior individual best response, the FOC
+      \eqref{eq:foc} reduces to the $V$-free sign identity
+      $\mathrm{sgn}(\partial A_i/\partial \eps_i)
+       = \mathrm{sgn}(V'(\sigma)\,\partial \sigma/\partial \eps_i)$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The mechanism's constraints (C1)+(C2) and the closed-form $p_g(\sigma,\eps_g)$
+do not read $V$: every step of the proof of \cref{lem:externality}, and of
+\cref{cor:externality-small-p} and \cref{thm:externality-full} which
+chain through it, is a manipulation of the mechanism's constraints and
+the per-group RDP. Clause (i) follows. Clause (ii) uses only clause (i)
+applied to the target's coordinate; $V$ does not enter the
+$\lambda\to\infty$ coalition objective. For clause (iii), differentiate
+$u_i = V(\sigma) - w_i A_i$ in $\eps_i$: by (A2), $V'(\sigma) \leq 0$
+almost everywhere on $\mathcal S$ (Lebesgue's theorem on monotone
+functions); by (i), $\partial\sigma/\partial\eps_i < 0$ on the feasible
+interior. Setting $\partial u_i / \partial \eps_i = 0$ gives the FOC
+\eqref{eq:foc}, whose sign structure depends on $V$ only through
+$\mathrm{sgn}\,V'$. Real-valuedness of $u_i$ on the finite action grid
+follows from (A1) and (A3), so the discretised-game scaffolding of
+\cref{sec:existence} applies to every admissible $V$.
+\end{proof}
+
+\Cref{prop:V-invariance} isolates the load-bearing role of $V$: only the
+sign of $V'$, not its magnitude or shape, enters the externality lemma
+and the coalition-attack recovery. The experimental choice $V(\sigma) =
+1/(1+\sigma^2)$ is therefore a directional proxy for a whole class of
+admissible model-utility functions, and the equilibrium phenomena
+reported in \cref{sec:experiments} are properties of the class, not of
+the representative.
+
+\subsection{An aside on awareness}
+
+\Cref{lem:externality} requires that players compute (or approximate) the
+realised $A_i$. A natural question is: what about a player whose only
+information is the formal $(\eps_i, \delta)$-iDP contract? Such a player
+treats $\eps_i$ as a direct privacy proxy and plays the budget that
+maximises $V(\sigma) - g(\eps_i)$ for some monotone $g$. Their best response
+does not depend on $\eps_{-i}$ at all (the externality is invisible), so
+their action is mechanically the smallest $\eps_i$ that does not break
+their own $V$. This is the \emph{rational} action of a naive player, and it
+is precisely the configuration in which the attack of
+\citet{kaiser2026your} succeeds against them: by \cref{lem:externality},
+naive players' choices feed the externality on everyone else without their
+realising. The contribution of this paper is to show that even
+\emph{aware} players---those who can compute $A_i$ explicitly---arrive at
+asymmetric equilibria that concentrate vulnerability on a subset of players.
+The externality cannot be undone by individual rationality alone.

@@ -1,0 +1,71 @@
+% Reusable 3-panel hierarchy row. Call with
+%   \hierarchyrow{<data-prefix>}{<caption-I-text>}{<label>}
+% Data files: <prefix>_profile_k.dat, <prefix>_tradeoff_k.dat,
+%   <prefix>_tradeoff_env.dat, <prefix>_adv.dat (produced by
+%   28_hierarchy_tikz_data.py). Used for the I=10 / I=100 inspection figures.
+\newcommand{\hierarchyrow}[3]{%
+\begin{figure*}[p]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=3 by 1, horizontal sep=1.25cm},
+  width=0.315\textwidth, height=4.4cm,
+  tick label style={font=\scriptsize},
+  label style={font=\footnotesize},
+  legend style={font=\tiny, draw=none, fill=none},
+  title style={font=\footnotesize},
+]
+\nextgroupplot[
+  title={(a) privacy profiles},
+  xlabel={$\varepsilon$}, ylabel={$\delta(\varepsilon)$},
+  ymode=log, ymin=1e-13, ymax=3, ytick={1e-12,1e-9,1e-6,1e-3,1e0},
+  xmin=0, xmax=12, legend pos=south west, legend cell align=left,
+]
+\addplot[hierblue1, thick] table[x=eps, y=delta] {figures/data/#1_profile_1.dat}; \addlegendentry{$p{=}0.001$}
+\addplot[hierblue2, thick] table[x=eps, y=delta] {figures/data/#1_profile_2.dat}; \addlegendentry{$p{=}0.01$}
+\addplot[hierblue3, thick] table[x=eps, y=delta] {figures/data/#1_profile_3.dat}; \addlegendentry{$p{=}0.1$}
+\addplot[hierblue4, thick] table[x=eps, y=delta] {figures/data/#1_profile_4.dat}; \addlegendentry{$p{=}0.3$}
+\addplot[hierblue5, thick] table[x=eps, y=delta] {figures/data/#1_profile_5.dat}; \addlegendentry{$p{=}0.6$}
+\addplot[hierblue6, thick] table[x=eps, y=delta] {figures/data/#1_profile_6.dat}; \addlegendentry{$p{=}1$ (Gaussian)}
+\addplot[only marks, mark=*, mark size=1.6pt, color=hierorange] coordinates {(10, 1e-12)}; \addlegendentry{contract $(\varepsilon,\delta)$}
+\nextgroupplot[
+  title={(b) trade-off curves},
+  xlabel={type-I error $\alpha$}, ylabel={type-II error $T(\alpha)$},
+  xmin=0, xmax=1, ymin=0, ymax=1, width=4.9cm, height=4.9cm,
+]
+\addplot[black!55, thin] coordinates {(0,1) (1,0)};
+\addplot[hierorange, densely dotted, very thick] table[x=alpha, y=beta] {figures/data/#1_tradeoff_env.dat};
+\addplot[hierblue1, thick] table[x=alpha, y=beta] {figures/data/#1_tradeoff_1.dat};
+\addplot[hierblue2, thick] table[x=alpha, y=beta] {figures/data/#1_tradeoff_2.dat};
+\addplot[hierblue3, thick] table[x=alpha, y=beta] {figures/data/#1_tradeoff_3.dat};
+\addplot[hierblue4, thick] table[x=alpha, y=beta] {figures/data/#1_tradeoff_4.dat};
+\addplot[hierblue5, thick] table[x=alpha, y=beta] {figures/data/#1_tradeoff_5.dat};
+\addplot[hierblue6, thick] table[x=alpha, y=beta] {figures/data/#1_tradeoff_6.dat};
+\nextgroupplot[
+  title={(c) advantage $\Adv$}, ylabel={$\Adv$},
+  ybar, bar width=7pt, every axis plot/.append style={bar shift=0pt},
+  ymin=0, ymax=1.15, ytick={0,0.25,0.5,0.75,1},
+  xmin=0.4, xmax=7.6, xtick={1,2,3,4,5,6,7},
+  xticklabels={{$0.001$},{$0.01$},{$0.1$},{$0.3$},{$0.6$},{$1$},{$A_{\varepsilon,\delta}$}},
+  xlabel={mechanism (subsampling rate $p$)},
+  xticklabel style={font=\scriptsize, rotate=35, anchor=east},
+  nodes near coords, nodes near coords style={font=\tiny,
+    /pgf/number format/fixed, /pgf/number format/precision=3, rotate=90, anchor=west},
+]
+\addplot[ybar, fill=hierblue1, draw=none] table[x=index, y=adv, restrict x to domain=0.5:1.5] {figures/data/#1_adv.dat};
+\addplot[ybar, fill=hierblue2, draw=none] table[x=index, y=adv, restrict x to domain=1.5:2.5] {figures/data/#1_adv.dat};
+\addplot[ybar, fill=hierblue3, draw=none] table[x=index, y=adv, restrict x to domain=2.5:3.5] {figures/data/#1_adv.dat};
+\addplot[ybar, fill=hierblue4, draw=none] table[x=index, y=adv, restrict x to domain=3.5:4.5] {figures/data/#1_adv.dat};
+\addplot[ybar, fill=hierblue5, draw=none] table[x=index, y=adv, restrict x to domain=4.5:5.5] {figures/data/#1_adv.dat};
+\addplot[ybar, fill=hierblue6, draw=none] table[x=index, y=adv, restrict x to domain=5.5:6.5] {figures/data/#1_adv.dat};
+\addplot[ybar, fill=hierorange, draw=none] table[x=index, y=adv, restrict x to domain=6.5:7.5] {figures/data/#1_adv.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{\textbf{Advantage hierarchy at one contract point, #2}
+($\eps = 10$, $\delta = 10^{-12}$). Identical construction to
+\cref{fig:hierarchy} but with #2: six Poisson-subsampled Gaussian
+mechanisms, each recalibrated so its privacy profile passes through the
+same contract point, with trade-off curves the exact Neyman--Pearson
+ROC of the composed privacy-loss distribution.}
+\label{#3}
+\end{figure*}}

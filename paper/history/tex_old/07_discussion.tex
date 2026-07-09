@@ -1,0 +1,252 @@
+\section{Discussion and Conclusion}
+\label{sec:discussion}
+
+We have shown that sampling-based individual differential privacy is not
+just \emph{vulnerable} to collusion attacks but \emph{equilibrium-asymmetric}.
+The pure Nash equilibria of the Privacy Externality Game, when they exist on
+the dense action grid, sit \emph{off the diagonal}: one player accepts a
+higher realised MIA advantage and is compensated by a higher model-utility
+benefit; the other absorbs the opposite trade. The budget-manipulation
+attack of \citet{kaiser2026your} is precisely the asymmetric equilibrium
+played by a coalition that weights the target's harm in its joint utility,
+and \cref{cor:coalition-attack} shows this is the rational best response of
+\emph{any} coordinated subset of data holders.
+
+\paragraph{Limitations of this work.} Three caveats are worth noting.
+First, our model assumes one-shot full-information play. Real
+deployments of iDP are dynamic: contributors join and leave; budgets are
+re-negotiated; trainers re-train. A natural extension is a repeated game
+in which the players also have private preference types and learn about
+one another across rounds. \Cref{sec:br-peg} formalises such a game as
+the \emph{Bayesian Repeated PEG} (BR-PEG), states a sharpened attack
+characterisation (\cref{prop:bayesian-not-min}) that identifies the
+optimal adversarial budget as strictly interior to the feasible action
+grid, and reports a small simulation. We treat the fully two-sided
+repeated game of \citet{aumann1995repeated} and quantitative regret
+rates in the style of \citet{balcan2015commitment} as follow-up work.
+Second, we assume full information about other players' actions. Real
+contracts may keep budgets private, and \cref{rem:awareness} already
+distinguishes between fully aware players and players who only see their
+nominal $(\eps_i,\delta)$ contract. A Bayesian PEG that treats $\eps_i$ as
+a private type drawn from a known distribution is a natural and important
+extension.
+Third, our analysis is restricted to the sampling-based realisation of iDP.
+The sensitivity-based realisation~\cite{boenisch2023have} adjusts per-sample
+clipping bounds rather than per-sample sampling rates and does not exhibit
+the same externality (the noise-to-sensitivity ratio is preserved by
+construction). Our framework specialises to that case as the trivial PEG in
+which the externality vanishes.
+
+\subsection{Repeated Bayesian variant (BR-PEG)}
+\label{sec:br-peg}
+
+The one-shot analysis leaves the strategic content of repetition and
+incomplete information untouched. We formalise the natural extension---
+the \emph{Bayesian Repeated PEG}---and identify the qualitative
+consequence of the mechanism's leader--follower coupling: the optimal
+adversarial budget is bounded away from the minimum feasible one.
+
+\paragraph{The game.}
+Two players, $H$ (honest) and $M$ (malicious). At $t=0$, $H$ draws a
+private type $\theta_H = (w_H, n_H)$ from a finite set $\Theta$ known
+to $M$. Per round $t \in \{1,\dots,T\}$: (i) $M$ observes the history
+and picks $(\eps_M^t, n_M^t)$; (ii) $H$ observes $(\eps_M^t, n_M^t)$
+and myopically best-responds with $\eps_H^t \in \mathcal{A}$ that
+maximises the one-shot utility $u_H(\eps_H; \eps_M^t, \theta_H) =
+V(\sigma) - w_H A_H$, with $(\sigma, p_H, p_M, A_H, A_M)$ returned by
+the sampling-based iDP mechanism of \cref{def:sampling-idp}; (iii) the
+pair $(\eps_H^t, u_H^t)$ becomes public and $M$ updates a posterior
+$\pi^t \in \Delta(\Theta)$ over $\theta_H$ via the observation
+likelihood induced by $H$'s best-response map. $M$'s total score is
+$\sum_t A_H^t$. Positioned in the literature, the game is the
+Stackelberg-learning template of \citet{letchford2009learning,
+blum2014learning, balcan2015commitment} with the tabular follower
+payoff replaced by the DP-accountant coupling of
+\cref{def:sampling-idp}, and it is the myopic-informed special case of
+the one-sided incomplete-information repeated game of
+\citet{aumann1995repeated}. The prior $\pi^0$ has full support on
+$\Theta$, so Kalai--Lehrer's absolute-continuity condition holds
+trivially and posterior consistency is automatic; the interesting
+content is what $M$ does once consistency kicks in.
+
+\begin{proposition}[Bayesian-greedy attack is not min-budget]
+\label{prop:bayesian-not-min}
+Consider the BR-PEG with $H$ myopic and $M$ posterior-greedy on a
+finite action grid $\mathcal{A} \subset [\eps^{\min}, \eps^{\max}]$.
+Fix a type $\theta_H^\star \in \Theta$ and let
+\[
+G(\eps_M; \theta) \;:=\; A_H\!\bigl(\eps_M,\, \eps_H^{\mathrm{BR}}(\eps_M; \theta)\bigr)
+\]
+be the composed map from $M$'s action to the elicited advantage, where
+$\eps_H^{\mathrm{BR}}(\eps_M; \theta) \in \arg\max_{\eps_H \in
+\mathcal{A}} u_H(\eps_H; \eps_M, \theta)$. Assume
+\begin{enumerate}
+\item[\normalfont(I)] \emph{Identifiability.} The observation
+likelihood is $\theta_H^\star$-identifying on the equilibrium path in
+the sense of \citet{kalai1993rational}: for a full-support prior
+$\pi^0$, $\pi^t(\theta_H^\star) \to 1$ $\pi^0$-a.s.
+\item[\normalfont(A)] \emph{Interior argmax.} $G(\cdot; \theta_H^\star)$
+attains its maximum on $\mathcal{A}$ at a unique
+$\eps_M^\star(\theta_H^\star) \in \mathcal{A}$ with
+$\eps_M^\star(\theta_H^\star) > \eps^{\min}$.
+\end{enumerate}
+Then the posterior-greedy action
+$\eps_M^{\mathrm{greedy}}(t) \in \arg\max_{\eps_M \in \mathcal{A}}
+\mathbb{E}_{\theta \sim \pi^t}\!\bigl[G(\eps_M; \theta)\bigr]$
+satisfies
+$\eps_M^{\mathrm{greedy}}(t) = \eps_M^\star(\theta_H^\star)$
+eventually, $\pi^0$-a.s.; equivalently, setting
+$\eta := \eps_M^\star(\theta_H^\star) - \eps^{\min} > 0$,
+$\eps_M^{\mathrm{greedy}}(t) \geq \eps^{\min} + \eta$ for all
+sufficiently large $t$.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+By (I), $\pi^t \to \delta_{\theta_H^\star}$ in total variation. Since
+$G$ is bounded ($0 \leq A_H \leq 1$), the posterior-averaged score
+$\bar G(\eps_M; \pi^t) := \mathbb{E}_{\theta \sim \pi^t} G(\eps_M;
+\theta)$ satisfies
+$|\bar G(\eps_M; \pi^t) - G(\eps_M; \theta_H^\star)| \leq 1 -
+\pi^t(\theta_H^\star) \to 0$, uniformly over the finite grid
+$\mathcal{A}$. By (A), the truth-argmax gap
+$\Delta := G(\eps_M^\star; \theta_H^\star) - \max_{\eps_M \neq
+\eps_M^\star} G(\eps_M; \theta_H^\star) > 0$; once
+$1 - \pi^t(\theta_H^\star) < \Delta/2$, the argmax of
+$\bar G(\cdot; \pi^t)$ coincides with $\eps_M^\star(\theta_H^\star)$
+for every subsequent round. \Cref{app:bayesian} works the argument
+through in full.
+\end{proof}
+
+\paragraph{Numerical realisation and scope.} For the demo instance of
+\cref{app:bayesian} ($\Theta = \{w_H \in \{0.5, 1, 2\}\}$, $n_H = n_M
+= 5000$, $H$'s true type $w_H^\star = 2$), the posterior collapses at
+$t = 1$, and from then on the Bayesian-greedy attack plays
+$\eps_M^\star \approx 3.08$ and elicits $A_H \approx 0.454$---roughly
+twice the naive-minimum attack $\eps_M = 1$ and fifty times the
+benign baseline $\eps_M = 64$. The separation from the naive-attack
+anchor is $\eta \approx 2.08$; assumption (A) is verified numerically
+on the mechanism grid. Two extensions sit outside this scope. First,
+the strategising-$H$ case, in which $H$ chooses her action sequence to
+manage what she reveals: a two-sided incomplete-information game in
+the sense of \citet{aumann1995repeated}. Second, a regret rate in the
+style of \citet{balcan2015commitment, blum2014learning} that quantifies
+the number of rounds until $\eps_M^{\mathrm{greedy}}(t) =
+\eps_M^\star$; the finite-type Kalai--Lehrer setup used here delivers
+one-round identification and so provides only a constant-regret upper
+bound. Both extensions fit the framework above without modification.
+
+\subsection{Modelling choices, mitigation, and open questions}
+
+\paragraph{The role of the model-utility function $V$.} Our choice $V(\sigma)
+= 1/(1+\sigma^2)$ is motivated by the convex DP-ERM excess-risk bound of
+\citet{bassily2014private}, and we use it as a directional proxy in our
+possibly non-convex setting. The qualitative findings---existence of
+asymmetric NEs, monotone coalition attack, externality lemma---do not depend
+on the precise shape of $V$; they require only that $V$ is continuous,
+monotone-decreasing in $\sigma$, and bounded. We expect the same qualitative
+picture under any utility function with these three properties.
+
+\paragraph{Mitigation.} The natural mitigation is to make the contract
+internalise the externality. The $(\eps_i, \delta, \Delta)$-iDP formulation
+of \citet{kaissis2024beyond} adds a $\Delta$-divergence bound on the realised
+vulnerability, restricting the action space of the PEG to profiles that
+satisfy a per-record bound on excess advantage.
+\Cref{prop:delta-neutralisation} makes the deterministic half of this
+statement precise: capping the slack at $\Delta$ squeezes every player's
+realised advantage into $[\bar c(\eps_i)-\Delta, \bar c(\eps_i)]$ and
+caps its cross-profile variation at fixed $\eps_i$ by $\Delta$. Existence
+of a unique equilibrium under this restriction is left to future work
+(the second open question below).
+
+\begin{proposition}[$\Delta$-neutralisation of the externality]
+\label{prop:delta-neutralisation}
+Restrict the action set to profiles on which
+$\mathrm{slack}_i(\boldsymbol{\eps})\leq\Delta$ for every player $i$
+(equivalently: the $(\eps_i,\delta,\Delta)$-iDP contract of
+\citet{kaissis2024beyond} is enforced by the mechanism). Then:
+\begin{enumerate}
+\item[(i)] \emph{Pointwise squeeze.} At every feasible profile
+$\boldsymbol{\eps}$ in the restricted action set,
+\[
+\bar c(\eps_i)-\Delta
+\;\leq\;A_i(\boldsymbol{\eps})
+\;\leq\;\bar c(\eps_i).
+\]
+\item[(ii)] \emph{Cross-profile bound at fixed own budget.} For any two
+feasible profiles $\boldsymbol{\eps},\boldsymbol{\eps}'$ in the
+restricted action set that agree in $i$'s own coordinate ($\eps_i =
+\eps_i'$),
+\[
+\bigl|A_i(\boldsymbol{\eps})-A_i(\boldsymbol{\eps}')\bigr|\;\leq\;\Delta.
+\]
+\end{enumerate}
+That is: once the slack is capped by $\Delta$, no unilateral or joint
+deviation of the other players can move player $i$'s realised advantage
+by more than $\Delta$ from any other feasible value it can attain at the
+same $\eps_i$; and $A_i$ never falls below its DP worst case by more
+than $\Delta$.
+\end{proposition}
+
+\begin{proof}
+Both parts use only the identity~\eqref{eq:decomp} and the
+non-negativity of $\mathrm{slack}_i$.
+
+\emph{(i) Pointwise squeeze.} By definition
+$\mathrm{slack}_i(\boldsymbol{\eps})\geq 0$, so
+$A_i(\boldsymbol{\eps}) = \bar c(\eps_i) -
+\mathrm{slack}_i(\boldsymbol{\eps}) \leq \bar c(\eps_i)$. The
+restriction $\mathrm{slack}_i\leq\Delta$ then gives
+$A_i(\boldsymbol{\eps}) \geq \bar c(\eps_i) - \Delta$.
+
+\emph{(ii) Cross-profile bound.} For two profiles with
+$\eps_i = \eps_i'$, $\bar c(\eps_i)$ cancels and
+\[
+A_i(\boldsymbol{\eps}) - A_i(\boldsymbol{\eps}')
+\;=\;\mathrm{slack}_i(\boldsymbol{\eps}')-\mathrm{slack}_i(\boldsymbol{\eps}).
+\]
+Both slacks lie in $[0,\Delta]$ by the restriction and by non-negativity,
+hence the difference lies in $[-\Delta,\Delta]$ and
+$|A_i(\boldsymbol{\eps}) - A_i(\boldsymbol{\eps}')|\leq\Delta$.
+\end{proof}
+
+\paragraph{Open questions.} The following questions naturally arise from
+this work but lie outside its scope:
+\begin{enumerate}
+\item Does a pure-strategy NE always survive on the continuous action space
+under the coupled cost, and does a $\Delta$-bound on the slack suffice for
+existence?
+\item Is the PEG a potential game in the sense of \cite{monderer1996potential}?
+PoP's analysis was a potential game because the privacy cost was
+separable; the externality term breaks this directly. Conditions on the
+cross-partial of $A_i$ that recover the potential structure would unify
+the two settings.
+\item What is the sign of the externality across composition regimes
+(minority vs majority weak-privacy)? Our experiments suggest the smaller
+group is favoured, but the analytic dependence on $|G_g|$ deserves a
+closed-form characterisation.
+\item What is the appropriate player granularity (single sample versus
+silo) in the FL setting, and how does the granularity change the
+equilibria?
+\item Worst-case (analytical) vs realised (empirical) cost---which should
+the contract be written against, and how large is the gap in practice
+across deep-learning workloads?
+\item Is the $(\eps_i, \delta, \Delta)$-iDP contract by itself sufficient
+as a collusion-resistant mechanism, or are sensitivity-based iDP or
+public-data padding needed when the slack is exceeded?
+\end{enumerate}
+
+\paragraph{Wider lesson.} The wider lesson is that an \emph{individual}
+privacy contract is incomplete: it does not pin down the collective
+dynamics. Where individuals interact strategically (in a single
+machine-learning training, in a federated round, in any future composition
+of the iDP mechanism), the contract must also constrain their joint
+behaviour or the equilibrium will quietly violate at least one
+participant's expectations while preserving every formal guarantee.
+
+\paragraph{Conclusion.} The promise of iDP---that every data contributor
+controls her own privacy---is broken by the privacy externality of
+sampling-based mechanisms. We formalised the strategic situation faced by
+iDP data contributors as the Privacy Externality Game, proved monotonicity
+of the externality and characterised the equilibria. The result is that
+the collusion attack on iDP is not adversarial but \emph{rational}, and the
+remedy must operate at the level of the contract.

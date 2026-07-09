@@ -1,336 +1,391 @@
 \section{Numerical Evaluation}
 \label{sec:experiments}
 
-Our evaluation works through the game in two phases. We first establish
-the core phenomenology of the symmetric setting: that the equilibrium is
-asymmetric even when the players are not (\cref{sec:C1}); that size
-asymmetry has a clean group-size sign (\cref{sec:C2}); that coordination
-amplifies the realised vulnerability (\cref{sec:C4}); and that the
-externality itself is monotone in the others' choice (\cref{sec:C5}). We
-then probe how robust this picture is to the grid resolution and the
-players' utility weights: the NE set is finite and stable under grid
-refinement (\cref{sec:C6}), the asymmetric multiplicity survives across
-a wide range of benefit-to-cost weights (\cref{sec:C7}), heterogeneous
-privacy preferences amplify the asymmetry rather than dampen it
-(\cref{sec:C8}).
+The theory of \cref{sec:analysis} makes qualitative predictions:
+asymmetric equilibria, ordered by privacy weight, specific to the
+sampling-based mechanism. We now quantify them. The evaluation asks
+five questions, each a subsection: whether the symmetric game has a
+symmetric equilibrium (\cref{sec:C1}); who absorbs the externality
+under size and preference asymmetry (\cref{sec:C2}); whether the
+picture survives more players (\cref{sec:H3}); whether it is the
+mechanism or the paradigm (\cref{sec:scale}); and what equilibrium
+play costs, both per contract (\cref{sec:C5}) and in aggregate
+(\cref{sec:poev}). \Cref{sec:H1} closes by asking whether any of it
+survives a \emph{measured}, rather than analytical, adversary---the
+answer draws the practical boundary of the phenomenon. Supporting
+sweeps live in the appendices: common-weight shifts
+(\cref{app:wsweep}), the raw externality response and its
+finite-difference sign certificate (\cref{app:certificate}),
+model-utility ablations (\cref{app:v-shape}), and grid and threshold
+sensitivity (\cref{app:sensitivity}).
 
 \subsection{Common setup}
 \label{sec:setup}
 
-All experiments are analytical---no model is trained at any point---and
-follow the same two-step pipeline. We first solve for the mechanism's
-parameters by bisecting on $\sigma$ until the batch-size constraint
-\textnormal{(C2)} is met, with each per-group sampling rate chosen to make
-the \textnormal{(C1)} R\'enyi-DP constraint
-bind~\cite{mironov2017renyi}; profiles in which any $p_i$ falls below a
-small participation threshold are flagged as infeasible per
-\cref{ass:participation}. We then compute each realised $A_i$ exactly from
-the privacy profile of the $I$-fold $(p_i, \sigma)$-subsampled Gaussian via
-PLD accounting~\cite{google-dp-accounting}, recovering~\eqref{eq:adv}. The
-action space is the log-spaced grid $\mathcal{A}_K \subset [0.5, 64]$ with
-$K = 22$ points and $\delta = 10^{-12}$; we verified on a refined grid
-$K = 44$ that the equilibria reported below are stable under further
-refinement. Unless otherwise noted each experiment uses symmetric groups of
-$|G_g| = 5000$ samples, expected batch size $E_b = 128$, $5$ epochs of
-training, $B_i = C_i = 1$, and $V(\sigma) = 1/(1+\sigma^2)$.
-These choices broadly mirror the empirical iDP scenarios of
-\citet{kaiser2026your, boenisch2023have}.
+All experiments in
+\cref{sec:C1,sec:C2,sec:H3,sec:scale,sec:C5,sec:poev} are
+analytical---no model is trained---and share one pipeline. We solve
+the mechanism of \cref{def:sampling-idp} by bisecting on $\sigma$
+until the batch constraint (Batch) is met, with each per-group rate
+chosen to make (Budget) bind under the R\'enyi
+accountant~\cite{mironov2017renyi}; profiles where any $p_i$ falls
+below a participation threshold are flagged infeasible
+(\cref{ass:participation}, \cref{app:mechanism}). Each realised $\Apld{i}$
+is then computed exactly from the privacy profile of the $I$-fold
+$(p_i,\sigma)$-subsampled Gaussian by \ac{PLD}
+accounting~\cite{google-dp-accounting}---the level-2 advantage of
+\eqref{eq:hierarchy}, not the level-1 ceiling. The canonical action grid is
+log-spaced with $K = 200$ points on $[0.5, 64]$ at $\delta =
+10^{-12}$; unless noted otherwise, groups are symmetric with $|G_g| =
+5000$, $B = 128$, $5$ training epochs, $\lambda_i = 1$, and $V(\sigma) =
+1/(1+\sigma^2)$, mirroring the empirical \ac{iDP} scenarios of
+\citet{kaiser2026your, boenisch2023have}. \Cref{sec:H1} instead
+trains real \ac{DPSGD} shadow models and measures the advantage with
+\ac{LiRA}~\cite{carlini2022membership}.
 
-\input{tex/table_NE_v2}
-
-% =====================================================================
-\subsection{C1 --- Does the symmetric 2-player game admit a symmetric NE?}
+\subsection{Does the symmetric game have a symmetric equilibrium?}
 \label{sec:C1}
 
-For our first experiment we consider the cleanest possible setting: two
-players with identical group sizes, identical preference weights, and a
-full sweep of both $\eps$'s over the log-spaced grid. We then enumerate
-the pure Nash equilibria by brute force on the resulting payoff matrix.
+We start with the cleanest possible setting: two players, identical
+group sizes, identical weights, both budgets swept over the full grid,
+pure \acp{NE} enumerated by brute force.
 
-The result is striking. The best-response correspondences cross at
-\emph{eight} distinct points (\cref{fig:C1}, centre; \cref{tab:NE}), and
-all eight sit off the diagonal of the action grid. They fall in four
-mirror-image pairs: $(0.79, 5.04)$ and its swap, $(1.26, 6.35)$ and its
-swap, $(1.59, 8.00)$ and its swap, and $(2.52, 3.17)$ and its swap. The
-realised MIA advantages at these equilibria range from
-$(A_1, A_2) = (0.001, 0.202)$ at the most asymmetric pair down to
-$(0.081, 0.120)$ at the closest-to-symmetric pair. No equilibrium lies on
-the diagonal: in this symmetric game the players do \emph{not} settle on
-a profile in which both choose the same $\eps$.
+No. The $K = 200$ payoff matrix has $48$ pure Nash equilibria, and
+every one of them sits off the diagonal (\cref{fig:C6};
+representative equilibria in \cref{tab:NE}). The equilibrium budget
+ratio $\max(\eps_1^*,\eps_2^*)/\min(\eps_1^*,\eps_2^*)$ ranges from
+$1.02\times$ to $6.54\times$ with median $2.03\times$: even the
+equilibria closest to symmetry keep the players on different budgets,
+and the realised advantages split accordingly---at the most asymmetric
+equilibria one player carries $A$ up to $0.32$ while the other sits
+below $0.001$. Because the players are interchangeable, the
+equilibria come in mirror pairs, exactly the Hawk--Dove signature
+anticipated by \cref{prop:no-symmetric-ne}: both players prefer the
+protected role, both cannot have it, and every stable resolution
+assigns the roles asymmetrically.
 
-This breaks symmetry by necessity rather than by chance. At any
-hypothetical symmetric profile $(\eps,\eps)$, both players face an
-identical incentive to deviate downward in $\eps$ (the externality on each
-is identical, and lowering own $\eps$ raises own $V$ while shifting cost
-to the other). Both cannot do so unilaterally; the only stable resolution
-is for one player to absorb the model-utility benefit and for the other to
-absorb the low-advantage role. This is the mechanism's content of
-\cref{lem:externality} made explicit: the externality
-\emph{must} be carried by someone, and at equilibrium it is carried
-asymmetrically. The social optimum on the same grid sits at $(5.04,
-25.40)$, even more extreme, with $A = 0.535$ for one player and $A =
-0.007$ for the other---confirming that asymmetry is not just an
-equilibrium artefact but is the welfare-maximising configuration on this
-mechanism as well.
+\Cref{fig:C1} dissects why. At any diagonal profile, lowering one's
+own budget buys a large drop in own advantage at a modest shared
+utility cost---the deviation the externality subsidises, since part of
+the bill lands on the opponent. Both players face this incentive
+simultaneously, so the diagonal cannot hold; the best-response curves
+(\cref{fig:C6}, left) consequently avoid the diagonal and cross only
+off it, along a band where one player has committed to the low-budget
+role. The mechanics---the diagonal as a payoff trough, the
+substitutes structure that keeps deviations from damping back, and
+the mixed lottery that is all the symmetry the game retains---are
+dissected in \cref{sec:no-symmetric-ne} and quantified in
+\cref{app:symbreak}.
+
+Grid resolution moves the equilibrium \emph{count}, not the
+structure. At $K = 22$ the same game resolves $8$ pure \acp{NE}, at $K =
+200$ it resolves $48$: the stepped \ac{BR} loci of a finer grid cross more
+often. What is invariant---and is the claim we stake---is that the \ac{NE}
+set stays entirely off-diagonal, in mirror pairs, inside the same
+budget-ratio band along the same \ac{BR} loci. We therefore quote $K = 200$
+throughout and treat individual \ac{NE} coordinates as samples from the \ac{BR}
+crossing band rather than as isolated predictions. The picture is
+equally insensitive to how much \emph{everyone} cares: sweeping the
+common weight $w$ from $0.125$ to $4$ leaves every equilibrium
+off-diagonal ($240$ of $241$; the lone exception sits on a
+solver-tolerance artefact) while shifting the cloud toward lower
+budgets as privacy weight grows (\cref{app:wsweep}).
 
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_C1_payoff.pdf}
-\caption{\textbf{C1.} 2-player payoff surface $u_1(\eps_1,\eps_2)$ (left),
-best-response correspondences with pure NEs as black stars (centre), and
-realised MIA advantage $A_1$ (right). All eight pure NEs lie off the
+\caption{\textbf{Anatomy of the symmetric 2-player PEG} ($K=22$ shown
+for legibility). Payoff surface $u_1(\eps_1,\eps_2)$ (left),
+best-response correspondences with pure \acp{NE} as black stars (centre),
+and realised \ac{MIA} advantage $\Apld{1}$ (right). Every pure \ac{NE} lies off the
 diagonal.}
 \label{fig:C1}
 \end{figure*}
 
-% =====================================================================
-\subsection{C2 --- Who absorbs the externality when groups differ in size?}
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_C6_locus_K200.pdf}
+\caption{\textbf{The \ac{NE} locus at full resolution} ($K=200$).
+\emph{Left:} smoothed best-response loci of both players with the $48$
+pure \acp{NE} (clustered at $0.15$-decade print resolution) as stars; the
+dashed line is the diagonal $\eps_1 = \eps_2$. \emph{Right:} \ac{NE}
+density over the action plane with the \ac{BR} loci overlaid. All $48$
+equilibria sit off the diagonal, in mirror pairs along the
+best-response crossing band; equilibrium budget ratios span
+$1.02\times$--$6.54\times$ (median $2.03\times$).}
+\label{fig:C6}
+\end{figure*}
+
+\input{tex/table_NE}
+
+\subsection{Who absorbs the externality?}
 \label{sec:C2}
 
-C1 leaves open which player ends up carrying the high-$A$ role---under
-exact symmetry the two equilibrium branches are equally likely. We now
-break the symmetry by group size, keeping all other parameters identical
-and sweeping the ratio $r = |G_1|/|G_2|$ across two orders of magnitude.
+Symmetry leaves the exposed role to equilibrium selection. Any
+asymmetry assigns it. We break symmetry two ways: by group size and by
+preference.
 
-A clear pattern emerges. Across every ratio, \emph{the smaller group
-plays the smaller equilibrium budget and absorbs the smaller realised
-MIA advantage} (\cref{fig:C2}). When player $1$ is the minority ($r < 1$)
-the equilibrium has $\eps_1^* \in [1.5, 3]$ and $\eps_2^* \approx 10$,
-producing $A_1^* < 0.01$ against $A_2^* \in [0.24, 0.32]$; when player
-$1$ becomes the majority ($r > 1$) the pattern flips by symmetry. The
-equal-size case $r = 1$ recovers the multiplicity of asymmetric NEs from
-C1.
+\paragraph{Group size.} Sweeping the size ratio $r = |G_1|/|G_2|$
+across two orders of magnitude (all else symmetric), the pattern is
+uniform: \emph{the smaller group plays the smaller equilibrium budget
+and absorbs the smaller realised advantage} (\cref{fig:C2}). With
+player $1$ in the minority ($r<1$), equilibria have $\eps_1^* \in
+[1.5, 3]$ against $\eps_2^* \approx 10$, yielding $\Apld{1}^* < 0.01$
+against $\Apld{2}^* \in [0.24, 0.32]$; the pattern mirrors for $r > 1$.
+The mechanism is legible in (Batch): a small group demanding strong
+privacy contributes little to the expected batch, the majority's
+sampling rate rises to compensate, and the majority absorbs the
+advantage. The minority free-rides on the shared
+mechanism~\cite{hardin1968tragedy}---a privacy analogue of the
+classical result that small groups benefit disproportionately from a
+common resource.
 
-The mechanism is straightforward to read off the (C2) constraint. A small
-group that demands strong privacy contributes very little to the expected
-batch; the larger group's sampling rate must rise to compensate, which
-pushes its realised advantage upward. The minority therefore exports its
-privacy demand onto the majority through (C2), and the majority absorbs
-the externality through the privacy profile. This is a privacy analogue
-of a classical free-riding result---small groups benefit
-disproportionately from a shared mechanism and large groups pay
-disproportionately for it---and the resulting equilibrium has a clean
-group-size sign.
+\paragraph{Preference.} Fixing $\lambda_2 = 1$ and sweeping $\lambda_1 \in
+\{0.25, 0.5, 1, 2, 4\}$ at $K = 200$ yields $30$--$48$ pure \acp{NE} per
+ratio, every one off-diagonal (\cref{fig:C8}). The \ac{NE} cloud migrates
+exactly as \cref{prop:self-sorting} predicts: when player $1$ values
+privacy less than player $2$, the equilibria sit in the
+lower-right region (player $1$ on the high budget, absorbing the
+advantage); as $\lambda_1/\lambda_2$ crosses unity the cloud migrates through the
+symmetric configuration into the upper-left. Heterogeneous preferences
+do not meet in a diagonal compromise; the population \emph{splits},
+each player settling into the role their weight selects. Sorting
+compliance---the fraction of equilibria with the higher-$w$ player on
+the lower budget---is $100\%$ across the sweep.
 
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_C2_asymmetric.pdf}
-\caption{\textbf{C2.} Equilibrium budget (left) and realised MIA advantage
-(right) as a function of dataset size ratio $|G_1|/|G_2|$. The minority
-group's $\eps^*$ is always lower than the majority's, and its realised
-$A^*$ correspondingly smaller. The flip at $r{=}1$ is the boundary at
-which the minority/majority labels exchange.}
+\caption{\textbf{Group-size asymmetry.} Equilibrium budgets (left) and
+realised \ac{MIA} advantages (right) as a function of the size ratio
+$|G_1|/|G_2|$. The minority group plays the lower budget and absorbs
+the lower advantage at every ratio; the flip at $r{=}1$ is where the
+minority/majority labels exchange.}
 \label{fig:C2}
 \end{figure*}
 
-% =====================================================================
-\subsection{C4 --- How severe does the attack get under coordination?}
-\label{sec:C4}
-
-C1 and C2 establish that asymmetric equilibria arise even among self-
-interested players. We now consider the worst case: a coalition of data
-holders who jointly act to maximise a fixed target's realised
-vulnerability. We take five symmetric players, designate player $0$ as
-the target with $\eps_t = 32$, and let a subset of the remaining four
-players coordinate. The non-coalition members are held at $\eps = 32$ as
-a passive baseline; the coalition picks the single $\eps_C$ that
-maximises the target's realised MIA advantage---a Stackelberg leader with
-$\lambda \to \infty$ in \cref{def:coalition}.
-
-The target's advantage rises monotonically and rapidly with the coalition
-size~$k$ (\cref{fig:C4}). With no coalition, $A_t = 0.442$; adding a
-single colluder takes it to $0.483$; two colluders push it to $0.531$;
-three to $0.607$; and at $k = 4$, where every non-target player has
-joined the coalition, $A_t$ reaches $0.728$---a $65\%$ inflation over
-baseline. The optimal coalition budget shifts predictably with $k$: at
-$k \in \{1, 2, 3\}$ the coalition picks $\eps_C \approx 6.8$, but at
-$k = 4$ it can afford to drop to $\eps_C \approx 3.2$ while still
-keeping every $p_i > 0$. The participation-preserving minimum of
-\cref{prop:coalition-attack} relaxes as more colluders join because the
-collective constraint slackens.
-
-The strategic content of this experiment is the recovery of an empirical
-phenomenon as the rational equilibrium of the game we have defined. The
-budget-manipulation attack of \citet{kaiser2026your}, reported there as a
-$62\%$ success rate against a target across diverse datasets, is what a
-coalition of aware iDP participants would naturally do without any
-adversarial intent---it is the best response in our PEG. The framework
-therefore predicts not merely that such an attack is possible but that it
-is the equilibrium of a benign decentralised game with a coordinating
-subset.
-
 \begin{figure}[!t]
 \centering
-\includegraphics[width=\linewidth]{figures/fig_C4_coalition.pdf}
-\caption{\textbf{C4.} Target's realised MIA advantage as a function of
-coalition size $k$, with the coalition playing its target-maximising
-joint action. Annotations show the optimal coalition budget $\eps^\star$
-at each $k$.}
-\label{fig:C4}
-\end{figure}
-
-% =====================================================================
-\subsection{C5 --- What is the functional form of the externality?}
-\label{sec:C5}
-
-The previous three experiments all use \emph{equilibrium} budgets; we now
-strip away the strategic layer to inspect the externality alone. Two
-groups, target with budget $\eps_T$ fixed at either $4$ or $16$, and
-others' budget $\eps_O$ swept across the log-spaced grid. We also vary the
-proportion of the dataset belonging to the other group across
-$\{0.2, 0.4, 0.6, 0.8\}$ at fixed total size $M = 10000$. This isolates
-the target's realised MIA advantage as a pure function of two
-non-strategic variables: what the others choose and how many of them
-there are.
-
-The dependence is monotone and smooth (\cref{fig:C5}). At $\eps_T = 4$
-the target's advantage ranges from roughly $0.20$ when others have tight
-privacy ($\eps_O = 0.5$) down to approximately zero when others are
-loose ($\eps_O = 64$). At $\eps_T = 16$ the range is from $0.55$ down to
-$0.05$. Across both targets, larger proportions of the other group
-amplify the externality below the crossover and suppress it above; the
-curves all meet at $\eps_O = \eps_T$, which is the regime in which the
-others' choice and the target's choice contribute identically to $\sigma$
-through (C2).
-
-This isolates the externality as a pure mechanism effect, independent of
-any strategic choice. The shape mirrors Figure~3 of
-\citet{kaiser2026your}, who showed the same dependence empirically
-through the iDP-SGD trade-off function. C5 therefore confirms that the
-externality lemma (\cref{lem:externality}) is not just empirically
-monotone but \emph{quantitatively} so: each unit decrease in others' $\eps$
-corresponds to a smooth, predictable increase in the target's realised
-$A$, and the proportion-weighted dependence the lemma predicts is borne
-out exactly.
-
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C5_surface.pdf}
-\caption{\textbf{C5.} Target's realised MIA advantage as a function of
-the other group's budget $\eps_O$ and proportion, at two fixed target
-budgets $\eps_T \in \{4, 16\}$. The curves cross at $\eps_O = \eps_T$.
-Below crossover, larger proportions raise $A_t$; above crossover, larger
-proportions lower it.}
-\label{fig:C5}
-\end{figure*}
-
-% =====================================================================
-\subsection{C6 --- Where does the NE locus live in $(\eps_1, \eps_2)$ space?}
-\label{sec:C6}
-
-The eight pure NEs of C1 sit at discrete grid points; the underlying
-question is whether they are an artefact of the grid resolution or whether
-they reflect a smaller stable set of isolated equilibria of the continuous
-game. The implicit first-order condition~\eqref{eq:foc} defines two BR
-loci---one per player, each a one-dimensional curve in
-$(\eps_1, \eps_2)$-space---whose intersections \emph{are} the pure NEs.
-Under symmetric players the two loci are reflections across the diagonal.
-The number of intersections depends on how the curves bend through each
-other, and need not grow with the grid resolution.
-
-We re-run C1 at $K = 44$, doubling the resolution along each axis from $K
-= 22$ (so the grid is now four times denser). \cref{fig:C6} reports the
-resulting BR loci with the pure NEs marked. The BR curves are clearly
-visible as one-dimensional stepped loci, and they cross at \emph{eight}
-distinct points---the same count as at $K = 22$. The crossings sit at
-nearly identical $(\eps_1, \eps_2)$ values to those at the coarse
-resolution, modulo grid quantisation. The asymmetric pure NEs are
-therefore a finite set of isolated equilibria of the continuous game, not
-a one-parameter family; the discrete grid samples them faithfully.
-
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C6_locus_K44.pdf}
-\caption{\textbf{C6.} BR loci and pure NEs (left) and the $u_1$ surface
-with NEs marked (right) at the refined resolution $K = 44$. The two BR
-correspondences are one-dimensional stepped curves in the action plane;
-they cross at exactly eight isolated points (the same count as at $K =
-22$), confirming that the asymmetric NE set is finite.}
-\label{fig:C6}
-\end{figure*}
-
-% =====================================================================
-\subsection{C7 --- How does the NE locus respond to a shift in the
-benefit/cost ratio?}
-\label{sec:C7}
-
-The implicit-curve characterisation of~\eqref{eq:foc} says the BR is
-parametrised by the ratio $B_i / C_i$; we now sweep this ratio
-\emph{symmetrically} across both players from $0.25$ (privacy-heavy) to
-$8$ (utility-heavy) and read off how the NE locus moves.
-\cref{fig:C7} reports the union of pure NEs across all six ratios on a
-single plot.
-
-The number of pure NEs and their locations vary systematically with
-$B/C$. At the privacy-heavy end ($B/C = 0.25$), only a single pure NE
-exists, and it lies on the diagonal at $(\eps^{\min}, \eps^{\min}) =
-(0.5, 0.5)$: both players race to the strongest privacy that the
-participation constraint admits. As $B/C$ grows the diagonal NE
-fragments. At $B/C = 0.5$ we count three pure NEs; at $B/C = 1$ the
-familiar eight from C1; at $B/C = 2$ and $4$ the count holds at six but
-the cloud shifts outward (toward higher $\eps$ on both axes); at $B/C =
-8$ only two pure NEs remain, both at the upper-right corner near
-$(\eps^{\max}, \eps^{\max})$, where utility dominates and the
-externality is negligible.
-
-Two readings of this. First, the asymmetric-NE phenomenon of C1 is not
-fragile: it persists across roughly an order of magnitude of $B/C$,
-roughly $B/C \in [0.5, 4]$. Second, the asymmetric NEs disappear at both
-extremes and are replaced by a single diagonal NE---privacy-heavy
-players coordinate on minimum $\eps$, utility-heavy players coordinate on
-maximum $\eps$. The middle regime is the one in which the externality
-matters strategically; the extremes wash it out.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C7_BC_ratio.pdf}
-\caption{\textbf{C7.} Pure NE locations across symmetric $B/C$ ratios
-$\in \{0.25, 0.5, 1, 2, 4, 8\}$ at $K = 22$. The dashed diagonal is for
-reference. NEs are asymmetric for $B/C \in [0.5, 4]$ and collapse to the
-diagonal at the privacy-heavy and utility-heavy extremes.}
-\label{fig:C7}
-\end{figure}
-
-% =====================================================================
-\subsection{C8 --- What happens under asymmetric privacy preferences?}
-\label{sec:C8}
-
-C7 sweeps $B/C$ symmetrically across both players. We now break the
-preference symmetry: we fix $C_2 = 1$ and vary $C_1 \in \{0.25, 0.5, 1,
-2, 4\}$ with $B_1 = B_2 = 1$. Player $1$ is therefore four times more
-privacy-sensitive than player $2$ at one extreme and four times less
-sensitive at the other. \cref{fig:C8} plots the resulting NEs.
-
-The NE locus shifts smoothly. When $C_1 \ll C_2$ (player $1$ values
-privacy less), pure NEs sit in the lower-right region of the action
-plane---player $1$ plays high $\eps$ (it doesn't mind the realised
-advantage) and player $2$ plays low $\eps$ (it does). As $C_1/C_2$
-crosses unity the NEs move through the symmetric configuration of
-\cref{sec:C1} and continue past it: at $C_1 \gg C_2$ the locus has
-flipped to the upper-left region, with player $1$ now in the low-$\eps$
-role. The structure of the externality therefore makes the
-\emph{more} privacy-sensitive player carry the lower $\eps$ at the
-equilibrium and the realised advantage on the less-sensitive player.
-
-This is unintuitive at first reading but is exactly what the
-externality lemma predicts. The player who values privacy more is willing
-to give up more model utility to suppress their own $A$; doing so pushes
-$\sigma$ upward and the other player's $p$ upward, leaving the
-less-sensitive player to absorb the realised advantage. Asymmetric
-\emph{preferences} therefore amplify the equilibrium asymmetry rather
-than dampening it: a population of players with heterogeneous privacy
-weights does not converge to a compromise on the diagonal but instead
-splits, with each player ending up in the role for which their weight is
-best suited.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C8_asymmetric_C.pdf}
-\caption{\textbf{C8.} Pure NE locations under asymmetric privacy weights
-$C_1/C_2 \in \{0.25, 0.5, 1, 2, 4\}$ at $K = 22$ and $B_1 = B_2 = 1$. As
-$C_1/C_2$ grows (player $1$ more privacy-sensitive), the NE cloud
-migrates from the lower-right region to the upper-left region of the
-action plane.}
+\includegraphics[width=\linewidth]{figures/fig_C8_asymmetric_w.pdf}
+\caption{\textbf{Preference asymmetry} ($K=200$, $\lambda_2 = 1$). Pure \ac{NE}
+clouds under $\lambda_1/\lambda_2 \in \{0.25, 0.5, 1, 2, 4\}$ (centroids and
+$68\%$ dispersion ellipses). As player $1$ becomes more
+privacy-sensitive the cloud migrates from lower-right (player $1$
+exposed) to upper-left (player $2$ exposed), never crossing the
+diagonal: heterogeneity self-sorts instead of averaging out.}
 \label{fig:C8}
 \end{figure}
 
+\subsection{Does the asymmetry survive more than two players?}
+\label{sec:H3}
+
+We sweep $n \in \{3, \dots, 10\}$ on a coarse $K = 7$ grid,
+enumerating pure \acp{NE} exhaustively for $n \le 5$ and running $32$
+seeds of Monte-Carlo fictitious play for $n \ge 6$
+(\cref{fig:h3-fp-nplayer}). Under heterogeneous weights $\lambda_i \in
+\mathrm{geomspace}(0.25, 4)$, the self-sorting signature is exact at
+every $n \in \{3,\dots,8\}$---the rank order of equilibrium budgets is
+the reverse of the rank order of weights in $100\%$ of
+observations---and $83\%$ at $n = 10$, where the fictitious-play tail
+occasionally swaps adjacent, nearly-tied weights. Realised advantages
+remain strongly asymmetric throughout: the extreme players' advantage
+ratio $A_{\max}/A_{\min}$ runs from roughly $480$ at $n = 3$ to $75$
+at $n = 10$. Under fully symmetric weights, fictitious play on this coarse
+grid settles onto symmetric profiles for $n \le 8$; this is the
+expected discretisation effect---the diagonal deviation gain of
+\cref{prop:no-symmetric-ne} is second-order and falls below a $K = 7$
+grid step---and at $n = 10$ the dynamics again find asymmetric
+profiles with advantage ratios near $5$. Resolving the symmetric-$n$
+case on a fine grid is a computational, not conceptual, gap; we flag
+it as open.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_h3_fp_nplayer.pdf}
+\caption{\textbf{$n$-player PEG} on the $K{=}7$ grid: brute-force \ac{NE}
+for $n \le 5$, fictitious-play tails for $n \ge 6$ ($32$ seeds
+$\times$ $400$ rounds). \emph{Left axis:} fraction of observations
+whose budget order is the exact reverse of the weight order
+(self-sorting compliance) under heterogeneous $\lambda_i$. \emph{Right axis
+(log):} the $A_{\max}/A_{\min}$ advantage ratio across observed
+profiles. Sorting is exact for $n \le 8$ and near-exact at $n = 10$;
+the advantage asymmetry persists at every $n$.}
+\label{fig:h3-fp-nplayer}
+\end{figure}
+
+\subsection{Is it the mechanism or the paradigm?}
+\label{sec:scale}
+
+The asymmetry could conceivably be a feature of individual budgets per
+se. It is not: it is a feature of \emph{how sampling-based \ac{iDP}
+reconciles them}. We replay the identical game---same groups, weights,
+grid, utility---through the \emph{sensitivity-based} \ac{iDP} realisation
+of \citet{boenisch2023have}, in which each group receives a personal
+clipping norm under a shared noise multiplier and each record's
+noise-to-sensitivity ratio is preserved by construction, so $\Apld{i}$
+depends on $\eps_i$ alone and the players interact only through the
+shared $V(\sigma)$.
+
+The contrast is total (\cref{fig:h2-scale}). At $w = 1$ and $K =
+200$, the sensitivity-based game has \emph{exactly one} pure Nash
+equilibrium, and it is symmetric: $(\eps_1, \eps_2) = (5.73, 5.73)$.
+The sampling-based game on the identical grid has $48$, all
+asymmetric. The same uniqueness-and-symmetry holds across the common
+weight sweep ($w \in \{0.25, 0.5, 1\}$ each yield a single diagonal
+\ac{NE}). This is the cleanest statement of the paper's scope: individual
+privacy budgets do not by themselves create strategic redistribution;
+the joint $(\sigma, p_g)$ solve of the sampling-based realisation
+does. It is also, in effect, a control experiment for the theory---
+remove the coupling that \cref{lem:externality} formalises, and the
+Hawk--Dove structure disappears.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_h2_scale.pdf}
+\caption{\textbf{Sampling-based versus sensitivity-based \ac{iDP}, same
+game} ($K=200$, $w=1$). The sensitivity-based realisation (single
+orange star) has exactly one pure \ac{NE}, on the diagonal at
+$(5.73, 5.73)$; the sampling-based realisation (blue) has $48$ pure
+\acp{NE}, all off-diagonal. The strategic asymmetry is a property of the
+budget-coordination mechanism, not of individual budgets.}
+\label{fig:h2-scale}
+\end{figure}
+
+\subsection{Promise versus reality at a fixed contract}
+\label{sec:C5}
+
+What does the externality do to a single contract, with the strategy
+stripped away? Fix player $i$'s budget at $\eps_i = 4$ and sweep only
+the \emph{other} player's budget (\cref{fig:slack}). The level-1
+ceiling $A_{\eps_i,\delta} = 0.963$ never moves, and the level-2
+advantage stays below it everywhere---the guarantee holds---but the
+gap between the levels swings from $0.79$ to $0.96$ as the other
+player's budget moves, smoothly and monotonically, exactly as
+\cref{prop:externality-full} predicts. The $(\eps_i, \delta)$ pair
+alone reveals none of this variation---which is precisely the room
+the strategic play of \cref{sec:C1,sec:C2} exploits, and the quantity
+a $\Delta$-augmented contract caps (\cref{sec:mitigation}). The full
+externality-response sweep across target budgets and dataset shares,
+together with a finite-difference certificate that the proposition's sign
+holds on $99.1\%$ of the $K=200$ grid's interior, is in
+\cref{app:certificate}.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_slack_panel.pdf}
+\caption{\textbf{Promise versus reality at a fixed contract} (anchor
+$\eps_i = 4$, $K=200$). Dashed: the level-1 ceiling $A_{\eps_i,\delta} =
+0.963$ of the hierarchy \eqref{eq:hierarchy}. Solid: the level-2
+advantage $\Apld{i}$ as the \emph{other} player's budget $\eps_j$ varies
+at fixed $\eps_i$. Shaded: the slack---the gap between the two
+levels. The level-1 guarantee upper-bounds the risk at every profile,
+but where the level-2 risk sits under it is decided by the other
+player's choice.}
+\label{fig:slack}
+\end{figure}
+
+\subsection{How costly is equilibrium play?}
+\label{sec:poev}
+
+Equilibria that redistribute risk need not inflate it in aggregate; we
+measure whether they do with a value-side analogue of the price of
+anarchy~\cite{koutsoupias1999worst}.
+
+\begin{definition}[Price of externality-vulnerability]
+\label[definition]{def:poev}
+Given a symmetric baseline profile $\boldsymbol{\eps}^{\mathrm{uni}}$
+and a reference profile $\boldsymbol{\eps}^\star$,
+\[
+\PoEV(\boldsymbol{\eps}^\star) \;:=\;
+\frac{\sum_i \Apld{i}(\boldsymbol{\eps}^\star) - \sum_i \Apld{i}(\boldsymbol{\eps}^{\mathrm{uni}})}
+     {\sum_i \Apld{i}(\boldsymbol{\eps}^{\mathrm{uni}})}.
+\]
+\end{definition}
+
+Against the geometric-midpoint baseline $\eps^{\mathrm{uni}} = 5.73$
+(aggregate advantage $0.305$), the $48$ equilibria of the canonical
+game span $\PoEV \in [-0.785, +0.040]$ with median $-0.50$
+(\cref{tab:NE}): most equilibria \emph{deflate} aggregate advantage
+relative to uniform play, because the utility term pulls both players
+toward moderate noise. Three readings temper that comfort. First, the
+aggregate hides the redistribution: the median equilibrium assigns one
+player $4\times$ the advantage of the other
+(\cref{sec:C1}). Second, the spread across equilibria is itself the
+problem---the best equilibrium is the social optimum
+($\PoEV = -0.785$; it happens to be a Nash profile, so the price of
+stability is zero), the worst inflates aggregate advantage over the
+baseline ($+0.04$), and nothing in the mechanism selects among them.
+Third, the sign flips with the preference regime
+(\cref{app:wsweep}): at utility-heavy
+weights ($w \le 0.25$), $77$--$80\%$ of equilibria are inflationary,
+with $\PoEV$ up to $+1.70$---rational play then \emph{raises}
+aggregate exposure by up to $170\%$ over uniform budgets. Aggregate
+welfare at equilibrium is, in short, unmanaged: sometimes better than
+uniform, sometimes much worse, and never chosen.
+
+\subsection{Does the game survive a measured adversary?}
+\label{sec:H1}
+
+Everything so far prices risk at the middle level of the hierarchy
+\eqref{eq:hierarchy}---the mechanism-specific, \ac{PLD}-exact bound on
+what any adversary can extract from the deployed mechanism. A fair question is whether
+the strategic structure survives one level further down, when the
+advantage is \emph{measured} instead. We instantiate the two-player
+game end-to-end on Adult: for each profile of a $5 \times 5$ budget
+grid ($\eps \in \{2,4,8,16,32\}$, $5000$ records per silo) we train
+$128$ \ac{DPSGD} shadow models at the mechanism solution $(\sigma, p_1,
+p_2)$, score per-record membership with
+\ac{LiRA}~\cite{carlini2022membership}, and rebuild the payoff matrix from
+the measured advantage and measured test accuracy
+(\cref{fig:H1}).
+
+The measured game degenerates---informatively. On this workload the
+\ac{LiRA} advantage is flat at the measurement floor across the entire
+grid ($A^{\mathrm{LiRA}} \in [0.107, 0.115]$, per-silo AUC $\le
+0.506$) while the analytical bound spans $[0.004, 0.870]$: the
+attacker cannot resolve the leakage the accountant prices, the
+externality term of \eqref{eq:utility} is thus constant in the
+players' actions, and the equilibria slide to the high-$\eps$ corner
+where accuracy dominates ($(16,16)$ and $(32,32)$). The analytical
+game on the same coarse grid puts its equilibrium at the
+\emph{opposite}, low-budget corner $(2,2)$---a $5{\times}5$ grid is
+too coarse to resolve the off-diagonal band of \cref{sec:C1}, but the
+corner contrast is the point: the measured incentives are not a
+perturbation of the analytical ones, they are advantage-blind. This
+is the second inequality of the hierarchy \eqref{eq:hierarchy} at its
+loosest---on the $(16,16)$ profile the pooled attack ROC sits at
+chance ($A_{\mathrm{LiRA}} = 0.010$) against an optimal-adversary
+$A_{\mathrm{PLD}} = 0.58$, and the flat
+$[0.107, 0.115]$ band of the per-record statistic is that
+estimator's finite-sample floor at $128$ shadow models---and it is
+the privacy-onion effect of \citet{carlini2022privacy} made
+strategic: \emph{the game's asymmetric structure is carried by the
+attacker's ability to realise the externality}. Two
+consequences follow. For the theory's scope: the redistribution
+phenomenon binds in regimes where realised attack power tracks the
+accountant---strong attackers, vulnerable records, or the worst-case
+adversary the contract itself must assume. For practice: a deployment
+whose realistic adversary sits at the measurement floor will see no
+strategic pressure on budgets---but a risk assessment cannot be
+written against today's measurement floor, and the level-2 game
+prices exactly the most any adversary can ever extract from the
+deployed mechanism. Closing the gap between the two---a
+measured instance with above-floor attack power, e.g.\ canary-style
+outliers---is the natural next experiment.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_H1_n2_measured_NE.pdf}
+\caption{\textbf{Measured instance of the 2-player PEG} (Adult, MLP,
+$128$ \ac{LiRA} shadow models per profile, $5{\times}5$ grid $\eps \in
+\{2,\dots,32\}$, $5000$ records/silo). \emph{Left:} pure \ac{NE} of the
+analytical game on the same coarse grid (low-budget corner $(2,2)$).
+\emph{Centre:} pure \ac{NE} of the measured game (high-budget corner).
+\emph{Right:} measured versus analytical advantage across profiles.
+\ac{LiRA} sits at the measurement floor ($A^{\mathrm{LiRA}} \in [0.107,
+0.115]$) while the analytical bound spans $[0.004, 0.870]$; with the
+externality term flattened, the measured equilibria collapse to the
+corner where accuracy dominates. The strategic asymmetry requires
+attack power above the measurement floor.}
+\label{fig:H1}
+\end{figure*}

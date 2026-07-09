@@ -1,0 +1,85 @@
+\section{Mitigation: Change the Contract, Not the Players}
+\label{sec:mitigation}
+
+If asymmetric exposure is equilibrium behaviour, mitigation cannot
+consist of detecting deviants---at equilibrium there are none. Two
+repair strategies remain: discipline the \emph{reports} (mechanism
+design on the budget channel) or discipline the \emph{contract} (bound
+what any profile can do to a player). The first is unavailable; the
+second provably works.
+
+\paragraph{No report-based fix.} Viewed as a direct-revelation
+mechanism on the budget channel, sampling-based \ac{iDP} without transfers
+is not dominant-strategy incentive-compatible: a player's
+utility-maximising budget report necessarily depends on the others'
+declarations.
+
+\begin{proposition}[Non-strategyproofness of budget declaration]
+\label[proposition]{prop:non-strategyproof}
+For any player $i$ with $\lambda_i > 0$ there exist opponent declaration
+profiles $\hat{\boldsymbol{\eps}}_{-i}^{\mathrm{L}}$,
+$\hat{\boldsymbol{\eps}}_{-i}^{\mathrm{T}}$ such that player $i$'s best-response
+reports against them differ. In particular, no report is a dominant
+strategy, and the identity mechanism on the budget channel is not
+DSIC.
+\end{proposition}
+
+The proof (\cref{app:mechanism-design}) chains
+\cref{lem:externality} through the utility gradient and exhibits a
+numerical witness: against a loose opponent the best report is
+$\hat\eps_1 \approx 2.9$, against a tight one $\approx 1.2$. The
+classical rescues do not apply---the large-market route
+of~\cite{kearns2014mechanism} needs each agent's influence on the
+mechanism to vanish, whereas each silo moves (Batch) at constant
+magnitude, and the truthful-elicitation results
+of~\cite{ghosh2011selling, chen2013truthful, nissim2014redrawing}
+model privacy costs that vanish without influence, whereas here every
+report moves $\sigma$. \Cref{app:mechanism-design} sets up the
+type-channel (Myerson-style) design problem this opens and why it is
+harder than an auction: a shared $\sigma$, interim advantages coupled
+through all types, and no monetary transfer.
+
+\paragraph{The contract-based fix.} The
+$(\eps_i,\delta,\Delta)$-iDP contract of \citet{kaiser2026your,
+kaissis2024beyond} adds one clause to the individual contract: the
+realised mechanism must stay within $\Delta$-divergence of a
+reference, equivalently the slack of \eqref{eq:decomp} is capped.
+In the vocabulary of this paper, the clause is exactly an externality
+bound:
+
+\begin{proposition}[$\Delta$-neutralisation of the externality]
+\label[proposition]{prop:delta-neutralisation}
+Restrict the action space to profiles with
+$\mathrm{slack}_i(\boldsymbol{\eps})\leq\Delta$ for every player.
+Then at every feasible profile
+\[
+A_{\eps_i,\delta}-\Delta \;\leq\; \Apld{i}(\boldsymbol{\eps}) \;\leq\;
+A_{\eps_i,\delta},
+\]
+and for any two feasible profiles agreeing in player $i$'s own budget,
+$\bigl|\Apld{i}(\boldsymbol{\eps})-\Apld{i}(\boldsymbol{\eps}')\bigr|\leq\Delta$.
+\end{proposition}
+
+\begin{proof}
+Both claims are immediate from the identity \eqref{eq:decomp} and
+$\mathrm{slack}_i \in [0, \Delta]$: the realised advantage is the
+ceiling minus the slack, and two profiles sharing $\eps_i$ share the
+ceiling, so their advantage difference is a difference of slacks.
+\end{proof}
+
+The proposition is deliberately elementary---that is its virtue. In
+the terms of the hierarchy \eqref{eq:hierarchy}, the $\Delta$-clause
+pins the distance between levels 1 and 2: the level-2 advantage may
+sit at most $\Delta$ below the level-1 ceiling, so no unilateral or
+joint deviation by the other players, coordinated or not, can move
+player $i$'s realised advantage by more than $\Delta$ at fixed
+$\eps_i$. The coalition curve of \cref{fig:C4} is capped at height
+$\Delta$ above its floor, and the strategic redistribution of
+\cref{sec:C1} is bounded to a $\Delta$-band around each contract.
+What $\Delta$-iDP does \emph{not} automatically deliver is a
+well-behaved residual game---whether an equilibrium of the restricted
+game exists, is unique, or is symmetric, and what utility cost the
+restriction imposes through forced noise, are open (we return to
+this in \cref{sec:discussion}). The equilibrium analysis of this
+paper is the reason to pay that cost: without the clause, the
+contract's realised meaning is set by everyone else's play.

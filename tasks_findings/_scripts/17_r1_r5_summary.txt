@@ -1,0 +1,18 @@
+# T17 R1-R5 robustness sweep summary
+# base K=200, delta=1e-12, batch=128, steps=int(5*10000/128)=390, w=(1,1)
+# R3 is on the K'=50 stride-4 subgrid of the K=200 cache (2500 cells);
+# per-cell (sigma, A) come from the K=200 solve.
+
+baseline (K=200, full grid): |NE|=48 off-diag=1.000 ext-sign+=0.822
+
+R3 participation threshold sweep (min_sample_rate) on K'=50 stride-4 subgrid:
+  p_min=1e-03  feas=1160/2500  |NE|=6   off-diag=1.000  ext-sign+=0.955
+  p_min=1e-05  feas=1610/2500  |NE|=12  off-diag=1.000  ext-sign+=0.927
+  p_min=1e-07  feas=1610/2500  |NE|=12  off-diag=1.000  ext-sign+=0.927
+
+R2 PLD-discretization advantage stability at NE cells (max |Delta A| vs disc=1e-3 default):
+  disc=1e-02  max|Delta A|=1.19e-02  (over 16 NE cells x 2 groups)
+  disc=1e-03  max|Delta A|=0.00e+00  (over 16 NE cells x 2 groups, self-reference)
+
+R1 delta, R4 (batch, epochs), R5 RDP orders:
+  require Slurm reruns; see task spec step 10 for slurm_scripts/run_robustness.sh template.

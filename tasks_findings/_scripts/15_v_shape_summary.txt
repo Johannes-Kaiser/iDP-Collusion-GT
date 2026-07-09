@@ -1,0 +1,20 @@
+# T15 / H5 V-shape robustness summary (appendix ablation)
+# K=200, w1=w2=1, symmetric cache, sigma range [0.368, 3.650]
+
+#    V                            shape  #NE asym  sym     ext P1     ext P2      d_H mean(a->b) mean(b->a) agree(sign)
+    V1                 $1/(1+\sigma^2)$   48   48    0  82.19725%  82.19725%    0.000      0.000      0.000      100.0%
+    V2                   $1/(1+\sigma)$   60   60    0  82.19725%  82.19725%    0.945      0.274      0.075      100.0%
+    V3                $e^{-\sigma^2/2}$   48   48    0  82.19725%  82.19725%    0.152      0.017      0.013      100.0%
+    V4                    $e^{-\sigma}$   44   44    0  82.19725%  82.19725%    0.305      0.024      0.062      100.0%
+    V5                $-\log(1+\sigma)$   48   48    0  82.19725%  82.19725%    0.000      0.000      0.000      100.0%
+    V6                        $-\sigma$   54   54    0  82.19725%  82.19725%    0.360      0.093      0.111      100.0%
+
+# max pairwise |ext P_i - ext P_1|  = 0.00e+00
+# ext P_i identical to 5 decimals?   True
+
+# Notes
+# d_H, mean(a->b), mean(b->a) are in log10(eps) units
+# 'a' is the V under test; 'b' is the baseline V1 = 1/(1+s^2)
+# ext P1 = fraction of feasible edges with dU_1/deps_2 >= 0
+# ext P2 = fraction of feasible edges with dU_2/deps_1 >= 0
+# agree(sign) = fraction of feasible edges where sign(du_i/deps_j) matches V1

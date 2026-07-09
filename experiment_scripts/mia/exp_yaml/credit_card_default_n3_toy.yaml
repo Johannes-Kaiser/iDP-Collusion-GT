@@ -1,0 +1,47 @@
+# T25 -- toy federated n=3 shadow-model config.
+#
+# Consumed by experiment_scripts/mia/04_mia_pergroup.py (T24 branch) with the
+# --federated fedsgd flag; per-silo (sigma, p_g) are passed on the CLI from
+# game_experiments/_cache_T25/mechanism_grid.pkl, so the (sigma, budgets) here
+# are informational (they document the coarse action grid, not the mechanism).
+
+dataset: credit_card_default
+model: null
+lr: 0.01
+batchsize: 128         # matches expected_batch_size in the mechanism solver
+epochs: 60             # 60 x (30000/128) = 14040 DP-SGD steps total (server side)
+n_shadows: 32          # LiRA floor per profile per silo -- see findings Section 2.
+n_targets: 256         # in/out membership targets per silo
+pkeep: 0.5
+debug: false
+n_queries: 2
+private: true
+adapt_weights_to_budgets: true
+accountant: rdp
+individualize: sampling
+weights: null
+target_delta: 1e-12
+max_grad_norm: 1.0
+portions:
+  - 0.3333
+  - 0.3334
+  - 0.3333
+budgets:
+  - 2.0
+  - 8.0
+  - 32.0
+n_parallel: 8
+disable_inner: true
+seed: 42
+train_and_save_models: false
+compute_and_save_logits: true
+compute_and_save_scores: true
+compute_and_save_stats: false
+plot_results: false
+test_model: true
+
+# T25 additions -- consumed by 04_mia_pergroup.py's --federated fedsgd branch.
+n_silos: 3
+silo_split: modulo3
+federated: fedsgd
+per_group_mechanism_cache: _cache_T25/mechanism_grid.pkl

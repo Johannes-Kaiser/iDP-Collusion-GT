@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\caption{Numerical Price-of-Externality-on-Values (\PoEV, \cref{def:poev}) at each pure Nash equilibrium of the symmetric 2-player PEG and at its social optimum. $K=200$ log-spaced action grid on $[0.5,64]$, $|G_1|=|G_2|=5000$, $E_b=128$, $5$ epochs, $\delta=10^{-12}$, $w_1=w_2=1$, $V(\sigma) = 1/(1+\sigma^2)$. Uniform baseline $\varepsilon^{\mathrm{uni}} = 5.73$ (geometric midpoint of the log grid) with $\sum_i A_i(\varepsilon^{\mathrm{uni}}) = 0.305$. Social optimum is the feasible action profile maximising $u_1 + u_2$.}
+\label{tab:PoEV}
+\begin{tabular}{lccccc}
+\toprule
+ & $(\varepsilon_1^*, \varepsilon_2^*)$ & $A_1$ & $A_2$ & $\sum_i A_i$ & $\PoEV$ \\
+\midrule
+NE$_{1}$ & $(1.43, 9.33)$ & 0.001 & 0.295 & 0.296 & -0.032 \\
+NE$_{2}$ & $(1.53, 3.88)$ & 0.011 & 0.142 & 0.153 & -0.500 \\
+NE$_{3}$ & $(1.91, 3.35)$ & 0.030 & 0.117 & 0.146 & -0.521 \\
+NE$_{4}$ & $(3.35, 1.91)$ & 0.117 & 0.030 & 0.146 & -0.521 \\
+NE$_{5}$ & $(3.88, 1.53)$ & 0.142 & 0.011 & 0.153 & -0.500 \\
+NE$_{6}$ & $(4.07, 4.17)$ & 0.055 & 0.059 & 0.114 & -0.626 \\
+NE$_{7}$ & $(4.17, 4.07)$ & 0.059 & 0.055 & 0.114 & -0.626 \\
+NE$_{8}$ & $(9.33, 1.43)$ & 0.295 & 0.001 & 0.296 & -0.032 \\
+social opt & $(10.28, 12.80)$ & 0.017 & 0.048 & 0.066 & -0.785 \\
+\bottomrule
+\end{tabular}
+\end{table}

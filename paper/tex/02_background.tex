@@ -1,100 +1,281 @@
-\section{Background}
+\section{Background and Related Work}
 \label{sec:background}
 
-\subsection{Differential privacy and Gaussian mechanisms}
+\subsection{Differential privacy}
+\label{sec:dp}
 
-We use the standard definition of approximate differential
-privacy~\cite{dwork2006calibrating}: a randomised mechanism
-$\mathcal{M}\colon \mathcal{Z}^* \to \mathcal{O}$ satisfies $(\eps,
-\delta)$-differential privacy ($(\eps, \delta)$-DP) if, for any pair of
-adjacent databases $D \sim D'$ (differing on a single record) and every
-measurable $S \subseteq \mathcal{O}$,
-\[
-\Pr[\mathcal{M}(D) \in S] \;\leq\; e^\eps \Pr[\mathcal{M}(D') \in S] + \delta.
-\]
-A single $(\eps, \delta)$-pair is only a single point of the underlying
-\emph{privacy profile} $\{(\eps,\delta(\eps)) : \eps \geq 0\}$~\cite{balle2020privacy,
-kaissis2024beyond}, and mechanisms calibrated to the same point can have
-substantially different profiles and so substantially different realised
-adversarial risk. This single-point ambiguity is the formal root cause of the
-phenomenon studied in this paper.
+A randomised mechanism $\mathcal{M}$ is $(\eps,
+\delta)$-differentially private
+($(\eps,\delta)$-DP)~\cite{dwork2006calibrating} if, for all adjacent
+datasets $D \sim D'$ and all measurable output sets $S$,
+\begin{equation}
+\Pr[\mathcal{M}(D) \in S] \;\leq\; e^\eps \Pr[\mathcal{M}(D') \in S] +
+\delta .
+\label{eq:dp}
+\end{equation}
+\ac{DPSGD} instantiates \cref{eq:dp} for deep learning: per-example
+gradients are clipped, their sum is perturbed with Gaussian noise
+$\mathcal{N}(0, \sigma^2 I)$, and Poisson subsampling---each record
+enters each batch independently with probability $p$---amplifies the
+per-step guarantee before composition over training
+iterations~\cite{abadi2016deep}. A record's protection is therefore
+set by two dials: the noise multiplier $\sigma$, shared by all
+records, and its own sampling rate $p$.
 
-The \emph{Gaussian mechanism}, $\mathcal{M}(D) = f(D) + \mathcal{N}(0,\sigma^2 I)$
-for a query $f$ of $L_2$ sensitivity $\Delta f$, satisfies $(\eps,\delta)$-DP
-for all $(\eps, \delta)$ such that
-$\Phi(\Delta f / 2\sigma - \eps\sigma/\Delta f) - e^\eps
-\Phi(-\Delta f/2\sigma - \eps\sigma/\Delta f) \leq \delta$,
-where $\Phi$ is the standard-normal CDF.
-For training neural networks under DP, the standard procedure is DP-SGD with
-Poisson subsampling~\cite{abadi2016deep}, in which each data point is included
-in each minibatch independently with probability $p$, providing the well-known
-\emph{subsampling amplification} of DP.
-
-\subsection{Individual differential privacy and the sampling-based realisation}
+\subsection{Individual differential privacy}
 \label{sec:idp}
 
-\emph{Individual differential privacy}~\cite{jorgensen2015conservative}
-relaxes the uniform $(\eps,\delta)$ guarantee to a per-record contract
-$(\eps_i,\delta)$: the resulting algorithm must satisfy $(\eps_i,\delta)$-DP
-\emph{with respect to record~$i$} for every $i$. Boenisch et
-al.~\cite{boenisch2023have} translate per-record contracts into per-record
-Poisson sampling probabilities while keeping a single noise multiplier $\sigma$
-and a fixed expected batch size, which is the configuration we study.
+A single $(\eps, \delta)$ imposes one privacy level on contributors
+whose dispositions demonstrably differ: three decades of surveys
+following Westin consistently segment any surveyed population into
+privacy fundamentalists, pragmatists, and
+unconcerned~\cite{kumaraguru2005privacy}, and the split persists
+among users of emerging health
+technologies~\cite{schairer2019disposition}, even though the
+categories predict individual behaviour only
+loosely~\cite{woodruff2014would}. We write $\lambda_i > 0$ for the
+utility/privacy weight contributor $i$ attributes to their data: how
+much they value a unit of their own realised leakage relative to a
+unit of model quality. The survey evidence says $\lambda_i$ varies
+widely within any one dataset---a patient with a stigmatised
+diagnosis and a healthy volunteer in the same clinical study, or a
+rare-disease clinic and a large research hospital in the same
+cross-silo federation~\cite{kairouz2021advances,
+mcmahan2017communication, liu2024crosssilo}.
+\ac{iDP}~\cite{jorgensen2015conservative} operationalises this
+heterogeneity, giving record $i$ its own budget: $\mathcal{M}$ is
+$(\eps_i, \delta)$-iDP if for every $i$,
+every pair $D \sim_i D'$ differing only in record $i$, and all $S$,
+\begin{equation}
+\Pr[\mathcal{M}(D) \in S] \;\leq\; e^{\eps_i} \Pr[\mathcal{M}(D') \in S] +
+\delta .
+\label{eq:idp}
+\end{equation}
+Realisations fall into two families~\cite{feldman2021individual,
+boenisch2023have}. \emph{Accounting} realisations track each record's
+cumulative expenditure and filter it out once its budget is
+exhausted; the progressive record removal causes catastrophic
+forgetting and poor utility~\cite{feldman2021individual,
+boenisch2023have}. \emph{Assignment} realisations instead fix
+per-record training parameters up front: \emph{sensitivity-based} \ac{iDP}
+assigns each record a personal clipping norm, \emph{sampling-based}
+\ac{iDP} a personal Poisson sampling rate under one shared noise
+multiplier. Sampling-based \ac{iDP} attains the better empirical utility
+of the two~\cite{boenisch2023have, kaiser2026your}; we adopt the
+formulation of \citet{boenisch2023have} and use the sensitivity-based
+variant as a control (\cref{sec:scale}).
 
 \begin{definition}[Sampling-based iDP-SGD~\cite{boenisch2023have}]
-\label{def:sampling-idp}
+\label[definition]{def:sampling-idp}
 Let the dataset of size $M$ partition into $G$ \emph{privacy groups}
 $\{G_1,\dots,G_G\}$ with sizes $|G_g|$. Each group has a target
 $(\eps_g,\delta)$-DP budget. The mechanism trains by Poisson-subsampled
-DP-SGD for $I$ iterations, where the noise multiplier $\sigma$ and the per-group
-sampling rates $p_1,\dots,p_G$ are chosen such that
+\ac{DPSGD} for $I$ iterations, where the noise multiplier $\sigma$ and the
+per-group sampling rates $p_1,\dots,p_G$ are chosen such that
 \begin{align}
-\textnormal{(C1) for every } g, \quad
-& \textnormal{the } I\textnormal{-fold } (p_g,\sigma)\textnormal{-subsampled} \notag\\
-& \textnormal{Gaussian satisfies } (\eps_g,\delta)\textnormal{-DP at equality.} \notag\\
-\textnormal{(C2)} \quad
-& \sum_{g=1}^G \frac{|G_g|}{M}\,p_g \;=\; \frac{E_b}{M}, \label{eq:batch}
+\textnormal{(Budget)} \quad
+& \textnormal{for every } g\textnormal{, the } I\textnormal{-fold } (p_g,\sigma)\textnormal{-sub-} \notag\\
+& \textnormal{sampled Gaussian is } (\eps_g,\delta)\textnormal{-DP at equality;} \notag\\
+\textnormal{(Batch)} \quad
+& \sum_{g=1}^G \frac{|G_g|}{M}\,p_g \;=\; \frac{B}{M}, \label{eq:batch}
 \end{align}
-where $E_b$ is the desired expected batch size. We refer to $(\sigma,
+where $B$ is the desired expected batch size. We refer to $(\sigma,
 p_1,\dots,p_G)$ as the \emph{mechanism solution} for the budget vector
 $\boldsymbol{\eps} = (\eps_1,\dots,\eps_G)$.
 \end{definition}
 
-The single shared $\sigma$ in (C1) is the source of the privacy externality.
-For any candidate $\sigma$, the largest sampling rate that keeps group $g$ at
-its budget is a monotone-increasing function of $\sigma$ (more noise $\Rightarrow$
-more room for sampling); the batch-size constraint (C2) then determines $\sigma$
-as the unique value at which the per-group rates sum to $E_b$.  As a corollary,
-the rate $p_g$ that group $g$ obtains is determined by the entire vector
-$\boldsymbol{\eps}$, not by $\eps_g$ alone.
+We account for the subsampled-Gaussian composition in \ac{RDP}~\cite{mironov2017renyi, abadi2016deep} for tight composition, but
+state each contract in $(\eps_i, \delta)$ form, following
+\citet{boenisch2023have, kaiser2026your}. The budget $(\eps, \delta)$
+is the formal quantification of a record's information
+leakage~\cite{dwork2006calibrating}; it is the basis of the contract
+between a data contributor and the party that processes their
+data~\cite{kaiser2026your}, and the form in which guarantees are
+deployed and communicated in practice~\cite{cummings2024advancing}.
 
-\subsection{MIA advantage and the privacy profile}
+\subsection{Membership inference, privacy profiles, and slack}
+\label{sec:mia}
 
-For a privacy-preserving mechanism $\mathcal{M}$ with trade-off function $T$
-(equivalently, an $f$-DP function~\cite{dong2022gaussian}), the membership
-inference advantage of the optimal Bayes-aware adversary
-is~\cite{kaiser2026your}
+A contract $(\eps, \delta)$ is a lossy description of a mechanism's
+leakage. In \cref{eq:dp} the two parameters compensate for each
+other---a larger $\eps$ lets the same mechanism claim a smaller
+$\delta$---so a fixed mechanism satisfies \cref{eq:dp} not at one
+pair but along a whole curve: its \emph{privacy profile} $\{(\eps,
+\delta(\eps)) : \eps \geq 0\}$, where $\delta(\eps)$ is the smallest
+$\delta$ at which \cref{eq:dp} holds~\cite{balle2020privacy}. The
+profile describes the leakage completely; the contract is a single
+point on it, and mechanisms through the same point can have very
+different profile shapes~\cite{kaissis2024beyond, gomez2025harmful,
+kaiser2026your}. The risk a contributor actually faces is determined
+by that shape, not by the calibration point.
+
+To make risk operational we use \ac{MIA}: an
+adversary observing the mechanism's output tests whether a target
+record was in the training set~\cite{yeom2018privacy,
+carlini2022membership}. \ac{DP} is itself a hypothesis-testing guarantee,
+and the profile is equivalent to a \emph{trade-off curve}
+$T(\alpha)$: the least type-II error at type-I level $\alpha$ that
+any test---hence any \ac{MIA} adversary---can
+achieve~\cite{dong2022gaussian}. The adversary's best operating
+point defines the advantage,
 \begin{equation}
-\Adv(\mathcal{M}) \;=\; \sup_{\alpha \in [0,1]} \;\bigl(\,1 - \alpha - T(\alpha)\,\bigr),
+\Adv(\mathcal{M}) \;=\; \sup_{\alpha \in [0,1]}
+\bigl(\,1 - \alpha - T(\alpha)\,\bigr),
 \label{eq:adv}
 \end{equation}
-i.e.~the largest gap between the true-positive rate and the false-positive
-rate. For the $I$-fold $(p, \sigma)$-subsampled Gaussian, $T$ can be
-computed numerically by privacy-loss-distribution (PLD)
-accounting~\cite{google-dp-accounting}, which is what we use throughout.
-Crucially, $\Adv$ is determined by the \emph{full privacy profile}, not by any
-single $(\eps,\delta)$ point.
+the largest gap between true-positive and false-positive rate. We
+compute the trade-off curve of the $I$-fold $(p,\sigma)$-subsampled
+Gaussian exactly by numerical
+accounting~\cite{google-dp-accounting} and read the advantage off
+\cref{eq:adv}.
 
-\subsection{Game-theoretic terminology}
+\paragraph{The advantage hierarchy.} The paper moves between three
+notions of vulnerability, one per level of knowledge about the
+mechanism.
+\begin{itemize}
+\item $A_{\eps,\delta}$ \emph{(contract level, mechanism-agnostic).}
+  Knowing only the contract, the worst case over every mechanism it
+  admits is $A_{\eps,\delta} :=
+  (e^{\eps}-1+2\delta)/(e^{\eps}+1)$~\cite{kairouz2015composition,
+  kaissis2024beyond}: no $(\eps,\delta)$-DP mechanism, whatever its
+  form, can leak more. As a worst case over profiles of every shape,
+  it is generally loose for any particular mechanism.
+\item $A_{\mathrm{PLD}}$ \emph{(mechanism level).} Knowing the
+  deployed mechanism---the actual sampling rates, Gaussian noise, and
+  composition, resolved by the exact \ac{PLD}
+  accountant, whence the name---its trade-off curve gives the
+  advantage \cref{eq:adv} of the \emph{optimal} adversary: a true
+  upper bound on what any attacker, with any decision rule, can
+  extract from that mechanism. This is the vulnerability our game
+  prices; player $i$'s vulnerability $\Apld{i}$ is always this
+  quantity.
+\item $A_{\mathrm{LiRA}}$ \emph{(attack level).} The realised success
+  of a concrete attack against one trained model. The
+  \ac{LiRA}~\cite{carlini2022membership}
+  instantiates the membership hypothesis test with shadow models and
+  is currently among the most powerful attacks that are realistic
+  and applicable---the practical means by which an adversary
+  leverages the mechanism's information leakage. Realised per-record
+  vulnerability at a fixed budget is highly
+  heterogeneous~\cite{carlini2022privacy}.
+\end{itemize}
+The three levels are ordered:
+\begin{equation}
+A_{\eps,\delta} \;\geq\; A_{\mathrm{PLD}} \;\gtrsim\; A_{\mathrm{LiRA}}.
+\label{eq:hierarchy}
+\end{equation}
+The first inequality holds by construction---level 2 evaluates one
+mechanism inside the level-1 worst case. Its gap,
+\[
+\mathrm{slack} \;:=\; A_{\eps, \delta} - A_{\mathrm{PLD}}
+\;\geq\; 0 ,
+\]
+is the headroom between what the contract permits and what the
+mechanism actually leaks; the $\Delta$-divergence of
+\citet{kaissis2024beyond} makes this gap decision-theoretic,
+quantifying as an approximate Blackwell dominance the worst-case
+excess vulnerability of running one mechanism in place of another at
+the same contract. The second inequality is not a theorem: an attack
+that is not information-theoretically optimal should achieve no more
+than the optimal adversary~\cite{kaissis2023optimal}, but the
+trade-off curve is computed for a model of the implemented
+mechanism---training dynamics, finite precision, and implementation
+detail are abstracted away---so we treat $A_{\mathrm{PLD}} \gtrsim
+A_{\mathrm{LiRA}}$ as an empirical regularity.
+\Cref{fig:hierarchy} makes the first two levels
+concrete: six subsampled-Gaussian mechanisms whose profiles pass
+through one shared contract point realise trade-off curves and
+advantages differing by orders of magnitude, all far below the
+ceiling $A_{\eps,\delta}$ (orange bar in panel~(c)). Level-3
+quantities carry an explicit $\mathrm{LiRA}$ superscript.
 
-A finite normal-form game is a tuple
-$\langle N, \Sigma, U\rangle$ with $N = \{1,\dots,n\}$ players, action sets
-$\Sigma = \{S_1, \dots, S_n\}$, and payoff functions $U = \{u_1,\dots,u_n\}$.
-A \emph{Nash equilibrium} (NE) is an action profile $\boldsymbol{s}^*$ such
-that no player profits from a unilateral deviation:
-$u_i(s_i^*,\boldsymbol{s}_{-i}^*) \geq u_i(s_i,\boldsymbol{s}_{-i}^*)$ for every
-$s_i \in S_i$~\cite{nash1950equilibrium}. A \emph{best response} is the
-utility-maximising action against a fixed strategy of the others. The
-\emph{price of anarchy}~\cite{koutsoupias1999worst} compares the welfare of the
-worst NE to the social optimum. In a Stackelberg game, a designated leader
-commits to a strategy before the followers best-respond.
+\input{tex/fig_hierarchy_tikz}
+
+\paragraph{Where the externality appears.} In sampling-based iDP the
+budget vector selects the mechanism, and \cref{fig:hierarchy} shows
+how much that selection matters. The shared $\sigma$ in (Budget) is
+the channel: for any candidate $\sigma$, the largest sampling rate
+that meets group $g$'s budget increases in $\sigma$ (more noise,
+more room to sample), and (Batch) then pins $\sigma$ as the unique
+value at which the rates sum to $B$. When any group tightens its
+budget the mechanism re-solves, and every other group's $(p_g,
+\sigma)$---its trade-off curve, its advantage, its slack---moves
+along exactly the family of mechanisms in \cref{fig:hierarchy} while
+every contract point stays put. Record $i$'s realised risk is thus a
+function of \emph{everyone's} choices, while its contract mentions
+only $\eps_i$. Fixing the expected batch size is only one way to
+aggregate the per-record budgets into a shared $\sigma$; the
+externality is not specific to it but is inherent to any informed
+choice of a shared noise multiplier~\cite{kaiser2026your}, so the
+game we build applies to any such rule. \citet{kaiser2026your}
+demonstrated the stakes: adversarial budget choices inflate the \ac{MIA}
+susceptibility of $62\%$ of targeted records without touching any
+contract, and a $(\eps_i, \delta, \Delta)$-iDP clause capping the
+slack was proposed as the remedy. We take the complementary route:
+rather than restricting the mechanism, we explain the realised excess
+vulnerability as the equilibrium of self-interested play under the
+current contract---and return to the $\Delta$-clause as mitigation in
+\cref{sec:mitigation}.
+
+\subsection{Strategic privacy: games, externalities, incentives}
+\label{sec:related}
+
+A normal-form game $\langle N, \Sigma, U\rangle$ consists of players
+$N = \{1,\dots,n\}$, action sets $\Sigma = \{S_1, \dots, S_n\}$, and
+payoffs $U = \{u_1,\dots,u_n\}$. A \ac{NE} is a
+profile at which no player gains from unilateral
+deviation~\cite{nash1950equilibrium}; a \ac{BR}
+maximises a player's utility against fixed opponent play; the
+\emph{price of anarchy} compares worst-equilibrium welfare to the
+social optimum~\cite{koutsoupias1999worst}; in a Stackelberg game a
+leader commits before followers best-respond. Two classical templates
+organise our results. \emph{Hawk--Dove}~\cite{maynardsmith1973logic}
+is the canonical symmetric game whose pure equilibria are all
+asymmetric: someone must yield, and the equilibrium---not anyone's
+preference---decides who. Shared-resource
+games~\cite{hardin1968tragedy} show how a common constraint (here,
+the shared $\sigma$ under a fixed batch size) turns each player's
+private choice into an externality~\cite{buchanan1962externality} on
+all others.
+
+\paragraph{Privacy games.} \citet{pejo2019together} introduced the
+closest predecessor to our game: a two-player collaborative-learning
+game in which each player chooses a privacy parameter and the
+\emph{Price of Privacy} measures the accuracy lost at equilibrium.
+In their mechanism, however, a player's privacy choice affects only
+their own \emph{privacy} and both players' \emph{accuracy}: the privacy
+cost is separable, which makes their game a potential
+game~\cite{monderer1996potential} and its analysis a one-dimensional
+minimisation. In sampling-based \ac{iDP} every player's privacy choice
+moves every other player's \emph{privacy}---a qualitatively stronger
+coupling that destroys the potential structure
+(\cref{prop:non-potential}). Earlier game-theoretic privacy work
+studies different couplings: \citet{ioannidis2013linear} model
+regression with private features as a non-cooperative game,
+\citet{chessa2015game} study non-monetary incentives in data
+analytics, and \citet{pawlick2016stackelberg} model the
+learner-vs-perturber conflict as a Stackelberg game. None exhibit the
+privacy-to-privacy externality of a shared sampling mechanism. On the
+mechanism-design side, selling privacy as a good with heterogeneous
+valuations traces to \citet{ghosh2011selling}, with truthfulness
+impossibilities for unbounded privacy
+valuations~\cite{nissim2014redrawing, chen2013truthful}; we show in
+\cref{app:mechanism-design} why these positive results do not rescue
+budget declaration in the \ac{PEG}.
+
+\paragraph{Where the game lives.} The \ac{PEG} lives in systems that
+individualise privacy budgets and solve for a shared noise multiplier
+from the resulting budget vector. The budgets can be
+record-specific---a training instance running sampling-based
+\ac{iDP} over its own dataset~\cite{boenisch2023have}---or
+silo-specific, as in cross-silo federated learning with personalised
+budgets~\cite{liu2024crosssilo, mcmahan2017communication,
+geyer2017differentially, kairouz2021advances}, where the
+silos---hospitals in a consortium, banks in a fraud-detection
+coalition---are exactly the separately identifiable entities holding
+heterogeneous preferences. A separate literature designs
+incentives on top of privacy-heterogeneous federated
+learning~\cite{li2024fedpcs, donahue2021optimality, tu2025idhfl,
+ma2024evolutionary}; our equilibrium characterisation is the baseline
+any such scheme must improve upon---it is what happens when no
+incentive is offered.

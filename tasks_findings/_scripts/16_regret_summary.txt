@@ -1,0 +1,15 @@
+# T16 / H8 BR-PEG regret summary (redesigned)
+# instance: 5 overlapping types w in [0.6, 0.8, 1.0, 1.4, 2.0]
+#           n_H=n_M=5000, sigma_obs=0.15, T=60, N_SEEDS=40
+# eps_M grid (7 arms, log-spaced [1.0,32.0]): 1.00 1.78 3.17 5.66 10.08 17.96 32.00
+# oracle arm=2, eps_M*=3.175, A_H*=0.4540
+# uniform-belief arm=1, eps_M_uni=1.782, A_H_uni=0.3159
+# prior (correct)     = [0.2, 0.2, 0.2, 0.2, 0.2]
+# prior (misspecified)= [0.0, 0.25, 0.25, 0.25, 0.25]
+
+# Mean cumulative regret R(T) +/- 1 SE over seeds
+#    T         BR-PEG(correct)        BR-PEG(mis)               EXP3            uniform
+    10       0.773 +/- 0.068         1.517 +/- 0.016         2.805 +/- 0.079         1.380 +/- 0.000
+    20       1.073 +/- 0.148         2.897 +/- 0.016         5.212 +/- 0.132         2.761 +/- 0.000
+    40       1.239 +/- 0.213         5.658 +/- 0.016         9.457 +/- 0.264         5.522 +/- 0.000
+    60       1.308 +/- 0.256         8.419 +/- 0.016        13.205 +/- 0.361         8.283 +/- 0.000

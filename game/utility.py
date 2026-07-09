@@ -1,12 +1,10 @@
 """
 Player utility for the Privacy Externality Game.
 
-Canonical formulation (single utility term + single privacy term):
+    u_i(eps_vec)  =  V( sigma(eps_vec) )  -  w_i * A_i(eps_vec)
 
-    u_i(eps_vec)  =  B_i * V( sigma(eps_vec) )  -  C_i * A_i(eps_vec)
-
-* V(sigma) is the *shared* model-utility proxy. It is decreasing in the noise
-  multiplier sigma of the sampling-based iDP mechanism.
+* V(sigma) is the *shared* model-utility proxy. It is decreasing in the
+  noise multiplier sigma of the sampling-based iDP mechanism.
 
   Choice of functional form. We use  V(sigma) = 1 / (1 + sigma**2)  motivated
   by the excess-empirical-risk bound for convex DP-ERM of Bassily, Smith and
@@ -24,11 +22,10 @@ Canonical formulation (single utility term + single privacy term):
   privacy profile of the I-fold (p_i, sigma)-subsampled Gaussian (Kaiser et
   al., SaTML 2026).
 
-The naive vs aware distinction we previously made conflated *utility shape*
-with *information asymmetry*. We drop it from the utility itself: there is a
-single objective every rational player optimises. The discussion of what a
-contract-only-aware ("naive") player would compute moves to a remark in the
-paper.
+* w_i > 0 is the player's privacy weight: how much she values a unit of
+  realised MIA advantage on her own data relative to a unit of model
+  quality. Larger w_i means she weights privacy more; smaller w_i means
+  she weights model quality more.
 """
 from __future__ import annotations
 
@@ -37,10 +34,9 @@ from dataclasses import dataclass
 
 @dataclass
 class PlayerProfile:
-    """Per-player weights for the canonical utility u_i = B_i V(sigma) - C_i A_i."""
+    """Per-player weight for the canonical utility u_i = V(sigma) - w_i A_i."""
     name: str
-    B: float = 1.0       # utility weight on model quality
-    C: float = 1.0       # cost weight on realised MIA advantage
+    w: float = 1.0
 
 
 def value_fn(sigma: float) -> float:
@@ -58,17 +54,17 @@ def value_fn(sigma: float) -> float:
 
 
 def utility(player: PlayerProfile, sigma: float, A_self: float) -> float:
-    return player.B * value_fn(sigma) - player.C * A_self
+    return value_fn(sigma) - player.w * A_self
 
 
-# Convenience constructors retained for backward compatibility with existing
-# experiment scripts.
-def aware_player(name: str, B: float = 1.0, C: float = 1.0, eps_max: float = 64.0) -> PlayerProfile:
-    return PlayerProfile(name=name, B=B, C=C)
+# Convenience constructors.
+def aware_player(name: str, w: float = 1.0, eps_max: float = 64.0) -> PlayerProfile:
+    return PlayerProfile(name=name, w=w)
 
 
-def naive_player(name: str, B: float = 1.0, C: float = 1.0, eps_max: float = 64.0) -> PlayerProfile:
-    # In the single-utility-term formulation there is no separate "naive"
-    # archetype: every player has the same utility shape. The distinction
-    # made in earlier drafts ("nominal cost only") has been removed.
-    return PlayerProfile(name=name, B=B, C=C)
+def naive_player(name: str, w: float = 1.0, eps_max: float = 64.0) -> PlayerProfile:
+    # There is no separate "naive" archetype at the utility level: every
+    # player has the same utility shape. The distinction between contract-
+    # only-aware and mechanism-aware players is one of information, not of
+    # utility.
+    return PlayerProfile(name=name, w=w)

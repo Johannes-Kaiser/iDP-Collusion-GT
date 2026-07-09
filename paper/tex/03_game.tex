@@ -1,178 +1,165 @@
 \section{The Privacy Externality Game}
 \label{sec:game}
 
-We formalise the strategic situation faced by data contributors in
-sampling-based iDP as a normal-form game on a continuous action space. The
-formalisation is a direct extension of \citet{pejo2019together}'s two-player
-Collaborative-Learning game, with the central modification that the
-\emph{privacy} cost is no longer separable across players.
+We formalise the strategic situation faced by data contributors under
+sampling-based \ac{iDP} as a normal-form game on a continuous action space.
+The formalisation deliberately follows the two-player
+collaborative-learning template of \citet{pejo2019together}, with one
+central modification: the privacy cost is no longer separable across
+players, because the mechanism couples it.
 
-\subsection{Players, actions and mechanism}
+\subsection{Players, actions, and utilities}
 
 \begin{definition}[Privacy Externality Game]
-\label{def:peg}
-Fix a common $\delta>0$, an expected batch size $E_b$, an iteration count $I$,
-and a partition of the dataset into $n$ \emph{groups} of sizes
-$|G_1|,\dots,|G_n|$. The Privacy Externality Game (PEG) is the tuple
+\label[definition]{def:peg}
+Fix a common $\delta>0$, an expected batch size $B$, an iteration
+count $I$, and a partition of the dataset into $n$ groups of sizes
+$|G_1|,\dots,|G_n|$. The \acf{PEG} is the tuple
 $\langle N, \Sigma, U\rangle$ where:
 \begin{itemize}
-\item $N = \{1,\dots,n\}$ is the set of players. We adopt the FL-silo
-  granularity of \cite{kaiser2026your}: player $i$ is the entity controlling
-  group $i$ (a silo). For a single-silo single-budget formulation each
-  player picks a scalar $\eps_i$; the framework extends to per-record
-  distributions inside a silo, which we discuss in
-  \cref{sec:discussion}.
-\item Each player's action set is $\Sigma_i = [\eps^{\min}, \eps^{\max}]
-  \subset \R_{>0}$.
+\item $N = \{1,\dots,n\}$ is the set of players. We adopt the
+  federated-silo granularity of \cite{kaiser2026your}: player $i$ is
+  the entity controlling group $i$. Each player picks a single scalar
+  budget for their group; per-record budget distributions within a group
+  are an extension we discuss in \cref{sec:discussion}.
+\item Each player's action set is $\Sigma_i = [\eps^{\min},
+  \eps^{\max}] \subset \R_{>0}$.
 \item Given the action profile $\boldsymbol{\eps} \in \prod_i
-  \Sigma_i$, the mechanism solution
-  $(\sigma(\boldsymbol{\eps}), p_1(\boldsymbol{\eps}),\dots,
-  p_n(\boldsymbol{\eps}))$ is determined by Definition~\ref{def:sampling-idp}.
+  \Sigma_i$, the mechanism solution $(\sigma(\boldsymbol{\eps}),
+  p_1(\boldsymbol{\eps}),\dots, p_n(\boldsymbol{\eps}))$ is determined
+  by \cref{def:sampling-idp}.
 \item Each player's utility is
   \begin{equation}
   u_i(\boldsymbol{\eps}) \;=\;
-  B_i\cdot V(\sigma(\boldsymbol{\eps}))
+  V(\sigma(\boldsymbol{\eps}))
   \;-\;
-  C_i\cdot A_i(\boldsymbol{\eps}),
+  \lambda_i\cdot \Apld{i}(\boldsymbol{\eps}),
   \label{eq:utility}
   \end{equation}
-  with $B_i, C_i > 0$.
+  where $\lambda_i > 0$ is the player's utility/privacy weight of
+  \cref{sec:idp}, pricing a unit of realised \ac{MIA} advantage on
+  their own data against a unit of model quality.
 \end{itemize}
 \end{definition}
 
-In the numerical evaluation we discretise $[\eps^{\min},\eps^{\max}]$ on a
-log-spaced grid of $K=22$ points; we verify our equilibrium results are
-stable to refinement.
+\begin{definition}[Vulnerability function]
+\label[definition]{def:vulnerability}
+The \emph{vulnerability function} of player $i$ is $\Apld{i}\colon
+\prod_i\Sigma_i \to [0, 1]$, $\boldsymbol{\eps} \mapsto
+\Adv\bigl(\mathcal{M}_{p_i(\boldsymbol{\eps}),\,\sigma(\boldsymbol{\eps}),\,I}\bigr)$,
+the tight analytical \ac{MIA} advantage~\eqref{eq:adv} of the $I$-fold
+$(p_i, \sigma)$-subsampled Gaussian.
+\end{definition}
 
-\subsection{The two ingredients of utility}
+In the hierarchy \eqref{eq:hierarchy}, $\Apld{i}$ is a level-2 object:
+the mechanism-specific supremum over all adversaries against the
+mechanism actually solved for at the profile---a true bound on what
+any attacker can extract there, unlike the mechanism-agnostic level-1
+ceiling written in player $i$'s contract, and unlike the outcome of
+any particular attack.
+It is the advantage measure of \citet{kaiser2026your} transferred
+unchanged to a strategic setting. Its dependence on
+$\boldsymbol{\eps}$ runs entirely through $(p_i, \sigma)$, both of
+which the mechanism's constraints (Budget) and (Batch) determine from
+the whole budget vector; this coupling is the externality.
 
-Utility has two pieces: a shared model-quality term and a per-player
-privacy cost. For the model-quality term we use
+\paragraph{The model-quality term.} For $V$ we use
 \begin{equation}
 V(\sigma) \;=\; \frac{1}{1 + \sigma^2},
 \label{eq:V}
 \end{equation}
-which is monotone-decreasing in the noise multiplier $\sigma$, bounded in
-$[0, 1]$, and motivated by the convex-DP-ERM excess-empirical-risk bound
-of \citet{bassily2014private}: for a Lipschitz strongly-convex loss the
-excess empirical risk of DP-SGD scales as $O(d \log(1/\delta)/(n\eps)^2)$,
-which under the moments accountant of \citet{abadi2016deep} translates
-into a $\sigma^2/n^2$ dependence. The bound is proven in the convex
-setting, while deep-learning DP-SGD is generally non-convex; we therefore
-use \eqref{eq:V} as a directional proxy. The empirical literature on
-DP-SGD in deep learning~\cite{tramer2021private, abadi2016deep,
-boenisch2023have} reports monotonic degradation of test accuracy with
-$\sigma$, supporting the qualitative form. None of the equilibrium
-results that follow depend on the precise shape of $V$, only on its being
-continuous, monotone-decreasing in $\sigma$, and bounded.
-
-For the privacy cost, we use the tight analytical MIA advantage of the
-$I$-fold $(p_i, \sigma)$-subsampled Gaussian, defined in~\eqref{eq:adv}.
-This is the advantage measure of \citet{kaiser2026your} and transfers
-their empirical measurement to a strategic setting unchanged. The
-functional dependence $A_i(\boldsymbol{\eps})$ runs through $(p_i,
-\sigma)$, both of which are determined by the entire vector
-$\boldsymbol{\eps}$ via the mechanism's constraints (C1) and (C2). This
-coupling is the source of the externality.
-
-\subsection{Decomposition into contracted and excess cost}
-\label{sec:decomposition}
-
-The privacy cost $A_i(\boldsymbol{\eps})$ in~\eqref{eq:utility} can be
-decomposed into a contracted (separable) part and an excess (coupled) part
-that makes the externality explicit. Let $\bar c(\eps_i)$ denote the
-MIA advantage of a reference, non-interdependent $(\eps_i, \delta)$-DP
-mechanism (e.g., the post-processing-tight $(\eps_i,\delta)$-DP advantage
-upper bound $(e^{\eps_i}-1+2\delta)/(e^{\eps_i}+1)$ of
-\cite{hayes2024bullseye, kaissis2024beyond}). The realised cost is
-\begin{equation}
-A_i(\boldsymbol{\eps}) \;=\; \bar c(\eps_i) - \mathrm{slack}_i(\boldsymbol{\eps}),
-\label{eq:decomp}
-\end{equation}
-where the \emph{slack} $\mathrm{slack}_i(\boldsymbol{\eps}) := \bar c(\eps_i)
-- A_i(\boldsymbol{\eps}) \geq 0$ is the amount by which the realised
-advantage falls below the worst-case-bound at $(\eps_i, \delta)$. In
-sampling-based iDP this slack is a function of the entire $\boldsymbol{\eps}$
-through the mechanism's coupling. \emph{The externality reduces the slack:}
-when others lower their $\eps_j$, $\mathrm{slack}_i$ shrinks (player $i$
-moves closer to its $(\eps_i, \delta)$-DP worst case). This is the formal
-quantity that the proposed $(\eps_i, \delta, \Delta)$-iDP
-contract~\cite{kaiser2026your, kaissis2024beyond} would cap: it would
-require $\mathrm{slack}_i$ to differ from a baseline reference by at most
-$\Delta$. In this sense, \emph{the $\Delta$-bound is exactly the device that
-neutralises the externality}.
-
-We will work directly with $A_i$ in the utility~\eqref{eq:utility} for
-analytical simplicity; the decomposition matters as a conceptual bridge to
-PoP~\cite{pejo2019together} (whose cost $c(p_i)$ was separable, hence
-$\mathrm{slack}_i$ did not exist) and to the iDP literature
-\cite{kaiser2026your} (where $\mathrm{slack}_i$ \emph{is} the new
-externality term).
-
-\subsection{Vulnerability function and feasibility}
-
-\begin{definition}[Vulnerability function]
-\label{def:vulnerability}
-The \emph{vulnerability function} of player $i$ is $A_i\colon
-\prod_i\Sigma_i \to [0, 1]$, $\boldsymbol{\eps} \mapsto
-\Adv\bigl(\mathcal{M}_{p_i(\boldsymbol{\eps}),\,\sigma(\boldsymbol{\eps}),\,I}\bigr)$.
-\end{definition}
+monotone-decreasing in the noise multiplier and bounded in $[0,1]$.
+The shape is motivated by the excess-empirical-risk bound of
+\citet{bassily2014private} for convex DP-ERM, which under the moments
+accountant of \citet{abadi2016deep} translates into a $\sigma^2$
+dependence of the excess risk (\cref{app:V}); in the potentially
+non-convex deep-learning regime we use it as a directional proxy,
+consistent with the monotone accuracy degradation reported
+empirically~\cite{tramer2021private, abadi2016deep, boenisch2023have}.
+None of our results hinge on this choice:
+\cref{prop:V-invariance} shows that every load-bearing statement holds
+for any $V$ that is continuous, strictly decreasing, and bounded on
+the feasible noise range, and \cref{app:v-shape} verifies numerically
+that the equilibrium structure is unchanged under six qualitatively
+different shapes.
 
 \begin{assumption}[Participation]
-\label{ass:participation}
-A profile $\boldsymbol{\eps}$ is \emph{feasible} if and only if the mechanism
-solution satisfies $p_i(\boldsymbol{\eps}) > 0$ for every player $i$.
+\label[assumption]{ass:participation}
+A profile $\boldsymbol{\eps}$ is \emph{feasible} iff the mechanism
+solution satisfies $p_i(\boldsymbol{\eps}) > 0$ for every player.
 Profiles with $p_i = 0$ correspond to a player whose data never enters
-training; their iDP contract is satisfied trivially. We exclude such
-profiles from the game; equivalently, the action space $\Sigma_i$ is
-implicitly restricted at each move to the participating region.
+training; their contract holds trivially and we exclude such profiles,
+restricting each action set to the participating region.
 \end{assumption}
+
+\subsection{Contracted versus excess cost}
+\label{sec:decomposition}
+
+The slack of \cref{sec:mia}, instantiated per player, separates the
+vulnerability into a contracted part and a played part:
+\begin{equation}
+\Apld{i}(\boldsymbol{\eps}) \;=\; A_{\eps_i,\delta}
+- \mathrm{slack}_i(\boldsymbol{\eps}),
+\qquad
+\mathrm{slack}_i(\boldsymbol{\eps}) \;\geq\; 0.
+\label{eq:decomp}
+\end{equation}
+The two terms have different owners. The level-1 ceiling
+$A_{\eps_i,\delta}$ depends on player $i$'s budget alone---it is
+written in their contract---while the slack is a function of the
+entire profile. The externality therefore lives exclusively between
+levels 1 and 2 of \eqref{eq:hierarchy}: when others tighten their
+budgets, $\mathrm{slack}_i$ shrinks and $\Apld{i}$ climbs toward the
+ceiling (\cref{prop:slack-monotonicity}); the $\Delta$-clause of
+\cref{sec:mitigation} caps exactly this movable term.
 
 \subsection{Coalition variant}
 
 \begin{definition}[$k$-coalition Stackelberg PEG]
-\label{def:coalition}
-Fix a target index $t \in N$ and a colluding subset $C \subset
-N\setminus\{t\}$ with $|C| = k$. The $k$-coalition Stackelberg PEG is the
-two-stage game in which:
-\begin{enumerate}
-\item Stage~1 (leader): the coalition jointly commits to an action vector
-$\boldsymbol{\eps}_C$ to maximise the augmented coalition utility
+\label[definition]{def:coalition}
+Fix a target $t \in N$ and a colluding subset $C \subset
+N\setminus\{t\}$ with $|C| = k$. The $k$-coalition Stackelberg \ac{PEG} is
+the two-stage game in which (i) the coalition jointly commits to an
+action vector $\boldsymbol{\eps}_C$ maximising the augmented utility
 \begin{equation}
 \sum_{i \in C} u_i(\boldsymbol{\eps}) \;+\;
-\lambda\, A_t(\boldsymbol{\eps}),
+\kappa\, \Apld{t}(\boldsymbol{\eps}),
 \label{eq:coalition-util}
 \end{equation}
-where $\lambda \geq 0$ is the \emph{malice weight} on the target's
-vulnerability~\cite{pejo2019together}. $\lambda = 0$ recovers the benign
-PEG; $\lambda \to \infty$ recovers the
-budget-manipulation attack of \citet{kaiser2026your}.
-\item Stage~2 (followers): the non-coalition players $\{t\} \cup (N
-\setminus (C \cup \{t\}))$ best-respond.
-\end{enumerate}
+with \emph{malice weight} $\kappa \geq 0$ on the target's
+vulnerability~\cite{pejo2019together}, and (ii) the remaining players
+best-respond. $\kappa = 0$ recovers the benign \ac{PEG}; $\kappa \to
+\infty$ recovers the budget-manipulation threat model of
+\citet{kaiser2026your}.
 \end{definition}
 
-\subsection{Equilibrium concepts}
+\subsection{Equilibrium concepts and information}
 
-We use the standard Nash equilibrium concept: an $\boldsymbol{\eps}^*$ in
-the feasible region such that $u_i(\eps_i^*, \boldsymbol{\eps}_{-i}^*) \geq
-u_i(\eps_i, \boldsymbol{\eps}_{-i}^*)$ for every player $i$ and every
-feasible deviation $\eps_i$. Existence of pure NE on the continuous action
-space is not automatic; we report pure NE found by brute search on a fine
-log-spaced grid and verify the result is stable under grid refinement.
-Where no pure NE exists on the dense grid we report the empirical mixed
-strategy reached by fictitious play~\cite{monderer1996potential}.
+We use pure Nash equilibrium on the feasible region as the primary
+solution concept. Existence on the continuous action space is not
+automatic---$u_i$ is not concave in $\eps_i$, so the classical
+quasi-concavity route~\cite{rosen1965existence, glicksberg1952further}
+does not apply; \cref{sec:existence} gives an order-theoretic
+existence result in the practically relevant regime. Numerically we
+enumerate pure \acp{NE} by brute force on a dense log-spaced grid
+$\mathcal{A}_K \subset [\eps^{\min}, \eps^{\max}]$ (a finite game, so
+a mixed \ac{NE} exists in any case~\cite{nash1950equilibrium}) and use
+fictitious play~\cite{monderer1996potential} where enumeration is out
+of reach.
 
-\begin{remark}[Awareness as information, not utility]
-\label{rem:awareness}
-A useful distinction is between players who can \emph{compute}
-$A_i(\boldsymbol{\eps})$ given the public mechanism's parameters and players
-who can only access their nominal $(\eps_i,\delta)$-iDP contract. Both
-populations face the same utility~\eqref{eq:utility}; they differ only in
-the rationality they apply. A \emph{nominal-information} (``naive'') player
-who treats the contracted bound $\bar c(\eps_i)$ as a separable cost plays
-the PoP game of \citet{pejo2019together} unchanged. An
-\emph{aware} player who computes $A_i(\boldsymbol{\eps})$ from the
-mechanism's parameters plays the PEG. We will return to this distinction in
-\cref{sec:discussion}.
+\begin{remark}[Awareness is information, not utility]
+\label[remark]{rem:awareness}
+Every player has the same utility \eqref{eq:utility}; what separates
+them is the level of the hierarchy \eqref{eq:hierarchy} at which they
+can price its cost term. A \emph{nominal-information} player sees
+only their own contract and therefore prices at level 1, taking the
+ceiling $A_{\eps_i,\delta}$ as their cost. That ceiling depends on
+their own budget alone, so their best response ignores
+$\boldsymbol{\eps}_{-i}$: they play the separable Price-of-Privacy
+game of \citet{pejo2019together} unchanged. An \emph{aware} player
+can compute $\Apld{i}(\boldsymbol{\eps})$ from the public mechanism
+parameters, prices at level 2, and plays the \ac{PEG}. The
+distinction matters for the attack analysis of \cref{sec:attacks}:
+the known attacks succeed against nominal-information targets, and
+awareness alone turns out to be a substantial defence.
 \end{remark}

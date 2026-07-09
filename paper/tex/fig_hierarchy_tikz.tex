@@ -1,0 +1,90 @@
+% Two-row advantage-hierarchy figure. Data computed by
+% tasks_findings/_scripts/28_hierarchy_tikz_data.py: profiles from the
+% dp_accounting PLD, trade-off curves the exact single-step subsampled-Gaussian
+% ROC, advantages verified against the Dong-Roth-Su (arXiv:1905.02383) closed
+% form; every mechanism verified to deliver its contract delta. Nothing is
+% drawn by hand. Row 1: (eps,delta)=(10,1e-12); row 2: (2,1e-12).
+% Included from tex/02_background.tex.
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=3 by 2, horizontal sep=1.25cm, vertical sep=1.15cm},
+  width=0.315\textwidth, height=3.9cm,
+  tick label style={font=\scriptsize},
+  label style={font=\footnotesize},
+  legend style={font=\tiny, draw=none, fill=none},
+  title style={font=\footnotesize},
+]
+%% ============ ROW 1: (eps,delta) = (10, 1e-12) ============
+\nextgroupplot[title={(a) privacy profiles},
+  ylabel={$(\varepsilon,\delta){=}(10,10^{-12})$\\[1pt]$\delta(\varepsilon)$},
+  ylabel style={align=center}, ymode=log, ymin=1e-13, ymax=3,
+  ytick={1e-12,1e-6,1e0}, xmin=0, xmax=12, legend pos=south west, legend cell align=left]
+\addplot[hierblue1,thick] table[x=eps,y=delta]{figures/data/hier_profile_1.dat}; \addlegendentry{$p{=}0.001$}
+\addplot[hierblue2,thick] table[x=eps,y=delta]{figures/data/hier_profile_2.dat}; \addlegendentry{$p{=}0.01$}
+\addplot[hierblue3,thick] table[x=eps,y=delta]{figures/data/hier_profile_3.dat}; \addlegendentry{$p{=}0.1$}
+\addplot[hierblue4,thick] table[x=eps,y=delta]{figures/data/hier_profile_4.dat}; \addlegendentry{$p{=}0.3$}
+\addplot[hierblue5,thick] table[x=eps,y=delta]{figures/data/hier_profile_5.dat}; \addlegendentry{$p{=}0.6$}
+\addplot[hierblue6,thick] table[x=eps,y=delta]{figures/data/hier_profile_6.dat}; \addlegendentry{$p{=}1$ (Gaussian)}
+\addplot[only marks,mark=*,mark size=1.4pt,color=hierorange] coordinates {(10,1e-12)};
+\addlegendentry{contract $(\varepsilon,\delta)$}
+\nextgroupplot[title={(b) trade-off curves}, ylabel={$T(\alpha)$},
+  xmin=0,xmax=1,ymin=0,ymax=1,width=3.9cm,height=3.9cm]
+\addplot[black!55,thin] coordinates {(0,1) (1,0)};
+\addplot[hierorange,densely dotted,very thick] table[x=alpha,y=beta]{figures/data/hier_tradeoff_env.dat};
+\foreach \k in {1,...,6} {\edef\temp{\noexpand\addplot[hierblue\k,thick] table[x=alpha,y=beta]{figures/data/hier_tradeoff_\k.dat};}\temp}
+\nextgroupplot[title={(c) advantage $\Adv$}, ylabel={$\Adv$}, ybar, bar width=7pt,
+  every axis plot/.append style={bar shift=0pt}, ymin=0,ymax=1.15, ytick={0,0.5,1},
+  xmin=0.4,xmax=7.6, xtick=\empty,
+  nodes near coords, nodes near coords style={font=\tiny,
+    /pgf/number format/fixed, /pgf/number format/precision=3, rotate=90, anchor=west}]
+\addplot[ybar,fill=hierblue1,draw=none] coordinates {(1,0.000773)};
+\addplot[ybar,fill=hierblue2,draw=none] coordinates {(2,0.006923)};
+\addplot[ybar,fill=hierblue3,draw=none] coordinates {(3,0.06)};
+\addplot[ybar,fill=hierblue4,draw=none] coordinates {(4,0.165734)};
+\addplot[ybar,fill=hierblue5,draw=none] coordinates {(5,0.312849)};
+\addplot[ybar,fill=hierblue6,draw=none] coordinates {(6,0.498084)};
+\addplot[ybar,fill=hierorange,draw=none] coordinates {(7,0.999909)};
+%% ============ ROW 2: (eps,delta) = (2, 1e-12) ============
+\nextgroupplot[ylabel={$(\varepsilon,\delta){=}(2,10^{-12})$\\[1pt]$\delta(\varepsilon)$},
+  ylabel style={align=center}, ymode=log, ymin=1e-13, ymax=3, ytick={1e-12,1e-6,1e0},
+  xmin=0, xmax=2.5, xlabel={$\varepsilon$}]
+\foreach \k in {1,...,6} {\edef\temp{\noexpand\addplot[hierblue\k,thick] table[x=eps,y=delta]{figures/data/hierD_profile_\k.dat};}\temp}
+\addplot[only marks,mark=*,mark size=1.4pt,color=hierorange] coordinates {(2,1e-12)};
+\nextgroupplot[ylabel={$T(\alpha)$}, xlabel={type-I error $\alpha$},
+  xmin=0,xmax=1,ymin=0,ymax=1,width=3.9cm,height=3.9cm]
+\addplot[black!55,thin] coordinates {(0,1) (1,0)};
+\addplot[hierorange,densely dotted,very thick] table[x=alpha,y=beta]{figures/data/hierD_tradeoff_env.dat};
+\foreach \k in {1,...,6} {\edef\temp{\noexpand\addplot[hierblue\k,thick] table[x=alpha,y=beta]{figures/data/hierD_tradeoff_\k.dat};}\temp}
+\nextgroupplot[ylabel={$\Adv$}, ybar, bar width=7pt, every axis plot/.append style={bar shift=0pt},
+  ymin=0,ymax=1.15, ytick={0,0.5,1}, xmin=0.4,xmax=7.6,
+  xtick={1,2,3,4,5,6,7}, xticklabels={{.001},{.01},{.1},{.3},{.6},{1},{$A_{\varepsilon,\delta}$}},
+  xlabel={subsampling rate $p$}, xticklabel style={font=\scriptsize, rotate=40, anchor=east},
+  nodes near coords, nodes near coords style={font=\tiny,
+    /pgf/number format/fixed, /pgf/number format/precision=3, rotate=90, anchor=west}]
+\addplot[ybar,fill=hierblue1,draw=none] coordinates {(1,0.000506)};
+\addplot[ybar,fill=hierblue2,draw=none] coordinates {(2,0.003787)};
+\addplot[ybar,fill=hierblue3,draw=none] coordinates {(3,0.024618)};
+\addplot[ybar,fill=hierblue4,draw=none] coordinates {(4,0.055014)};
+\addplot[ybar,fill=hierblue5,draw=none] coordinates {(5,0.087049)};
+\addplot[ybar,fill=hierblue6,draw=none] coordinates {(6,0.1182)};
+\addplot[ybar,fill=hierorange,draw=none] coordinates {(7,0.761594)};
+\end{groupplot}
+\end{tikzpicture}
+\caption{\textbf{The advantage hierarchy at two contract points}
+(top: $\eps = 10$, $\delta = 10^{-12}$, the paper's canonical
+setting; bottom: $\eps = 2$, $\delta = 10^{-12}$). Six
+Poisson-subsampled Gaussian mechanisms (blues), each calibrated by
+exact PLD accounting so that its privacy profile passes through the
+row's contract point (orange dot). \emph{(a)} Away from the shared
+point, the profiles differ by orders of magnitude. \emph{(b)} The
+exact trade-off curves $T(\alpha)$~\cite{dong2022gaussian}; the thin
+diagonal is no leakage, the dotted orange envelope $f_{\eps,\delta}$
+the mechanism-agnostic worst case. \emph{(c)} The realised advantages
+$A_{\mathrm{PLD}}$ sit far below the ceiling $A_{\eps,\delta}$
+(orange bar): up to $0.50$ versus ${\approx}1$ at the top contract,
+$0.12$ versus $0.76$ at the bottom. The contract alone neither
+determines nor tightly bounds the realised risk.}
+\label{fig:hierarchy}
+\end{figure*}

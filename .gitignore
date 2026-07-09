@@ -47,3 +47,26 @@ main.aux
 main.log
 paper/main.bbl
 paper/main.blg
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.aux.bak*
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/out/
+texput.log
+
+# experiment caches
+game_experiments/_cache_*/
+paper/game_experiments/
+
+# assistant working notes (not part of the deliverable)
+.knowledge/
+.tasks/
+EXPERIMENT_IDEAS.md
+EXTENSION_DIRECTIONS.md
+HERO_FIGURE_BRIEF.md
+NOVELTY_ACTION_PLAN.md
+NOVELTY_GAME_PLAN.md
+NOVELTY_REVIEW.md

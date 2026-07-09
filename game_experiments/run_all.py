@@ -56,16 +56,16 @@ def small_scenario(n: int, eps_max: float = 64.0,
     expected_batch = 128
     steps = int(5 * M / expected_batch)
     if awareness == "aware":
-        players = [aware_player(f"P{i}", B=1.0, C=1.0, eps_max=eps_max) for i in range(n)]
+        players = [aware_player(f"P{i}", w=1.0, eps_max=eps_max) for i in range(n)]
     elif awareness == "naive":
-        players = [naive_player(f"P{i}", B=1.0, C=1.0, eps_max=eps_max) for i in range(n)]
+        players = [naive_player(f"P{i}", w=1.0, eps_max=eps_max) for i in range(n)]
     else:  # mixed: half aware, half naive
         players = []
         for i in range(n):
             if i % 2 == 0:
-                players.append(aware_player(f"P{i}_A", B=1.0, C=1.0, eps_max=eps_max))
+                players.append(aware_player(f"P{i}_A", w=1.0, eps_max=eps_max))
             else:
-                players.append(naive_player(f"P{i}_N", B=1.0, C=1.0, eps_max=eps_max))
+                players.append(naive_player(f"P{i}_N", w=1.0, eps_max=eps_max))
     return make_n_player_game(
         players=players, group_sizes=[group_size] * n,
         expected_batch_size=expected_batch, steps=steps,

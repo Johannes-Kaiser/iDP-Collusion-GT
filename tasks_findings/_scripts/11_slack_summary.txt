@@ -1,0 +1,7 @@
+# T11 slack panel summary (K=200)
+# c_bar(eps) = (exp(eps) - 1 + 2 delta) / (exp(eps) + 1), delta = 1e-12
+# slack_i(eps_i, eps_j) = c_bar(eps_i) - A_i(eps_i, eps_j)
+# grid file: mech_grid_K200_g5000x5000_b128_e5.pkl
+
+eps_i (target)=4  eps_i (grid)=3.9722  c_bar=0.9630  feasible=163/200  slack in [0.7863, 0.9621]  median=0.8498  A in [0.0009, 0.1768]  non-decreasing pairs: 131/162 raw / 131/162 after excluding 0 isolated solver artefact(s); worst raw decrease: -0.01930
+eps_i (target)=16  eps_i (grid)=15.9444  c_bar=1.0000  feasible=138/200  slack in [0.5890, 0.9348]  median=0.6704  A in [0.0652, 0.4110]  non-decreasing pairs: 110/137 raw / 109/135 after excluding 1 isolated solver artefact(s); worst raw decrease: -0.28033

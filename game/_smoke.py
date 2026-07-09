@@ -6,8 +6,8 @@ from game.utility import aware_player
 
 def main():
     players = [
-        aware_player("P1", B=1.0, C=1.0, eps_max=32.0),
-        aware_player("P2", B=1.0, C=1.0, eps_max=32.0),
+        aware_player("P1", w=1.0, eps_max=32.0),
+        aware_player("P2", w=1.0, eps_max=32.0),
     ]
     game = make_n_player_game(
         players=players,

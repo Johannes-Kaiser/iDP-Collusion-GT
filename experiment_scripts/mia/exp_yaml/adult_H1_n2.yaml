@@ -1,0 +1,46 @@
+# T24 -- LiRA H1 config for the n=2 Privacy Externality Game.
+#
+# The findings doc originally targeted UCI Default of Credit Card Clients,
+# but the `credit_card_default` alias in
+# `Clipping_vs_Sampling/experiment_scripts/mia/utils/utils_general.py` fetches
+# OpenML `credit-g` (1000 rows), which cannot sustain a 5000-per-silo pool or
+# 128-shadow LiRA. The design substitutes Adult (36k train rows, tabular MLP,
+# binary classification) -- the drop-in replacement of least resistance.
+#
+# Consumed by `experiment_scripts/mia/04_mia_pergroup.py`. Per-profile
+# (sigma, p_1, p_2) come from the mechanism grid at
+# `game_experiments/_cache_H1/mechanism_grid.pkl` and are passed on the CLI;
+# the (budgets, portions) here are informational only (they document the
+# 5x5 action grid, not the mechanism-solver output).
+
+dataset: adult
+model: null            # -> defaults to 'mlp' via load_model / DATASETS_INFO
+lr: 0.01
+batchsize: 128         # matches expected_batch_size in the mechanism solver
+epochs: 60             # 60 x (10000/128) ~= 4680 DP-SGD steps total
+n_shadows: 128         # LiRA floor -- findings Section 2 (Carlini 2022 Fig. 3)
+n_targets: 128         # unused by 04_mia_pergroup.py; kept for cross-script compat
+pkeep: 0.5
+n_queries: 2
+private: true
+adapt_weights_to_budgets: false   # (sigma, p_g) fed via CLI, not derived from budgets
+accountant: rdp
+individualize: sampling
+weights: null
+target_delta: 1e-12
+max_grad_norm: 1.0
+portions:
+  - 0.5
+  - 0.5
+budgets:
+  - 2.0
+  - 32.0                # informational: the eps corners of the 5x5 grid
+n_parallel: 1
+disable_inner: true
+seed: 42
+train_and_save_models: true
+compute_and_save_logits: true
+compute_and_save_scores: true
+compute_and_save_stats: false
+plot_results: false
+test_model: true

@@ -1,7 +1,7 @@
 """
-Continuous-action experiments for the rewritten Privacy Externality Game.
+Continuous-action experiments for the Privacy Externality Game.
 
-Utility:  u_i = B_i * V(sigma(eps_vec))  -  C_i * A_i(eps_vec)
+Utility:  u_i = V(sigma(eps_vec))  -  w_i * A_i(eps_vec)
           V(sigma) = 1 / (1 + sigma**2)   (Bassily 2014 / sigma^2-loss frame)
 Action set:  log-spaced grid of K points in [eps_min, eps_max], default K=22.
 Feasibility:  every group must have p_i >= 1e-5 in the mechanism solution.
@@ -12,7 +12,6 @@ Experiments:
   C3:  n-player BR dynamics (n in {3,4,5}, coarser grid)
   C4:  k-coalition Stackelberg attack
   C5:  privacy-externality 3D surface (target eps fixed, others' eps + proportion swept)
-  C6:  effect of awareness (BELIEF asymmetry, not utility shape) -- discussed in paper
 """
 from __future__ import annotations
 
@@ -54,13 +53,13 @@ KGRID = 22       # used for the heavy C1 sweep (already cached)
 KGRID_FAST = 9   # used for multi-ratio sweeps (no cross-ratio cache reuse)
 
 
-def make_2player(group_sizes=(5000, 5000), B=(1.0, 1.0), C=(1.0, 1.0),
+def make_2player(group_sizes=(5000, 5000), w=(1.0, 1.0),
                   K=KGRID, eps_min=EPS_MIN, eps_max=EPS_MAX) -> ContinuousGame:
     M = sum(group_sizes)
     expected_batch = 128
     steps = int(5 * M / expected_batch)
-    players = (PlayerProfile("P1", B=B[0], C=C[0]),
-               PlayerProfile("P2", B=B[1], C=C[1]))
+    players = (PlayerProfile("P1", w=w[0]),
+               PlayerProfile("P2", w=w[1]))
     return ContinuousGame(
         players=players, group_sizes=group_sizes,
         expected_batch_size=expected_batch, steps=steps, delta=DELTA,
@@ -69,12 +68,12 @@ def make_2player(group_sizes=(5000, 5000), B=(1.0, 1.0), C=(1.0, 1.0),
 
 
 def make_n_player(n: int, group_size: int = 5000,
-                   B: float = 1.0, C: float = 1.0,
+                   w: float = 1.0,
                    K: int = 12, eps_min=EPS_MIN, eps_max=EPS_MAX) -> ContinuousGame:
     M = group_size * n
     expected_batch = 128
     steps = int(5 * M / expected_batch)
-    players = tuple(PlayerProfile(f"P{i}", B=B, C=C) for i in range(n))
+    players = tuple(PlayerProfile(f"P{i}", w=w) for i in range(n))
     return ContinuousGame(
         players=players, group_sizes=tuple([group_size] * n),
         expected_batch_size=expected_batch, steps=steps, delta=DELTA,
@@ -116,7 +115,7 @@ def experiment_C1():
     titles = [
         (U_plot[:, :, 0], r"$u_1(\varepsilon_1, \varepsilon_2)$", "Blues"),
         (data["br1"], "Best-response curves", None),
-        (A_plot[:, :, 0], r"$A_1(\varepsilon_1, \varepsilon_2)$", "Oranges"),
+        (A_plot[:, :, 0], r"realised advantage $A_1$", "Oranges"),
     ]
     for ax, (M, title, cmap) in zip(axes, titles):
         if title == "Best-response curves":
@@ -331,8 +330,8 @@ def experiment_C5():
                         continue
                     M = g_tgt + g_other
                     steps = int(5 * M / expected_batch)
-                    players = (PlayerProfile("T", 1, 1),
-                                PlayerProfile("O", 1, 1))
+                    players = (PlayerProfile("T", w=1.0),
+                                PlayerProfile("O", w=1.0))
                     g = ContinuousGame(
                         players=players,
                         group_sizes=(g_tgt, g_other),

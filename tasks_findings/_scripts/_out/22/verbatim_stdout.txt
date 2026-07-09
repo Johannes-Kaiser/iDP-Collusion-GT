@@ -1,0 +1,62 @@
+======================================================================
+(0) Symbolic Roughgarden smoothness gap for the PEG
+======================================================================
+SW(s^opt)         = -A^{opt}_1*w_1 - A^{opt}_2*w_2 + 2*V(sigma_opt)
+SW(s)             = -A^{s}_1*w_1 - A^{s}_2*w_2 + 2*V(sigma_s)
+dev_sum LHS       = -A^{1d}_1*w_1 - A^{2d}_2*w_2 + V(sigma^{1d}) + V(sigma^{2d})
+gap (RHS - LHS)   = A^{1d}_1*w_1 + A^{2d}_2*w_2 - A^{opt}_1*lambda*w_1 - A^{opt}_2*lambda*w_2 + A^{s}_1*mu*w_1 + A^{s}_2*mu*w_2 + 2*lambda*V(sigma_opt) - 2*mu*V(sigma_s) - V(sigma^{1d}) - V(sigma^{2d})
+
+V-part (V-side of the gap):
+   2*lambda*V(sigma_opt) - 2*mu*V(sigma_s) - V(sigma^{1d}) - V(sigma^{2d})
+A-part (A-side of the gap):
+   A^{1d}_1*w_1 + A^{2d}_2*w_2 - A^{opt}_1*lambda*w_1 - A^{opt}_2*lambda*w_2 + A^{s}_1*mu*w_1 + A^{s}_2*mu*w_2
+(V-part + A-part - gap) = 0   (must be 0)
+
+Interpretation.
+  The V-part is negative iff
+     V(sigma_d1) + V(sigma_d2)
+       >= 2*lambda*V(sigma_opt) - 2*mu*V(sigma_s).
+  Because V is monotone-decreasing and sigma_d_k <= sigma_s at every
+  unilateral deviation to opt (increasing one player's eps drops sigma
+  by lem:externality), V(sigma_d_k) >= V(sigma_s), so the V-part
+  admits the (crude) sufficient condition
+     2*V(sigma_s) >= 2*lambda*V(sigma_opt) - 2*mu*V(sigma_s)
+     <=> V(sigma_s) * (1 + mu) >= lambda*V(sigma_opt).
+  This is trivially satisfied when V(s) = V(opt) and mu >= lambda - 1.
+
+  The A-part is negative iff
+     w_1 * A^{1d}_1 + w_2 * A^{2d}_2
+       <= lambda*(w_1 A^{opt}_1 + w_2 A^{opt}_2)
+          - mu*(w_1 A^{s}_1 + w_2 A^{s}_2).
+  This is the hard direction: A^{1d}_1 = A_1(opt_1, s_2), and
+  when s_2 is small (adversarial coalition), the externality on
+  player 1 makes A^{1d}_1 LARGE even though player 1 is playing opt_1.
+  See Section 3 of the findings note for the analytic bound.
+
+
+======================================================================
+(1) K=200 mechanism grid loaded: 200x200 cells, 25838 feasible
+
+======================================================================
+(2) C1 smoothness scan (w1 = w2 = 1)
+======================================================================
+  OPT idx    = (124, 133), eps=(10.280289912962557, 12.802839931045074)
+  SW(OPT)    = 1.5969
+  pure NEs   = 48
+  worst NE SW= 0.7152
+  best NE SW = 1.5969
+  SW(OPT) / worst-NE-SW = 2.233
+  min deficit over lambda,mu grid = -0.07415
+  best grid (lambda, mu, PoA_bound=(1+mu)/lambda) = (0.050, 0.000, 20.000)
+  ANALYTIC best over the frontier lambda_max(mu):
+    lambda=0.0706  mu=0.3600  PoA_bound=(1+mu)/lambda=19.274
+
+======================================================================
+(3) C7 symmetric-w sweep
+======================================================================
+  w=0.125  n_NE=35  SW(OPT)= 1.690  worst_NE_SW= 1.534  SW-ratio(OPT/worst-NE)=  1.10  analytic lambda=0.089 mu=0.150 PoA<=12.870
+  w=0.250  n_NE=40  SW(OPT)= 1.646  worst_NE_SW= 1.292  SW-ratio(OPT/worst-NE)=  1.27  analytic lambda=0.153 mu=1.010 PoA<=13.123
+  w=0.500  n_NE=48  SW(OPT)= 1.630  worst_NE_SW= 1.005  SW-ratio(OPT/worst-NE)=  1.62  analytic lambda=0.169 mu=1.470 PoA<=14.650
+  w=1.000  n_NE=48  SW(OPT)= 1.597  worst_NE_SW= 0.715  SW-ratio(OPT/worst-NE)=  2.23  analytic lambda=0.071 mu=0.360 PoA<=19.274
+  w=2.000  n_NE=52  SW(OPT)= 1.531  worst_NE_SW= 0.131  SW-ratio(OPT/worst-NE)= 11.70  analytic lambda=-0.271 mu=0.000 PoA<=inf
+  w=4.000  n_NE=18  SW(OPT)= 1.400  worst_NE_SW=-0.021  SW-ratio(OPT/worst-NE)=   nan  analytic lambda=-1.467 mu=0.000 PoA<=inf

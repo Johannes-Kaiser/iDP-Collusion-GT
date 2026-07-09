@@ -77,6 +77,75 @@ def fictitious_play(game: Game, n_rounds: int = 200,
     return freqs, history
 
 
+def fictitious_play_mc(
+    game: Game,
+    n_rounds: int = 200,
+    n_samples_per_round: int = 32,
+    start: Sequence[float] | None = None,
+    seed: int = 0,
+) -> Tuple[np.ndarray, List[Tuple[float, ...]]]:
+    """Monte-Carlo fictitious play for large n.
+
+    Same interface as :func:`fictitious_play`. Instead of enumerating the
+    K^{n-1} joint of the other players' empirical mixed strategies, we draw
+    ``n_samples_per_round`` i.i.d. joint samples from that empirical
+    distribution and estimate the expected utility by Monte Carlo. Draws
+    that land on an infeasible profile are dropped from the average.
+
+    Complexity per player per round is ``K * n_samples_per_round`` calls to
+    ``game.evaluate`` (which is itself cached, so all repeats over the
+    history reuse the mechanism solve).
+    """
+    rng = np.random.default_rng(seed)
+    actions = list(game.cfg.actions)
+    n = game.n
+    K = len(actions)
+    counts = np.zeros((n, K), dtype=int)
+    if start is None:
+        start = [actions[K // 2]] * n
+    last = list(start)
+    history: List[Tuple[float, ...]] = [tuple(last)]
+    for i_a, a in enumerate(last):
+        counts[i_a, actions.index(a)] += 1
+    for t in range(n_rounds):
+        new = list(last)
+        for i in range(n):
+            others_idx = [j for j in range(n) if j != i]
+            probs = np.stack([counts[j] / max(counts[j].sum(), 1) for j in others_idx], axis=0)
+            # Pre-draw n_samples joint action indices for the other players.
+            # shape: (n_samples, n-1)
+            draws = np.stack([
+                rng.choice(K, size=n_samples_per_round, p=probs[k])
+                for k in range(len(others_idx))
+            ], axis=1) if others_idx else np.zeros((n_samples_per_round, 0), dtype=int)
+            best_u = -np.inf
+            best_a = last[i]
+            for ai in actions:
+                expected_u = 0.0
+                weight = 0
+                for s in range(n_samples_per_round):
+                    eps_vec = list(last)
+                    eps_vec[i] = ai
+                    for slot_pos, slot in enumerate(others_idx):
+                        eps_vec[slot] = actions[int(draws[s, slot_pos])]
+                    ev = game.evaluate(eps_vec)
+                    if not ev.feasible:
+                        continue
+                    expected_u += float(ev.utilities[i])
+                    weight += 1
+                if weight > 0:
+                    expected_u /= weight
+                if expected_u > best_u:
+                    best_u = expected_u
+                    best_a = ai
+            new[i] = best_a
+            counts[i, actions.index(best_a)] += 1
+        last = new
+        history.append(tuple(last))
+    freqs = counts / counts.sum(axis=1, keepdims=True)
+    return freqs, history
+
+
 def payoff_grid_2player(game: Game) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """For a 2-player game, return the (K, K, 2) utility array, advantages, and
     sigma grid."""

@@ -1,0 +1,7 @@
+# T27 advantage hierarchy on H1 profile 18 (eps=(16,16))
+mechanism: sigma=0.8027 p=0.01294 I=4680 delta=1e-12 eps_realised=15.9947
+A_(eps,delta) (worst case at contract) = 1.000000
+A_PLD (optimal adversary, modelled mechanism) = 0.5799
+A_LiRA pooled-ROC advantage = 0.0097 (AUC 0.5036)
+A_LiRA mean per-record advantage (payoff-matrix statistic) = 0.1103
+wrote /vol/miltank/users/kaiserj/Collusion_Gametheory/paper/figures/fig_advantage_hierarchy.pdf

@@ -1,0 +1,10 @@
+# T28 hierarchy TikZ data (exact ROC trade-off): contract eps0=10, delta0=1e-12, PLD disc=0.0001
+check: Gaussian mu=1.3430 ROC adv=0.4981 vs closed 0.4981 (|diff|=1.3e-13)
+mech 1: p=0.001 I=1 -> sigma=0.41392, delta(eps0)=1.0001e-12 (rel 0.0001), Adv=0.0008 (delta(0)=0.0008)
+mech 2: p=0.01 I=1 -> sigma=0.49021, delta(eps0)=1.0000e-12 (rel 0.0000), Adv=0.0069 (delta(0)=0.0069)
+mech 3: p=0.1 I=1 -> sigma=0.59409, delta(eps0)=9.9995e-13 (rel 0.0001), Adv=0.0600 (delta(0)=0.0600)
+mech 4: p=0.3 I=1 -> sigma=0.65833, delta(eps0)=9.9998e-13 (rel 0.0000), Adv=0.1657 (delta(0)=0.1657)
+mech 5: p=0.6 I=1 -> sigma=0.70564, delta(eps0)=1.0000e-12 (rel 0.0000), Adv=0.3128 (delta(0)=0.3128)
+mech 6: p=1 I=1 -> sigma=0.74463, delta(eps0)=9.9997e-13 (rel 0.0000), Adv=0.4981 (delta(0)=0.4981)
+envelope: A_(eps,delta) = 0.999909
+advantage spread: [0.001, 0.498]

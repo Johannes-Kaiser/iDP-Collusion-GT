@@ -1,0 +1,68 @@
+\section{Discussion and Conclusion}
+\label{sec:discussion}
+
+Our work reframes the known fragility of sampling-based \ac{iDP}: the
+excess vulnerability that prior work attributed to adversaries is what
+rational play produces on its own. The Privacy Externality Game admits
+no symmetric pure equilibrium among symmetric players: the diagonal
+is a trough of each player's own utility, deviations from it are
+self-reinforcing because budgets are strategic substitutes, and the
+only symmetric equilibrium is a mixed lottery over who is exposed
+(proven for two players at interior profiles, corroborated
+numerically beyond). At every pure equilibrium
+someone carries the redistributed risk, heterogeneous preferences sort
+the exposed role onto whoever values privacy least, and the coalition
+attack of \citet{kaiser2026your} is the coordinated limit of the same
+incentive. The phenomenon is a property of the sampling-based
+realisation---its sensitivity-based sibling, replayed through the
+identical game, has a unique symmetric equilibrium---and its practical
+bite is carried by attack power: at the measurement floor the
+strategic pressure vanishes; against the strongest adversary the
+deployed mechanism admits---the level any risk assessment must
+price---it does not.
+
+\paragraph{Limitations.} Four boundaries of the analysis are worth
+stating plainly. First, the one-shot game assumes full information
+and simultaneous play; our repeated Bayesian extension
+(\cref{sec:brpeg}, \cref{app:bayesian}) covers a myopic follower and
+a learning leader, but the fully two-sided repeated game---a target
+who manages what their actions reveal~\cite{aumann1995repeated}---and
+finite-horizon regret rates in the style of
+\citet{balcan2015commitment} remain open. Second, our players are
+silos choosing scalar budgets; per-record budget distributions within
+a silo, and the granularity question they raise, are untreated.
+Third, the continuous-action existence theorem covers the small-$p$
+regime that \ac{DPSGD} occupies, not the saturation corner; and on coarse
+grids the $n$-player symmetric game can pin fictitious play to the
+diagonal (\cref{sec:H3}), so the $n \geq 3$ analogue of
+\cref{prop:no-symmetric-ne} is conjectural. Fourth, our single
+measured instance (\cref{sec:H1}) sits at the \ac{LiRA} measurement floor;
+a measured instance with above-floor attack power is the missing
+experiment between the analytical game and deployment reality.
+
+\paragraph{Open questions.} Beyond closing those gaps: does the
+$\Delta$-restricted game of \cref{prop:delta-neutralisation} admit a
+unique (ideally symmetric) equilibrium, and at what model-utility
+cost? Is there a budget-coordination mechanism that keeps
+sampling-based \ac{iDP}'s utility advantage while provably removing the
+externality---or is the sensitivity-based realisation's symmetric
+equilibrium the price of strategic neutrality? And what should a
+contributor-facing contract disclose: our aware-target result
+(\cref{sec:H4}) says the coupling itself is the single most valuable
+fact a contributor can know, which turns disclosure design into a
+security control.
+
+\paragraph{Conclusion.} Individual differential privacy promises that
+each contributor controls their own risk. Under the sampling-based
+realisation the promise fails not only against adversaries but at
+equilibrium: risk is redistributed by rational play, invisibly to
+every individual contract. In the hierarchy \eqref{eq:hierarchy}, the
+contract is written at the mechanism-agnostic first level; the
+redistribution takes place at the mechanism-specific second
+level---the true bound on what any adversary can extract from the
+deployed mechanism, which every player's choice moves and no
+contract states; and any deployed attack realises some fraction of
+that bound at the third. The remedy is not to police the
+players but to complete the contract---bound the externality itself,
+so that what each contributor is promised is what, whatever everyone
+else does, they get.

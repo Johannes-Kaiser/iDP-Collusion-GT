@@ -5,10 +5,10 @@ Two players, H (honest, fixed type theta_H) and M (malicious, knows the
 mechanism but does not initially know theta_H). Per round:
 
   1. M picks (eps_M, n_M) from a policy.
-  2. H best-responds with eps_H given its type theta_H = (B_H, C_H).
+  2. H best-responds with eps_H given her type theta_H = (w_H, n_H).
   3. Mechanism returns (sigma, p_H, p_M, A_H, A_M).
   4. M observes (eps_H, u_H) and updates a posterior over theta_H.
-  5. M accrues  A_H ;  H accrues  u_H = B_H V(sigma) - C_H A_H.
+  5. M accrues  A_H ;  H accrues  u_H = V(sigma) - w_H A_H.
 
 We provide:
   * ContinuousGame-style mechanism wrappers,
@@ -68,7 +68,7 @@ def play_one(eps_H: float, eps_M: float, n_H: int, n_M: int,
 # H's best response. H is myopic: picks the eps_H that maximises one-shot u_H.
 # -----------------------------------------------------------------------------
 
-def H_best_response(B_H: float, C_H: float, eps_M: float, n_H: int, n_M: int,
+def H_best_response(w_H: float, eps_M: float, n_H: int, n_M: int,
                      eps_grid: np.ndarray, expected_batch: int, steps: int,
                      delta: float) -> Tuple[float, dict]:
     best_u = -np.inf
@@ -79,7 +79,7 @@ def H_best_response(B_H: float, C_H: float, eps_M: float, n_H: int, n_M: int,
                         expected_batch, steps, delta)
         if not res["feasible"]:
             continue
-        u_H = B_H * value_fn(res["sigma"]) - C_H * res["A_H"]
+        u_H = value_fn(res["sigma"]) - w_H * res["A_H"]
         if u_H > best_u:
             best_u = u_H
             best_eps = float(eps_H)
@@ -93,12 +93,11 @@ def H_best_response(B_H: float, C_H: float, eps_M: float, n_H: int, n_M: int,
 
 @dataclass
 class ThetaH:
-    B: float
-    C: float
+    w: float
     n: int
 
     def __repr__(self):
-        return f"theta_H(B={self.B:g}, C={self.C:g}, n={self.n})"
+        return f"theta_H(w={self.w:g}, n={self.n})"
 
 
 @dataclass
@@ -138,7 +137,7 @@ def strategy_posterior_greedy(eps_M_grid: np.ndarray, n_M: int,
                     continue
                 # Predict H's BR for this theta
                 eps_H_br, res = H_best_response(
-                    B_H=theta.B, C_H=theta.C, eps_M=float(eps_M),
+                    w_H=theta.w, eps_M=float(eps_M),
                     n_H=theta.n, n_M=int(n_M),
                     eps_grid=cfg.eps_grid,
                     expected_batch=cfg.expected_batch,
@@ -168,7 +167,7 @@ def posterior_update(posterior, eps_M, n_M, eps_H_obs, u_H_obs, cfg):
         if posterior[k] < 1e-9:
             continue
         eps_H_pred, res = H_best_response(
-            B_H=theta.B, C_H=theta.C, eps_M=float(eps_M),
+            w_H=theta.w, eps_M=float(eps_M),
             n_H=theta.n, n_M=int(n_M),
             eps_grid=cfg.eps_grid,
             expected_batch=cfg.expected_batch,
@@ -176,7 +175,7 @@ def posterior_update(posterior, eps_M, n_M, eps_H_obs, u_H_obs, cfg):
         )
         if not res.get("feasible", False):
             continue
-        u_H_pred = theta.B * value_fn(res["sigma"]) - theta.C * res["A_H"]
+        u_H_pred = value_fn(res["sigma"]) - theta.w * res["A_H"]
         # Likelihood: Gaussian on the predicted (eps_H, u_H) vs observed.
         # Use log-space eps comparison since eps is log-spaced.
         d_eps = np.log(max(eps_H_pred, 1e-3)) - np.log(max(eps_H_obs, 1e-3))
@@ -212,7 +211,7 @@ def simulate(theta_H_true: ThetaH, m_policy: Callable, cfg: GameConfig,
         eps_M_t, n_M_t = m_policy(history, posterior, cfg)
         # 2. H best-responds
         eps_H_t, res_H = H_best_response(
-            B_H=theta_H_true.B, C_H=theta_H_true.C, eps_M=eps_M_t,
+            w_H=theta_H_true.w, eps_M=eps_M_t,
             n_H=theta_H_true.n, n_M=n_M_t,
             eps_grid=cfg.eps_grid, expected_batch=cfg.expected_batch,
             steps=cfg.steps, delta=cfg.delta,
@@ -227,7 +226,7 @@ def simulate(theta_H_true: ThetaH, m_policy: Callable, cfg: GameConfig,
                                   posterior_before=posterior.copy()))
             continue
         # 3. Reveal
-        u_H_t = theta_H_true.B * value_fn(res_H["sigma"]) - theta_H_true.C * res_H["A_H"]
+        u_H_t = value_fn(res_H["sigma"]) - theta_H_true.w * res_H["A_H"]
         # 4. M's posterior update
         post_before = posterior.copy()
         posterior = posterior_update(

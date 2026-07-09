@@ -41,7 +41,7 @@ def main():
         r"\caption{Pure Nash equilibria of the symmetric 2-player PEG on the "
         r"log-spaced action grid $\mathcal{A}_K = $ 22 points in $[0.5, 64]$, "
         r"$|G_1|=|G_2|=5000$, $E_b=128$, $5$ epochs, $\delta=10^{-12}$, "
-        r"$B_i = C_i = 1$, $V(\sigma) = 1/(1+\sigma^2)$. Social optimum is "
+        r"$w_i = 1$, $V(\sigma) = 1/(1+\sigma^2)$. Social optimum is "
         r"the feasible action profile maximising $u_1+u_2$.}",
         r"\label{tab:NE}",
         r"\begin{tabular}{lcccc}",

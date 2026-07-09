@@ -50,10 +50,12 @@ def main():
     delta = 1e-12
 
     # Type set for H -- M does not know which one is true.
+    # w is the player's privacy weight: larger w means she weights privacy
+    # more relative to model utility.
     types = [
-        ThetaH(B=0.5, C=1.0, n=n_H_true),   # privacy-preferring
-        ThetaH(B=1.0, C=1.0, n=n_H_true),   # balanced
-        ThetaH(B=2.0, C=1.0, n=n_H_true),   # utility-preferring
+        ThetaH(w=2.0, n=n_H_true),   # privacy-preferring
+        ThetaH(w=1.0, n=n_H_true),   # balanced
+        ThetaH(w=0.5, n=n_H_true),   # utility-preferring
     ]
     cfg = GameConfig(
         types=types, eps_grid=eps_grid,

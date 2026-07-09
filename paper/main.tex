@@ -11,8 +11,34 @@
 \usepackage{xcolor}
 \usepackage{microtype}
 \usepackage{subcaption}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepgfplotslibrary{groupplots}
+\definecolor{hierblue1}{HTML}{BDD7E7}
+\definecolor{hierblue2}{HTML}{9ECAE1}
+\definecolor{hierblue3}{HTML}{6BAED6}
+\definecolor{hierblue4}{HTML}{4292C6}
+\definecolor{hierblue5}{HTML}{2171B5}
+\definecolor{hierblue6}{HTML}{08306B}
+\definecolor{hierorange}{HTML}{FD8C3B}
 \usepackage[hidelinks]{hyperref}
 \usepackage[capitalise]{cleveref}
+\crefname{assumption}{Assumption}{Assumptions}
+\usepackage{acronym}
+
+% Abbreviations: \ac expands to "long (short)" on first use, "short"
+% after; \acf forces the full form. The abstract is spelled out by hand.
+\acrodef{DP}[DP]{differential privacy}
+\acrodef{iDP}[iDP]{individual differential privacy}
+\acrodef{DPSGD}[DP-SGD]{differentially private stochastic gradient descent}
+\acrodef{RDP}[RDP]{R\'enyi differential privacy}
+\acrodef{MIA}[MIA]{membership inference}
+\acrodef{LiRA}[LiRA]{likelihood-ratio attack}
+\acrodef{PLD}[PLD]{privacy-loss distribution}
+\acrodef{NE}[NE]{Nash equilibrium}
+\acrodefplural{NE}[NEs]{Nash equilibria}
+\acrodef{BR}[BR]{best response}
+\acrodef{PEG}[PEG]{Privacy Externality Game}
 
 % Theorem environments
 \theoremstyle{plain}
@@ -35,6 +61,7 @@
 \newcommand{\NE}{\mathrm{NE}}
 \newcommand{\BR}{\mathrm{BR}}
 \newcommand{\PoEV}{\mathrm{PoEV}}
+\newcommand{\Apld}[1]{A_{\mathrm{PLD},#1}}
 \newcommand{\PoA}{\mathrm{PoA}}
 \newcommand{\PEG}{\mathrm{PEG}}
 \newcommand{\iDP}{i\text{-}\mathrm{DP}}
@@ -62,50 +89,64 @@ Strategic Budget Choices in Sampling-Based Individual Differential Privacy}
 \maketitle
 
 \begin{abstract}
-Individual differential privacy (iDP) gives each data contributor a personal
-privacy budget. The currently dominant realisation---sampling-based iDP---turns
-each contributor's chosen budget into a per-sample inclusion rate, with a single
-noise multiplier shared across the dataset. We show that this realisation
-creates a privacy externality: lowering one's own budget mechanically raises
-the realised membership-inference (MIA) advantage on every other data point,
-even though every individual $(\eps_i, \delta)$-iDP guarantee continues to
-hold. We model the resulting strategic situation as a normal-form
-\emph{Privacy Externality Game} on a continuous action space, with each
-player's utility trading off a shared model-quality term $V(\sigma)$ against
-their own realised MIA advantage $A_i(\boldsymbol{\eps})$. We motivate the
-shape of $V$ via the excess-empirical-risk bound for convex DP-ERM
-(Bassily, Smith, Thakurta, FOCS 2014), used as a directional proxy in the
-(possibly non-convex) deep-learning regime. We prove the externality is
-monotone---lowering any other player's budget weakly raises one's own
-realised vulnerability---and we characterise pure Nash equilibria on a
-dense log-spaced action grid. In the symmetric $2$-player setting the pure
-NEs are \emph{asymmetric}: at any symmetric profile both players have a
-deviation incentive in the same direction, and the equilibrium settles with
-one player carrying a higher realised $A$ in exchange for a higher $V$.
-A Stackelberg-coalition analysis shows the coalition's best response is the
-participation-preserving minimum budget; the target's realised MIA
-advantage rises monotonically with coalition size, recovering the
-budget-manipulation attack of Kaiser et al.\ (SaTML 2026) as the rational
-best response of any coordinated set of data holders.
+Individual differential privacy (iDP) promises each data contributor
+control over their own privacy: a personal budget $(\eps_i, \delta)$,
+chosen by them, enforced for them. The dominant realisation of that
+promise in deep learning---sampling-based iDP---keeps a single noise
+multiplier for the whole dataset and turns each budget into a
+per-record sampling rate, so every contributor's realised
+membership-inference risk depends on the budget choices of everyone
+else. If risk is collectively determined, budget choice is a game, and
+the right question is not whether the mechanism \emph{can} be abused
+but what \emph{rational} contributors will do with it. We formalise
+this game as the Privacy Externality Game (PEG), prove that the
+externality is monotone---tightening any budget raises everyone else's
+realised risk---and characterise its equilibria. Our headline finding
+is that the game refuses symmetric play in pure strategies: with
+identical players, no interior symmetric profile of the two-player
+game is a pure Nash equilibrium---each such profile is a local
+\emph{minimum} of each player's own utility---and at every pure
+equilibrium one player carries a strictly higher realised risk in
+exchange for the shared gain in model quality. The symmetric
+equilibrium that Nash's theorem guarantees exists only in mixed
+strategies, and it merely randomises who takes the exposed role.
+Heterogeneous privacy preferences do not
+soften this; they sort players into protected and exposed roles, with
+the risk landing on whoever values privacy least. The asymmetry is a
+property of the sampling-based realisation, not of iDP itself: the
+sensitivity-based realisation, replayed through the same game, has a
+unique and symmetric equilibrium. A recent budget-manipulation attack
+on iDP emerges in our framework as the coordinated limit of ordinary
+rational play---and collapses by a factor of 18--35 when the target is
+allowed to best-respond. Throughout, risk is priced
+mechanism-specifically: with the strongest adversary the deployed
+mechanism admits, not the loose mechanism-agnostic
+$(\eps,\delta)$ bound; a measured shadow-model instance locates the
+boundary of the phenomenon, which vanishes where realised attack
+power sits at the measurement floor.
+Because no report-based fix exists (we show
+the mechanism is not strategyproof), mitigation must change the
+contract itself; a $(\eps_i,\delta,\Delta)$-iDP contract provably caps
+the externality any coalition can inflict.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Differential privacy, individual differential privacy, game theory, Nash
-equilibrium, collusion, membership inference.
+Differential privacy, individual differential privacy, game theory,
+Nash equilibrium, collusion, membership inference.
 \end{IEEEkeywords}
 
 \input{tex/01_intro}
-\input{tex/06_related}
 \input{tex/02_background}
 \input{tex/03_game}
 \input{tex/04_analysis}
 \input{tex/05_experiments}
-\input{tex/07_discussion}
+\input{tex/06_attacks}
+\input{tex/07_mitigation}
+\input{tex/08_discussion}
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
 
-\input{tex/08_appendix}
-\input{tex/09_bayesian}
+\input{tex/09_appendix}
 
 \end{document}

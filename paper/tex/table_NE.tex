@@ -1,16 +1,27 @@
 \begin{table}[t]
 \centering
-\caption{Pure Nash equilibria of the symmetric 2-player PEG (action grid $\mathcal{A} = \{1, 2, 4, 8, 16, 32, 64\}$, $|G_1|=|G_2|=5000$, $E_b=128$, $5$ epochs, $\delta=10^{-12}$, $B_i = C_i = 1$, $V(\sigma) = 1/(1+\sigma)$). $A_i$ is the realised MIA advantage of player $i$ at the equilibrium and $A^{\textrm{opt}}$ is the realised MIA advantage at the social-optimum profile $\boldsymbol{\eps}^{\textrm{opt}}$.}
+\caption{Representative pure Nash equilibria of the symmetric 2-player
+PEG on the $K=200$ log-spaced action grid ($\eps \in [0.5, 64]$,
+$|G_1|=|G_2|=5000$, $B=128$, $5$ epochs, $\delta=10^{-12}$,
+$\lambda_1=\lambda_2=1$). One member of each mirror pair is shown; the full set has
+$48$ equilibria, all off-diagonal. $\PoEV$ (\cref{def:poev}) is
+measured against the uniform baseline $\eps^{\mathrm{uni}} = 5.73$
+with $\sum_i \Apld{i}(\boldsymbol{\eps}^{\mathrm{uni}}) = 0.305$. The
+social optimum (SO) maximises $u_1 + u_2$ over the feasible grid and
+coincides with one of the pure NEs.}
 \label{tab:NE}
+\small
+\setlength{\tabcolsep}{2.8pt}
 \begin{tabular}{lccccc}
 \toprule
-Regime & $(\eps_1^*, \eps_2^*)$ & $A_1$ & $A_2$ & $\boldsymbol{\eps}^{\textrm{opt}}$ & $A^{\textrm{opt}}$ \\
+ & $(\eps_1^*, \eps_2^*)$ & $\Apld{1}$ & $\Apld{2}$ & $\sum_i \Apld{i}$ & $\PoEV$ \\
 \midrule
-Aware & (1, 2) & 0.033 & 0.098 & $(4, 8)$ & 0.146 \\
-Aware & (2, 1) & 0.098 & 0.033 & $(4, 8)$ & 0.146 \\
-Naive & (1, 8) & 0.000 & 0.275 & $(1, 16)$ & 0.205 \\
-Naive & (4, 4) & 0.123 & 0.123 & $(1, 16)$ & 0.205 \\
-Naive & (8, 1) & 0.275 & 0.000 & $(1, 16)$ & 0.205 \\
+most inflationary & $(1.61, 10.53)$ & 0.001 & 0.317 & 0.318 & $+0.04$ \\
+most asymmetric   & $(1.43, 9.33)$  & 0.001 & 0.295 & 0.296 & $-0.03$ \\
+median asymmetry  & $(1.91, 3.35)$  & 0.030 & 0.117 & 0.146 & $-0.52$ \\
+least asymmetric  & $(4.07, 4.17)$  & 0.055 & 0.059 & 0.114 & $-0.63$ \\
+low-advantage     & $(6.63, 16.34)$ & 0.001 & 0.112 & 0.113 & $-0.63$ \\
+SO ($=$ NE)       & $(10.28, 12.80)$ & 0.017 & 0.048 & 0.066 & $-0.78$ \\
 \bottomrule
 \end{tabular}
 \end{table}
