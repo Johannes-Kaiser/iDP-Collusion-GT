@@ -12,7 +12,7 @@ This script generates three key plots from the experimental output:
 """
 
 import sys
-sys.path.append("/vol/miltank/users/kaiserj/Clipping_vs_Sampling/")
+sys.path.append("/vol/miltank/users/kaiserj/Collusion_Gametheory/")
 import shutil
 import json
 from pathlib import Path
@@ -74,49 +74,49 @@ EXPERIMENTS = [
     # ##### Sampling based methods
     {
         "dataset": "bloodmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/None/bloodmnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/None/bloodmnist",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "cifar10",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/None/cifar10",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/None/cifar10",
         "budgets": [16.0, 50.0],
         "portions_list": portion_list
     },
     {
         "dataset": "credit_card_default",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/None/credit_card_default",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/None/credit_card_default",
         "budgets": [4.0, 20.0],
         "portions_list": portion_list
     },
     {
         "dataset": "dermamnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/None/dermamnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/None/dermamnist",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "mnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/None/mnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/None/mnist",
         "budgets": [4.0, 16.0],
         "portions_list": portion_list
     },
     {
         "dataset": "organcmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/None/organcmnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/None/organcmnist",
         "budgets": [4.0, 16.0],
         "portions_list": portion_list
     },
     {
         "dataset": "organsmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/None/organsmnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/None/organsmnist",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "pneumoniamnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/None/pneumoniamnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/None/pneumoniamnist",
         "budgets": [4.0, 16.0],
         "portions_list": portion_list
     },
@@ -125,55 +125,55 @@ EXPERIMENTS = [
     # ##### Clipping based methods
     {
         "dataset": "bloodmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/None/bloodmnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/None/bloodmnist",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "breastmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/None/breastmnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/None/breastmnist",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "credit_card_default",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/None/credit_card_default",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/None/credit_card_default",
         "budgets": [4.0, 20.0],
         "portions_list": portion_list
     },
     {
         "dataset": "dermamnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/None/dermamnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/None/dermamnist",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "german_credit",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/None/german_credit",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/None/german_credit",
         "budgets": [4.0, 16.0],
         "portions_list": portion_list
     },
     {
         "dataset": "mnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/None/mnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/None/mnist",
         "budgets": [4.0, 16.0],
         "portions_list": portion_list
     },
     {
         "dataset": "mnist_4",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/None/mnist_4",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/None/mnist_4",
         "budgets": [16.0, 50.0],
         "portions_list": portion_list
     },
     {
         "dataset": "organcmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/None/organcmnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/None/organcmnist",
         "budgets": [4.0, 16.0],
         "portions_list": portion_list
     },
     {
         "dataset": "organsmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/None/organsmnist",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/None/organsmnist",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
@@ -184,37 +184,37 @@ EXPERIMENTS = [
 
     {
         "dataset": "organcmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/resnet9/organcmnist_2000",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/resnet9/organcmnist_2000",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "organsmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/resnet9/organsmnist_500",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/resnet9/organsmnist_500",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "organsmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/resnet9/organsmnist_2000",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/resnet9/organsmnist_2000",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "pneumoniamnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/resnet9/pneumoniamnist_500",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/resnet9/pneumoniamnist_500",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "pneumoniamnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/resnet9/pneumoniamnist_2000",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/resnet9/pneumoniamnist_2000",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "dermamnist_500",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_sampling_fixed_split/resnet9/dermamnist_500",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_sampling_fixed_split/resnet9/dermamnist_500",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
@@ -225,31 +225,31 @@ EXPERIMENTS = [
 
     {
         "dataset": "organcmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/resnet9/organcmnist_500",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/resnet9/organcmnist_500",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "organsmnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/resnet9/organsmnist_500",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/resnet9/organsmnist_500",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "pneumoniamnist",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/resnet9/pneumoniamnist_500",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/resnet9/pneumoniamnist_500",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "dermamnist_500",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/resnet9/dermamnist_500",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/resnet9/dermamnist_500",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
     {
         "dataset": "breastmnist_500",
-        "path": "/vol/miltank/users/kaiserj/Clipping_vs_Sampling/exp_mia_final_clipping_fixed_split/resnet9/breastmnist_500",
+        "path": "/vol/miltank/users/kaiserj/Collusion_Gametheory/exp_mia_final_clipping_fixed_split/resnet9/breastmnist_500",
         "budgets": [8.0, 32.0],
         "portions_list": portion_list
     },
@@ -1156,7 +1156,7 @@ class ExperimentVisualizer:
 
 if __name__ == "__main__":
     # If a custom path is needed for modules like opacus_new
-    # sys.path.append("/vol/miltank/users/kaiserj/Clipping_vs_Sampling/")
+    # sys.path.append("/vol/miltank/users/kaiserj/Collusion_Gametheory/")
     
     setup_matplotlib_style()
     

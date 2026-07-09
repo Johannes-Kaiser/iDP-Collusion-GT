@@ -99,8 +99,8 @@ Multiple data contributors coordinate their privacy budget choices to increase a
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Johannes-Kaiser/Clipping_vs_Sampling.git
-cd Clipping_vs_Sampling
+git clone https://github.com/Johannes-Kaiser/iDP-Collusion-GT.git
+cd iDP-Collusion-GT
 
 # 2. Create and activate conda environment
 conda create -n idp-vuln python=3.9

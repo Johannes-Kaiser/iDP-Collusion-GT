@@ -30,7 +30,7 @@ Usage:
 See scripts_experiments/README.md for detailed workflow examples.
 """
 import sys
-sys.path.append("/vol/miltank/users/kaiserj/Clipping_vs_Sampling/")
+sys.path.append("/vol/miltank/users/kaiserj/Collusion_Gametheory/")
 
 import gc
 

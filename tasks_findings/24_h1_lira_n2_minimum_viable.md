@@ -62,7 +62,7 @@ scorer, and Slurm scaffold specified here.
    overriding `n_shadows: 128`, `n_targets: 128`, `pkeep: 0.5`,
    `individualize: sampling`, `budgets: null`, `portions: null`.
 3. Dataset substitution. The "credit_card_default" alias in
-   `Clipping_vs_Sampling/experiment_scripts/mia/utils/utils_general.py:883`
+   `experiment_scripts/mia/utils/utils_general.py:883`
    actually fetches OpenML `credit-g` (900 train + 100 test -- 1000 total),
    not UCI Default of Credit Card Clients (30k rows). The 5000-per-silo
    split is impossible on this alias. Options ranked by suitability:
@@ -404,7 +404,7 @@ failed on missing `04_mia_pergroup.py`.
   reach the `min_sample_rate = 1e-5` floor at extreme asymmetric profiles
   (e.g. `pid=4`, `eps=(2, 32)`, `p1 = 2.8e-5`) as expected.
 - **Dataset check.** Called
-  `Clipping_vs_Sampling/experiment_scripts/mia/utils/utils_general.load_dataset('credit_card_default')`.
+  `experiment_scripts/mia/utils/utils_general.load_dataset('credit_card_default')`.
   It returns a 900/100-row `TensorDataset` (OpenML `credit-g`, not UCI Default
   of Credit Card Clients). The design expected 30k rows and a 5000/silo
   split; that is not achievable on this alias. Available alternatives with

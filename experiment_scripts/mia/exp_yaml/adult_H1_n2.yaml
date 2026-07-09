@@ -2,7 +2,7 @@
 #
 # The findings doc originally targeted UCI Default of Credit Card Clients,
 # but the `credit_card_default` alias in
-# `Clipping_vs_Sampling/experiment_scripts/mia/utils/utils_general.py` fetches
+# `experiment_scripts/mia/utils/utils_general.py` fetches
 # OpenML `credit-g` (1000 rows), which cannot sustain a 5000-per-silo pool or
 # 128-shadow LiRA. The design substitutes Adult (36k train rows, tabular MLP,
 # binary classification) -- the drop-in replacement of least resistance.

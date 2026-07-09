@@ -9,7 +9,7 @@ Numeric summary cached at `_cache_T25/T25_ceiling_summary.pkl`. Zero
 files under `paper/tex/*` touched (CLAUDE.md Rule 0 -- prose is a
 separate turn). Purchase-100 flagged as the natural next-step benchmark;
 a follow-up task would wire it into
-`Clipping_vs_Sampling/experiment_scripts/mia/utils/utils_general.py` and
+`experiment_scripts/mia/utils/utils_general.py` and
 rerun the pipeline.
 
 **Status (2026-07-01 respawn, superseded).** Design + committed artefacts + mechanism
@@ -427,7 +427,7 @@ combination, not a pipeline bug. Two candidates with documented
 
 - **Purchase-100** (Shokri et al. 2017, canonical LiRA benchmark).
   Not present in
-  `Clipping_vs_Sampling/experiment_scripts/mia/utils/utils_general.py`
+  `experiment_scripts/mia/utils/utils_general.py`
   (the available aliases with `>= 10k` train rows are `adult`,
   `kaggle_credit`, `uci_isolet`, `cifar10`, per T24 findings Section 10).
   Adding it requires a downloader + feature-preprocessing + MLP-head

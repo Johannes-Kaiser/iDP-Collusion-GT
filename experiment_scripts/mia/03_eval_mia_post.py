@@ -27,7 +27,7 @@ Usage:
     python 03_eval_mia_post.py --dataset cifar10 --budgets 8.0 16.0
 """
 import sys
-sys.path.append("/vol/miltank/users/kaiserj/Clipping_vs_Sampling/")
+sys.path.append("/vol/miltank/users/kaiserj/Collusion_Gametheory/")
 import argparse
 import os
 import numpy as np

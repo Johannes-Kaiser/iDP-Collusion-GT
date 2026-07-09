@@ -23,7 +23,7 @@ Configuration:
     See exp_yaml/ directory for example configurations.
 """
 import sys
-sys.path.append("/vol/miltank/users/kaiserj/Clipping_vs_Sampling/")
+sys.path.append("/vol/miltank/users/kaiserj/Collusion_Gametheory/")
 
 import os
 import time

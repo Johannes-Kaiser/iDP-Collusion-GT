@@ -10,7 +10,7 @@ trainer, mechanism, and LiRA scoring verbatim on the same dataset, a
 federated sibling on Adult would inherit the same noise ceiling and
 produce no distinguishable per-silo signal. This figure documents the
 ceiling honestly from the T24 evidence and marks Purchase-100 (not yet
-wired into `Clipping_vs_Sampling/experiment_scripts/mia/utils/utils_general.py`)
+wired into `experiment_scripts/mia/utils/utils_general.py`)
 as the natural next-step benchmark.
 
 Reads:

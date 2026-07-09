@@ -1,6 +1,6 @@
 """T24 -- per-group DP-SGD shadow-model trainer for the n=2 PEG LiRA sweep.
 
-Fork of `Clipping_vs_Sampling/experiment_scripts/mia/04_mia.py`, but instead
+Fork of `experiment_scripts/mia/04_mia.py`, but instead
 of resolving per-record `pp_budgets` via
 `generate_pp_budgets -> assign_pp_values -> make_private_with_epsilon`, it
 takes the mechanism-solver output `(sigma, p_g)` directly on the CLI and
@@ -40,7 +40,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset, TensorDataset
 
-_CVS = Path("/vol/miltank/users/kaiserj/Clipping_vs_Sampling")
+_CVS = Path("/vol/miltank/users/kaiserj/Collusion_Gametheory")
 sys.path.insert(0, str(_CVS / "experiment_scripts" / "mia"))
 sys.path.insert(0, str(_CVS))
 
