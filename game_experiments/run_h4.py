@@ -239,7 +239,7 @@ def plot(data: dict):
     ax.set_ylim(8e-3, 1.0)
     ax.set_xlim(-0.25, 4.25)
     ax.set_xlabel(r"coalition size $k$")
-    ax.set_ylabel(r"target advantage $A_t^\star(k)$")
+    ax.set_ylabel(r"target advantage $A^\star_{\mathrm{PLD},t}(k)$")
     ax.legend(frameon=False, loc="center right")
 
     plt.tight_layout()

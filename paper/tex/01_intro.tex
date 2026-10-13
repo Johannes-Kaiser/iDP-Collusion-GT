@@ -39,31 +39,32 @@ mechanism-specifically: the most any adversary can extract from the
 mechanism actually deployed, tighter than the mechanism-agnostic
 $(\eps,\delta)$ worst case and above any concrete
 attack (\cref{sec:mia}); each knows that
-tightening their budget exports risk onto the others while degrading the
-model for all. We call the externality at the heart of this trade-off
+tightening their budget raises the others' realised vulnerability while
+degrading the model for all. We call the externality at the heart of this trade-off
 the \emph{privacy externality} and the resulting normal-form game the
 \ac{PEG}. Its equilibria---not any
 adversary---are our object of study.
 
-The answer is unsettling. The externality must land on someone: the
-mechanism's batch constraint conserves aggregate sampling exposure,
-so the game never decides \emph{whether} the exposure is held, only
-\emph{by whom}. At every pure Nash equilibrium of the symmetric
-two-player game, one player carries a strictly higher realised \ac{MIA}
-advantage than the other, and no symmetric profile is a pure
-equilibrium at all: at any symmetric candidate, each player's utility
-has a local \emph{minimum} in their own action, so conforming is the
-one thing rational players will not do. The game behaves like the
-classical Hawk--Dove game~\cite{maynardsmith1973logic}: the roles are
+The answer is unsettling. Equal protection is available: the
+mechanism recomputes every player's realised vulnerability from the
+whole budget vector at every profile, and profiles at which those
+vulnerabilities coincide exist throughout the feasible region. But
+rational play almost never rests at one. Wherever the shared model
+utility is not yet saturated, each player's utility has a local
+\emph{minimum} in their own action at any symmetric candidate, so
+conforming is the one thing rational players will not do; symmetric
+play survives at exactly one knife-edge budget, where saturation
+sets in. Everywhere else the game behaves like the classical
+Hawk--Dove game~\cite{maynardsmith1973logic}: the roles are
 strategic substitutes, deviations from symmetry amplify rather than
-damp back, the only symmetric equilibrium is a mixed-strategy lottery
-over who is exposed, and who ends up exposed at a pure equilibrium is
-decided by equilibrium selection, not by anyone's contract. When preferences are
+damp back, one player ends with a strictly higher realised \ac{MIA}
+advantage than the other, and who ends up exposed is decided by
+equilibrium selection, not by anyone's contract. When preferences are
 heterogeneous the roles stop being arbitrary---the equilibrium
 \emph{sorts} players, assigning the exposed role to whoever values
 privacy least. Risk under sampling-based \ac{iDP} is not merely
 interdependent, as prior work observed; at equilibrium it is
-systematically \emph{redistributed}.
+systematically \emph{unequal}.
 
 \paragraph{Contributions.} The main contributions of our work are as
 follows.
@@ -72,17 +73,19 @@ follows.
   Privacy Externality Game and prove the externality is monotone:
   tightening any budget raises every other player's realised \ac{MIA}
   advantage, shrinking their slack below the \ac{DP} ceiling.
-\item We prove the symmetric two-player game has no interior
-  symmetric pure equilibrium---the diagonal is a trough of own
-  utility, and budgets are strategic substitutes, so deviations
-  amplify; symmetry survives only as a mixed lottery over roles, and
-  heterogeneous preferences sort the exposed role onto whoever values
-  privacy least.
+\item We prove the diagonal is a trough of own utility wherever the
+  shared utility is unsaturated ($\sigma \geq \sqrt 3$ for the
+  canonical $V$), so the symmetric game has no interior symmetric
+  pure equilibrium there, and budgets are strategic substitutes, so
+  deviations amplify. Where saturation wins, we locate the single
+  symmetric pure equilibrium---it is also the welfare-best
+  equilibrium---and heterogeneous preferences sort the exposed role
+  of the asymmetric equilibria onto whoever values privacy least.
 \item We show the asymmetry is mechanism-specific---the
   sensitivity-based realisation yields a unique, symmetric
   equilibrium---and recover the budget-manipulation attack of
   \citet{kaiser2026your} as rational coalition play, which collapses
-  $18$--$35\times$ against a target that best-responds.
+  $18$--$53\times$ against a target that best-responds.
 \item We quantify the welfare cost of equilibrium play (the price of
   externality-vulnerability, $\PoEV$),
   prove that budget declaration is not strategyproof (no reporting
@@ -93,7 +96,7 @@ follows.
 
 \paragraph{Implication.} The attack literature on iDP frames excess
 vulnerability as something an adversary inflicts. Our equilibrium
-analysis says the adversary is optional: asymmetric exposure is what
+analysis says the adversary is optional: asymmetric vulnerability is what
 rational play produces on its own, and the coalition attack is merely
 its coordinated limit. Mitigation therefore cannot proceed by
 detecting attackers---there may be none---but must change the contract

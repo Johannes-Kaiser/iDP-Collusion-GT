@@ -190,16 +190,16 @@ def experiment_C7(K: int = 200):
         from matplotlib.lines import Line2D
         handles.append(Line2D([0], [0], color=cmap[ip], marker="o",
                                 lw=0, markersize=5,
-                                label=f"$w={r_data['w']:g}$"))
+                                label=f"$\\lambda={r_data['w']:g}$"))
     ax.legend(handles=handles, frameon=False, fontsize=6, loc="best")
     ax.set_xlabel(r"$\varepsilon_1$"); ax.set_ylabel(r"$\varepsilon_2$")
-    ax.set_title("NE locations across symmetric privacy weights $w$")
+    ax.set_title("NE locations across symmetric privacy weights $\\lambda$")
     ax.plot([0.5, 64], [0.5, 64], "--", color=ACCENT_GREY, lw=0.5, alpha=0.6)
     plt.tight_layout()
-    fig.savefig(FIG_DIR / f"fig_C7_w_ratio.pdf")
-    fig.savefig(FIG_DIR / f"fig_C7_w_ratio.svg")
+    fig.savefig(FIG_DIR / f"fig_C7_lambda_ratio.pdf")
+    fig.savefig(FIG_DIR / f"fig_C7_lambda_ratio.svg")
     plt.close()
-    print(f"  -> fig_C7_w_ratio.pdf")
+    print(f"  -> fig_C7_lambda_ratio.pdf")
     return data
 
 
@@ -242,17 +242,17 @@ def experiment_C8(K: int = 200):
     from matplotlib.lines import Line2D
     handles = [Line2D([0], [0], color=cmap[ip], marker="s",
                        lw=0, markersize=5,
-                       label=f"$w_1/w_2 = {r_data['ratio']:g}$")
+                       label=f"$\\lambda_1/\\lambda_2 = {r_data['ratio']:g}$")
                for ip, r_data in enumerate(rows)]
     ax.legend(handles=handles, frameon=False, fontsize=6, loc="best")
     ax.set_xlabel(r"$\varepsilon_1$"); ax.set_ylabel(r"$\varepsilon_2$")
-    ax.set_title("NE shift under asymmetric privacy weights $w_1 \\neq w_2$")
+    ax.set_title("NE shift under asymmetric privacy weights $\\lambda_1 \\neq \\lambda_2$")
     ax.plot([0.5, 64], [0.5, 64], "--", color=ACCENT_GREY, lw=0.5, alpha=0.6)
     plt.tight_layout()
-    fig.savefig(FIG_DIR / f"fig_C8_asymmetric_w.pdf")
-    fig.savefig(FIG_DIR / f"fig_C8_asymmetric_w.svg")
+    fig.savefig(FIG_DIR / f"fig_C8_asymmetric_lambda.pdf")
+    fig.savefig(FIG_DIR / f"fig_C8_asymmetric_lambda.svg")
     plt.close()
-    print(f"  -> fig_C8_asymmetric_w.pdf")
+    print(f"  -> fig_C8_asymmetric_lambda.pdf")
     return data
 
 

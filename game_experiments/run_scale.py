@@ -266,11 +266,11 @@ def make_hero_figure(K: int, samp_actions=None, samp_nes=None):
     im = ax.pcolormesh(X, Y, Aplot, cmap="Oranges", shading="nearest",
                        rasterized=True)
     cb = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.03)
-    cb.set_label(r"$A_1$", fontsize=8)
+    cb.set_label(r"$A_{\mathrm{PLD},1}$", fontsize=8)
     cb.ax.tick_params(labelsize=7)
     _style_heatmap_axis(ax)
     ax.set_xlabel(r"$\varepsilon_2$"); ax.set_ylabel(r"$\varepsilon_1$")
-    ax.set_title(r"(b) Scale: $A_1$ flat in $\varepsilon_2$")
+    ax.set_title(r"(b) Scale: $A_{\mathrm{PLD},1}$ flat in $\varepsilon_2$")
 
     # (c) NE overlay: sampling-iDP (K=200) vs Scale (K=K)
     ax = axes[2]
@@ -297,7 +297,7 @@ def make_hero_figure(K: int, samp_actions=None, samp_nes=None):
     # Light dashed grid, matched to the paper style but subdued.
     ax.grid(True, which="major", ls="--", lw=0.4, alpha=0.25)
     ax.set_xlabel(r"$\varepsilon_1$"); ax.set_ylabel(r"$\varepsilon_2$")
-    ax.set_title(r"(c) Pure NEs at $w_1{=}w_2{=}1$")
+    ax.set_title(r"(c) Pure NEs at $\lambda_1{=}\lambda_2{=}1$")
     ax.legend(frameon=False, fontsize=6, loc="lower right")
 
     out_pdf = FIG_DIR / "fig_h2_scale.pdf"

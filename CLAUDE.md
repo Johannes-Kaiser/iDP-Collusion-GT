@@ -5,6 +5,17 @@ Externality Game** — a game-theoretic analysis of sampling-based individual
 differential privacy. The companion paper is
 `2601.12922v1.pdf` (Kaiser et al., SaTML 2026).
 
+## Rule -1 — the paper is a work in progress: assume its content is wrong
+
+The paper (`paper/main.tex` + `paper/tex/`) is under active revision.
+**Treat every claim, number, theorem statement, and figure currently in
+the paper as provisional and due to be overwritten.** Never use the
+paper's current text as ground truth or as evidence for a claim; the
+sources of truth are the code (`game/`, `game_experiments/`), the
+regenerated caches, and the campaign log `nummeric_eval.md`. When paper
+text conflicts with those, the paper is wrong. Deriving a result "because
+the paper says so" is an error; re-derive from code/data instead.
+
 ## Rule 0 — the paper is a *final artefact*, not a log
 
 **The paper (`paper/main.tex` and its `tex/` sub-files) must read as a
@@ -50,6 +61,18 @@ enforced (opening promise-vs-reality frame, first-person plural, signposted
 transitions, single per-idea metaphor, no throat-clearing, contribution
 bullets as 2–3-sentence statements). When rewriting, keep the two papers
 aligned; when in doubt, imitate the companion paper's paragraph structure.
+
+**Voice guide (mandatory for all paper prose):** `sources/voice/voice.md`
+distills the writing style of twenty NeurIPS/ICML/ICLR oral/spotlight-tier
+papers in this domain (corpus and provenance in `sources/voice/MANIFEST.md`).
+Read it before writing or rewriting any text in `paper/` and apply it as a
+lens. Its core: one move per sentence, claim-first paragraphs, run-in
+headers that state findings, the forecast–statement–interpretation sandwich
+around every formal result, incentives tethered to a concrete player
+decision, numbers always with a comparison anchor, flat statements for
+proved claims and a closed hedging vocabulary for everything else, plain
+forceful verbs ("forces", "buys", "pays") over abstraction, and a metaphor
+budget of one per idea.
 
 ## Rule 2 — figures and caches
 

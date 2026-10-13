@@ -115,7 +115,7 @@ def experiment_C1():
     titles = [
         (U_plot[:, :, 0], r"$u_1(\varepsilon_1, \varepsilon_2)$", "Blues"),
         (data["br1"], "Best-response curves", None),
-        (A_plot[:, :, 0], r"realised advantage $A_1$", "Oranges"),
+        (A_plot[:, :, 0], r"realised advantage $A_{\mathrm{PLD},1}$", "Oranges"),
     ]
     for ax, (M, title, cmap) in zip(axes, titles):
         if title == "Best-response curves":
@@ -226,9 +226,9 @@ def experiment_C2():
     axes[0].set_title("Equilibrium budgets")
     axes[0].legend(frameon=False)
     axes[1].semilogx(ratios, A1, "o-", color=PRIMARY_ORANGE,
-                      label=r"$A_1^*$ (sweep group)")
+                      label=r"$A^*_{\mathrm{PLD},1}$ (sweep group)")
     axes[1].semilogx(ratios, A2, "s-", color=PRIMARY_BLUE,
-                      label=r"$A_2^*$")
+                      label=r"$A^*_{\mathrm{PLD},2}$")
     axes[1].set_xlabel(r"size ratio $|G_1|/|G_2|$")
     axes[1].set_ylabel("realised MIA advantage")
     axes[1].set_title("Realised excess vulnerability")

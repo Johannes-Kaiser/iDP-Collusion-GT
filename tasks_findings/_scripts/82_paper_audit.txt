@@ -1,0 +1,65 @@
+# Paper audit against post-fix caches (K=200 canonical grid)
+
+[1] pure NE at lambda=1: 43, diagonal: [2.9646]
+    ratio band 6.38-6.70, median 6.54
+
+[2] V-shape ablation (paper Fig. 14 / tab:H5: 48/60/48/44/48/54 NE, 100% off-diagonal)
+    V1 1/(1+s^2)     #NE= 43  diagonal=[np.float64(2.965)]  mean V1->V dist=0.000 dec
+    V2 1/(1+s)       #NE= 27  diagonal=[np.float64(1.359)]  mean V1->V dist=0.301 dec
+    V3 exp(-s^2/2)   #NE= 33  diagonal=[np.float64(4.171)]  mean V1->V dist=0.022 dec
+    V4 exp(-s)       #NE= 45  diagonal=[np.float64(1.911)]  mean V1->V dist=0.060 dec
+    V5 -log(1+s)     #NE= 37  diagonal=[np.float64(3.268)]  mean V1->V dist=0.006 dec
+    V6 -s            #NE= 30  diagonal=[]  mean V1->V dist=0.135 dec
+
+[3] common-lambda sweep; uniform baseline eps=5.726, sum A=0.310
+    lambda=0.125: 44 NE, diag [], PoEV [+0.91, +1.65] median +1.31, inflationary 100%
+    lambda=0.25: 62 NE, diag [], PoEV [+0.43, +1.65] median +1.13, inflationary 100%
+    lambda=0.5: 34 NE, diag [], PoEV [-0.03, +0.69] median +0.25, inflationary 94%
+    lambda=1: 43 NE, diag [np.float64(2.965)], PoEV [-0.33, +0.05] median -0.18, inflationary 14%
+    lambda=2: 0 NE
+    lambda=4: 1 NE, diag [np.float64(0.5)], PoEV [-0.82, -0.82] median -0.82, inflationary 0%
+    lambda=1 least-aggregate-advantage NE: (2.965, 2.965) sumA=0.207
+    lambda=1 welfare-best NE: (1.612, 10.794) W=0.8585
+
+[4] diagonal: 200 feasible cells, median best-deviation gain 0.122, cells with zero gain 1  (paper: 200 cells, median 0.122)
+
+[5] Hawk-Dove at (1.118,7.131): tight vs loose 0.505/0.253; (T,T)=0.154 (L,L)=0.426; mixed P(tight)=0.445, value=0.349  (paper: 0.505/0.253, 0.445, 0.349)
+[6] best report of P1 vs eps2=3.972: 1.820  (paper: 2.92 vs 4.0, 1.21 vs 0.5)
+[6] best report of P1 vs eps2=0.500: 3.432  (paper: 2.92 vs 4.0, 1.21 vs 0.5)
+
+[7] group-size sweep (paper: minority eps1* in [1.5,3] vs ~10; A1<0.01 vs A2 in [0.24,0.32])
+    |G1|/|G2|=0.1: NE (1.68,5.66|A=0.002,0.163), (3.08,10.37|A=0.004,0.238), (5.66,1.68|A=0.163,0.002), (10.37,3.08|A=0.238,0.004)
+    |G1|/|G2|=0.25: NE (0.92,3.08|A=0.002,0.120), (1.68,5.66|A=0.003,0.174), (3.08,0.92|A=0.120,0.002), (5.66,1.68|A=0.174,0.003)
+    |G1|/|G2|=0.5: NE (0.92,3.08|A=0.004,0.131), (1.68,5.66|A=0.005,0.191), (3.08,0.92|A=0.131,0.004), (5.66,1.68|A=0.191,0.005)
+    |G1|/|G2|=1.0: NE (0.92,5.66|A=0.001,0.219), (1.68,10.37|A=0.001,0.317), (3.08,3.08|A=0.106,0.106), (5.66,0.92|A=0.219,0.001), (10.37,1.68|A=0.317,0.001)
+    |G1|/|G2|=2.0: NE (1.68,1.68|A=0.073,0.073), (3.08,3.08|A=0.106,0.106), (5.66,5.66|A=0.154,0.154)
+    |G1|/|G2|=4.0: NE (0.50,0.50|A=0.028,0.028), (0.92,0.92|A=0.048,0.048), (1.68,1.68|A=0.073,0.073), (3.08,3.08|A=0.106,0.106), (5.66,5.66|A=0.154,0.154)
+    |G1|/|G2|=10.0: NE (0.50,0.50|A=0.028,0.028), (0.92,0.92|A=0.048,0.048), (1.68,1.68|A=0.073,0.073), (3.08,3.08|A=0.106,0.106), (5.66,5.66|A=0.154,0.154), (10.37,10.37|A=0.227,0.227)
+
+[8] sensitivity-based, common lambda (paper: single diagonal NE at 0.25/0.5/1)
+    lambda=0.125: (34.79,64.00), (64.00,34.79)
+    lambda=0.25: (21.89,21.89)
+    lambda=0.5: (11.33,11.33)
+    lambda=1.0: (5.73,5.73)
+    lambda=2.0: (2.44,2.44)
+    lambda=4.0: (0.50,0.50)
+
+[9] K=22 pure NE (7): (1.00,6.35), (1.26,8.00), (1.59,10.08), (2.52,2.52), (6.35,1.00), (8.00,1.26), (10.08,1.59)  (Fig. 3 caption: every pure NE off the diagonal; app:sensitivity: 8 NE at K=22)
+[10] cross dA1/deps2: N=25612 neg=25291 pos=0 tie=321
+[10] own dA1/deps1: N=25612 neg=0 pos=25612 tie=0
+
+[11] n-player heterogeneous sort compliance, Kendall tau(w, eps) < 0 (raw FP histories, last 50 rounds; paper: 100% n<=8, 83% n=10)
+    n= 3: 4 profiles, tau<0 in 100%, tau=nan (all-equal) 0
+    n= 4: 5 profiles, tau<0 in 100%, tau=nan (all-equal) 0
+    n= 5: 5 profiles, tau<0 in 100%, tau=nan (all-equal) 0
+    n= 6: 1600 profiles, tau<0 in 100%, tau=nan (all-equal) 0
+    n= 7: 1600 profiles, tau<0 in 100%, tau=nan (all-equal) 0
+    n= 8: 1600 profiles, tau<0 in 100%, tau=nan (all-equal) 0
+    n=10: 1600 profiles, tau<0 in 100%, tau=nan (all-equal) 0
+    symmetric n=3: modal profile [1.0, 1.0, 1.0]
+    symmetric n=4: modal profile [1.0, 1.0, 1.0, 1.0]
+    symmetric n=5: modal profile [1.0, 1.0, 1.0, 1.0, 1.0]
+    symmetric n=6: modal profile [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    symmetric n=7: modal profile [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    symmetric n=8: modal profile [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    symmetric n=10: modal profile [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]

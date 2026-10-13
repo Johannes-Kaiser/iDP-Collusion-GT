@@ -1,180 +1,23 @@
 \section{Numerical Evaluation}
 \label{sec:experiments}
 
-The theory of \cref{sec:analysis} makes qualitative predictions:
-asymmetric equilibria, ordered by privacy weight, specific to the
-sampling-based mechanism. We now quantify them. The evaluation asks
-five questions, each a subsection: whether the symmetric game has a
-symmetric equilibrium (\cref{sec:C1}); who absorbs the externality
-under size and preference asymmetry (\cref{sec:C2}); whether the
-picture survives more players (\cref{sec:H3}); whether it is the
-mechanism or the paradigm (\cref{sec:scale}); and what equilibrium
-play costs, both per contract (\cref{sec:C5}) and in aggregate
-(\cref{sec:poev}). \Cref{sec:H1} closes by asking whether any of it
-survives a \emph{measured}, rather than analytical, adversary---the
-answer draws the practical boundary of the phenomenon. Supporting
-sweeps live in the appendices: common-weight shifts
-(\cref{app:wsweep}), the raw externality response and its
-finite-difference sign certificate (\cref{app:certificate}),
-model-utility ablations (\cref{app:v-shape}), and grid and threshold
-sensitivity (\cref{app:sensitivity}).
-
-\subsection{Common setup}
-\label{sec:setup}
-
-All experiments in
-\cref{sec:C1,sec:C2,sec:H3,sec:scale,sec:C5,sec:poev} are
-analytical---no model is trained---and share one pipeline. We solve
-the mechanism of \cref{def:sampling-idp} by bisecting on $\sigma$
-until the batch constraint (Batch) is met, with each per-group rate
-chosen to make (Budget) bind under the R\'enyi
-accountant~\cite{mironov2017renyi}; profiles where any $p_i$ falls
-below a participation threshold are flagged infeasible
-(\cref{ass:participation}, \cref{app:mechanism}). Each realised $\Apld{i}$
-is then computed exactly from the privacy profile of the $I$-fold
-$(p_i,\sigma)$-subsampled Gaussian by \ac{PLD}
-accounting~\cite{google-dp-accounting}---the level-2 advantage of
-\eqref{eq:hierarchy}, not the level-1 ceiling. The canonical action grid is
-log-spaced with $K = 200$ points on $[0.5, 64]$ at $\delta =
-10^{-12}$; unless noted otherwise, groups are symmetric with $|G_g| =
-5000$, $B = 128$, $5$ training epochs, $\lambda_i = 1$, and $V(\sigma) =
-1/(1+\sigma^2)$, mirroring the empirical \ac{iDP} scenarios of
-\citet{kaiser2026your, boenisch2023have}. \Cref{sec:H1} instead
-trains real \ac{DPSGD} shadow models and measures the advantage with
-\ac{LiRA}~\cite{carlini2022membership}.
-
-\subsection{Does the symmetric game have a symmetric equilibrium?}
-\label{sec:C1}
-
-We start with the cleanest possible setting: two players, identical
-group sizes, identical weights, both budgets swept over the full grid,
-pure \acp{NE} enumerated by brute force.
-
-No. The $K = 200$ payoff matrix has $48$ pure Nash equilibria, and
-every one of them sits off the diagonal (\cref{fig:C6};
-representative equilibria in \cref{tab:NE}). The equilibrium budget
-ratio $\max(\eps_1^*,\eps_2^*)/\min(\eps_1^*,\eps_2^*)$ ranges from
-$1.02\times$ to $6.54\times$ with median $2.03\times$: even the
-equilibria closest to symmetry keep the players on different budgets,
-and the realised advantages split accordingly---at the most asymmetric
-equilibria one player carries $A$ up to $0.32$ while the other sits
-below $0.001$. Because the players are interchangeable, the
-equilibria come in mirror pairs, exactly the Hawk--Dove signature
-anticipated by \cref{prop:no-symmetric-ne}: both players prefer the
-protected role, both cannot have it, and every stable resolution
-assigns the roles asymmetrically.
-
-\Cref{fig:C1} dissects why. At any diagonal profile, lowering one's
-own budget buys a large drop in own advantage at a modest shared
-utility cost---the deviation the externality subsidises, since part of
-the bill lands on the opponent. Both players face this incentive
-simultaneously, so the diagonal cannot hold; the best-response curves
-(\cref{fig:C6}, left) consequently avoid the diagonal and cross only
-off it, along a band where one player has committed to the low-budget
-role. The mechanics---the diagonal as a payoff trough, the
-substitutes structure that keeps deviations from damping back, and
-the mixed lottery that is all the symmetry the game retains---are
-dissected in \cref{sec:no-symmetric-ne} and quantified in
-\cref{app:symbreak}.
-
-Grid resolution moves the equilibrium \emph{count}, not the
-structure. At $K = 22$ the same game resolves $8$ pure \acp{NE}, at $K =
-200$ it resolves $48$: the stepped \ac{BR} loci of a finer grid cross more
-often. What is invariant---and is the claim we stake---is that the \ac{NE}
-set stays entirely off-diagonal, in mirror pairs, inside the same
-budget-ratio band along the same \ac{BR} loci. We therefore quote $K = 200$
-throughout and treat individual \ac{NE} coordinates as samples from the \ac{BR}
-crossing band rather than as isolated predictions. The picture is
-equally insensitive to how much \emph{everyone} cares: sweeping the
-common weight $w$ from $0.125$ to $4$ leaves every equilibrium
-off-diagonal ($240$ of $241$; the lone exception sits on a
-solver-tolerance artefact) while shifting the cloud toward lower
-budgets as privacy weight grows (\cref{app:wsweep}).
-
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C1_payoff.pdf}
-\caption{\textbf{Anatomy of the symmetric 2-player PEG} ($K=22$ shown
-for legibility). Payoff surface $u_1(\eps_1,\eps_2)$ (left),
-best-response correspondences with pure \acp{NE} as black stars (centre),
-and realised \ac{MIA} advantage $\Apld{1}$ (right). Every pure \ac{NE} lies off the
-diagonal.}
-\label{fig:C1}
-\end{figure*}
-
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C6_locus_K200.pdf}
-\caption{\textbf{The \ac{NE} locus at full resolution} ($K=200$).
-\emph{Left:} smoothed best-response loci of both players with the $48$
-pure \acp{NE} (clustered at $0.15$-decade print resolution) as stars; the
-dashed line is the diagonal $\eps_1 = \eps_2$. \emph{Right:} \ac{NE}
-density over the action plane with the \ac{BR} loci overlaid. All $48$
-equilibria sit off the diagonal, in mirror pairs along the
-best-response crossing band; equilibrium budget ratios span
-$1.02\times$--$6.54\times$ (median $2.03\times$).}
-\label{fig:C6}
-\end{figure*}
-
-\input{tex/table_NE}
-
-\subsection{Who absorbs the externality?}
-\label{sec:C2}
-
-Symmetry leaves the exposed role to equilibrium selection. Any
-asymmetry assigns it. We break symmetry two ways: by group size and by
-preference.
-
-\paragraph{Group size.} Sweeping the size ratio $r = |G_1|/|G_2|$
-across two orders of magnitude (all else symmetric), the pattern is
-uniform: \emph{the smaller group plays the smaller equilibrium budget
-and absorbs the smaller realised advantage} (\cref{fig:C2}). With
-player $1$ in the minority ($r<1$), equilibria have $\eps_1^* \in
-[1.5, 3]$ against $\eps_2^* \approx 10$, yielding $\Apld{1}^* < 0.01$
-against $\Apld{2}^* \in [0.24, 0.32]$; the pattern mirrors for $r > 1$.
-The mechanism is legible in (Batch): a small group demanding strong
-privacy contributes little to the expected batch, the majority's
-sampling rate rises to compensate, and the majority absorbs the
-advantage. The minority free-rides on the shared
-mechanism~\cite{hardin1968tragedy}---a privacy analogue of the
-classical result that small groups benefit disproportionately from a
-common resource.
-
-\paragraph{Preference.} Fixing $\lambda_2 = 1$ and sweeping $\lambda_1 \in
-\{0.25, 0.5, 1, 2, 4\}$ at $K = 200$ yields $30$--$48$ pure \acp{NE} per
-ratio, every one off-diagonal (\cref{fig:C8}). The \ac{NE} cloud migrates
-exactly as \cref{prop:self-sorting} predicts: when player $1$ values
-privacy less than player $2$, the equilibria sit in the
-lower-right region (player $1$ on the high budget, absorbing the
-advantage); as $\lambda_1/\lambda_2$ crosses unity the cloud migrates through the
-symmetric configuration into the upper-left. Heterogeneous preferences
-do not meet in a diagonal compromise; the population \emph{splits},
-each player settling into the role their weight selects. Sorting
-compliance---the fraction of equilibria with the higher-$w$ player on
-the lower budget---is $100\%$ across the sweep.
-
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C2_asymmetric.pdf}
-\caption{\textbf{Group-size asymmetry.} Equilibrium budgets (left) and
-realised \ac{MIA} advantages (right) as a function of the size ratio
-$|G_1|/|G_2|$. The minority group plays the lower budget and absorbs
-the lower advantage at every ratio; the flip at $r{=}1$ is where the
-minority/majority labels exchange.}
-\label{fig:C2}
-\end{figure*}
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_C8_asymmetric_w.pdf}
-\caption{\textbf{Preference asymmetry} ($K=200$, $\lambda_2 = 1$). Pure \ac{NE}
-clouds under $\lambda_1/\lambda_2 \in \{0.25, 0.5, 1, 2, 4\}$ (centroids and
-$68\%$ dispersion ellipses). As player $1$ becomes more
-privacy-sensitive the cloud migrates from lower-right (player $1$
-exposed) to upper-left (player $2$ exposed), never crossing the
-diagonal: heterogeneity self-sorts instead of averaging out.}
-\label{fig:C8}
-\end{figure}
+The analysis of \cref{sec:analysis} settled the two-player game
+with its evidence in place. What remains are the questions that
+leave that setting, each a subsection: whether the picture survives
+more players (\cref{sec:H3}); whether it is the mechanism or the
+paradigm (\cref{sec:scale}); and what equilibrium play costs in
+aggregate (\cref{sec:poev}). \Cref{sec:H1} closes by asking whether
+any of it survives a \emph{measured}, rather than analytical,
+adversary---the answer draws the practical boundary of the
+phenomenon. \Cref{sec:H3,sec:scale,sec:poev} use the pipeline of
+\cref{sec:analysis}; \cref{sec:H1} instead trains real \ac{DPSGD}
+shadow models and measures the advantage with
+\ac{LiRA}~\cite{carlini2022membership}. Supporting sweeps live in
+the appendices: common-weight shifts (\cref{app:wsweep}), the raw
+externality response and its finite-difference sign certificate
+(\cref{app:certificate}), model-utility ablations
+(\cref{app:v-shape}), and grid and threshold sensitivity
+(\cref{app:sensitivity}).
 
 \subsection{Does the asymmetry survive more than two players?}
 \label{sec:H3}
@@ -226,14 +69,14 @@ noise-to-sensitivity ratio is preserved by construction, so $\Apld{i}$
 depends on $\eps_i$ alone and the players interact only through the
 shared $V(\sigma)$.
 
-The contrast is total (\cref{fig:h2-scale}). At $w = 1$ and $K =
+The contrast is total (\cref{fig:h2-scale}). At $\lambda = 1$ and $K =
 200$, the sensitivity-based game has \emph{exactly one} pure Nash
 equilibrium, and it is symmetric: $(\eps_1, \eps_2) = (5.73, 5.73)$.
-The sampling-based game on the identical grid has $48$, all
-asymmetric. The same uniqueness-and-symmetry holds across the common
-weight sweep ($w \in \{0.25, 0.5, 1\}$ each yield a single diagonal
+The sampling-based game on the identical grid has $43$, all but the
+single saturation-window equilibrium asymmetric. The same uniqueness-and-symmetry holds across the common
+weight sweep ($\lambda \in \{0.25, 0.5, 1\}$ each yield a single diagonal
 \ac{NE}). This is the cleanest statement of the paper's scope: individual
-privacy budgets do not by themselves create strategic redistribution;
+privacy budgets do not by themselves create the strategic asymmetry;
 the joint $(\sigma, p_g)$ solve of the sampling-based realisation
 does. It is also, in effect, a control experiment for the theory---
 remove the coupling that \cref{lem:externality} formalises, and the
@@ -243,7 +86,7 @@ Hawk--Dove structure disappears.
 \centering
 \includegraphics[width=\linewidth]{figures/fig_h2_scale.pdf}
 \caption{\textbf{Sampling-based versus sensitivity-based \ac{iDP}, same
-game} ($K=200$, $w=1$). The sensitivity-based realisation (single
+game} ($K=200$, $\lambda=1$). The sensitivity-based realisation (single
 orange star) has exactly one pure \ac{NE}, on the diagonal at
 $(5.73, 5.73)$; the sampling-based realisation (blue) has $48$ pure
 \acp{NE}, all off-diagonal. The strategic asymmetry is a property of the
@@ -251,44 +94,12 @@ budget-coordination mechanism, not of individual budgets.}
 \label{fig:h2-scale}
 \end{figure}
 
-\subsection{Promise versus reality at a fixed contract}
-\label{sec:C5}
-
-What does the externality do to a single contract, with the strategy
-stripped away? Fix player $i$'s budget at $\eps_i = 4$ and sweep only
-the \emph{other} player's budget (\cref{fig:slack}). The level-1
-ceiling $A_{\eps_i,\delta} = 0.963$ never moves, and the level-2
-advantage stays below it everywhere---the guarantee holds---but the
-gap between the levels swings from $0.79$ to $0.96$ as the other
-player's budget moves, smoothly and monotonically, exactly as
-\cref{prop:externality-full} predicts. The $(\eps_i, \delta)$ pair
-alone reveals none of this variation---which is precisely the room
-the strategic play of \cref{sec:C1,sec:C2} exploits, and the quantity
-a $\Delta$-augmented contract caps (\cref{sec:mitigation}). The full
-externality-response sweep across target budgets and dataset shares,
-together with a finite-difference certificate that the proposition's sign
-holds on $99.1\%$ of the $K=200$ grid's interior, is in
-\cref{app:certificate}.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_slack_panel.pdf}
-\caption{\textbf{Promise versus reality at a fixed contract} (anchor
-$\eps_i = 4$, $K=200$). Dashed: the level-1 ceiling $A_{\eps_i,\delta} =
-0.963$ of the hierarchy \eqref{eq:hierarchy}. Solid: the level-2
-advantage $\Apld{i}$ as the \emph{other} player's budget $\eps_j$ varies
-at fixed $\eps_i$. Shaded: the slack---the gap between the two
-levels. The level-1 guarantee upper-bounds the risk at every profile,
-but where the level-2 risk sits under it is decided by the other
-player's choice.}
-\label{fig:slack}
-\end{figure}
-
 \subsection{How costly is equilibrium play?}
 \label{sec:poev}
 
-Equilibria that redistribute risk need not inflate it in aggregate; we
-measure whether they do with a value-side analogue of the price of
+Vulnerability is not conserved: equilibria that drive the players'
+realised advantages apart may still lower---or raise---their sum. We
+measure which with a value-side analogue of the price of
 anarchy~\cite{koutsoupias1999worst}.
 
 \begin{definition}[Price of externality-vulnerability]
@@ -303,25 +114,26 @@ and a reference profile $\boldsymbol{\eps}^\star$,
 \end{definition}
 
 Against the geometric-midpoint baseline $\eps^{\mathrm{uni}} = 5.73$
-(aggregate advantage $0.305$), the $48$ equilibria of the canonical
-game span $\PoEV \in [-0.785, +0.040]$ with median $-0.50$
+(aggregate advantage $0.310$), the $43$ equilibria of the canonical
+game span $\PoEV \in [-0.33, +0.05]$ with median $-0.18$
 (\cref{tab:NE}): most equilibria \emph{deflate} aggregate advantage
 relative to uniform play, because the utility term pulls both players
-toward moderate noise. Three readings temper that comfort. First, the
-aggregate hides the redistribution: the median equilibrium assigns one
-player $4\times$ the advantage of the other
-(\cref{sec:C1}). Second, the spread across equilibria is itself the
-problem---the best equilibrium is the social optimum
-($\PoEV = -0.785$; it happens to be a Nash profile, so the price of
-stability is zero), the worst inflates aggregate advantage over the
-baseline ($+0.04$), and nothing in the mechanism selects among them.
-Third, the sign flips with the preference regime
-(\cref{app:wsweep}): at utility-heavy
-weights ($w \le 0.25$), $77$--$80\%$ of equilibria are inflationary,
-with $\PoEV$ up to $+1.70$---rational play then \emph{raises}
-aggregate exposure by up to $170\%$ over uniform budgets. Aggregate
-welfare at equilibrium is, in short, unmanaged: sometimes better than
-uniform, sometimes much worse, and never chosen.
+toward moderate noise. Three readings temper that comfort. First,
+the aggregate hides the asymmetry: away from the saturation window,
+the median equilibrium assigns one player more than two orders of
+magnitude the advantage of the other (\cref{tab:NE}). Second, the
+spread across equilibria is itself the problem---the best
+equilibrium is the symmetric one ($\PoEV = -0.33$), the social
+optimum $(3.35, 24.13)$ is not an equilibrium at all, the worst
+equilibrium inflates aggregate advantage over the baseline
+($+0.05$), and nothing in the mechanism selects among them. Third,
+the sign flips with the preference regime (\cref{app:wsweep}): at
+utility-heavy weights ($\lambda \le 0.25$), \emph{every} equilibrium
+is inflationary, with $\PoEV$ up to $+1.65$---rational play then
+raises aggregate vulnerability by up to $165\%$ over uniform
+budgets. Aggregate welfare at equilibrium is, in short, unmanaged:
+sometimes better than uniform, sometimes much worse, and never
+chosen.
 
 \subsection{Does the game survive a measured adversary?}
 \label{sec:H1}
@@ -349,7 +161,7 @@ players' actions, and the equilibria slide to the high-$\eps$ corner
 where accuracy dominates ($(16,16)$ and $(32,32)$). The analytical
 game on the same coarse grid puts its equilibrium at the
 \emph{opposite}, low-budget corner $(2,2)$---a $5{\times}5$ grid is
-too coarse to resolve the off-diagonal band of \cref{sec:C1}, but the
+too coarse to resolve the off-diagonal band of \cref{sec:no-symmetric-ne}, but the
 corner contrast is the point: the measured incentives are not a
 perturbation of the analytical ones, they are advantage-blind. This
 is the second inequality of the hierarchy \eqref{eq:hierarchy} at its
@@ -359,10 +171,10 @@ $A_{\mathrm{PLD}} = 0.58$, and the flat
 $[0.107, 0.115]$ band of the per-record statistic is that
 estimator's finite-sample floor at $128$ shadow models---and it is
 the privacy-onion effect of \citet{carlini2022privacy} made
-strategic: \emph{the game's asymmetric structure is carried by the
-attacker's ability to realise the externality}. Two
-consequences follow. For the theory's scope: the redistribution
-phenomenon binds in regimes where realised attack power tracks the
+strategic: \emph{the game's asymmetric structure stands or falls with
+the attacker's ability to realise the externality}. Two
+consequences follow. For the theory's scope: the equilibrium
+asymmetry binds in regimes where realised attack power tracks the
 accountant---strong attackers, vulnerable records, or the worst-case
 adversary the contract itself must assume. For practice: a deployment
 whose realistic adversary sits at the measurement floor will see no

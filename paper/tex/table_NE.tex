@@ -3,12 +3,14 @@
 \caption{Representative pure Nash equilibria of the symmetric 2-player
 PEG on the $K=200$ log-spaced action grid ($\eps \in [0.5, 64]$,
 $|G_1|=|G_2|=5000$, $B=128$, $5$ epochs, $\delta=10^{-12}$,
-$\lambda_1=\lambda_2=1$). One member of each mirror pair is shown; the full set has
-$48$ equilibria, all off-diagonal. $\PoEV$ (\cref{def:poev}) is
-measured against the uniform baseline $\eps^{\mathrm{uni}} = 5.73$
-with $\sum_i \Apld{i}(\boldsymbol{\eps}^{\mathrm{uni}}) = 0.305$. The
-social optimum (SO) maximises $u_1 + u_2$ over the feasible grid and
-coincides with one of the pure NEs.}
+$\lambda_1=\lambda_2=1$). One member of each mirror pair is shown; the
+full set has $43$ equilibria: $42$ off-diagonal in mirror pairs and
+the symmetric equilibrium of the saturation window. $\PoEV$
+(\cref{def:poev}) is measured against the uniform baseline
+$\eps^{\mathrm{uni}} = 5.73$ with $\sum_i
+\Apld{i}(\boldsymbol{\eps}^{\mathrm{uni}}) = 0.310$. The social
+optimum $(3.35, 24.13)$ is not an equilibrium; the best equilibrium
+is the symmetric one.}
 \label{tab:NE}
 \small
 \setlength{\tabcolsep}{2.8pt}
@@ -16,12 +18,9 @@ coincides with one of the pure NEs.}
 \toprule
  & $(\eps_1^*, \eps_2^*)$ & $\Apld{1}$ & $\Apld{2}$ & $\sum_i \Apld{i}$ & $\PoEV$ \\
 \midrule
-most inflationary & $(1.61, 10.53)$ & 0.001 & 0.317 & 0.318 & $+0.04$ \\
-most asymmetric   & $(1.43, 9.33)$  & 0.001 & 0.295 & 0.296 & $-0.03$ \\
-median asymmetry  & $(1.91, 3.35)$  & 0.030 & 0.117 & 0.146 & $-0.52$ \\
-least asymmetric  & $(4.07, 4.17)$  & 0.055 & 0.059 & 0.114 & $-0.63$ \\
-low-advantage     & $(6.63, 16.34)$ & 0.001 & 0.112 & 0.113 & $-0.63$ \\
-SO ($=$ NE)       & $(10.28, 12.80)$ & 0.017 & 0.048 & 0.066 & $-0.78$ \\
+symmetric (window) & $(2.96, 2.96)$  & 0.104 & 0.104 & 0.207 & $-0.33$ \\
+median             & $(1.12, 7.13)$  & 0.001 & 0.252 & 0.253 & $-0.18$ \\
+most inflationary  & $(1.61, 10.79)$ & 0.001 & 0.325 & 0.325 & $+0.05$ \\
 \bottomrule
 \end{tabular}
 \end{table}

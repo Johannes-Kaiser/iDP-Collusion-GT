@@ -7,7 +7,7 @@ The mechanism solution $(\sigma, p_1,\dots,p_n)$ for a given action
 profile $\boldsymbol{\eps}$ is obtained by a nested bisection. For
 each candidate $\sigma$, we find the largest per-group $p_g$ that
 satisfies the $I$-fold $(p_g, \sigma)$-subsampled Gaussian at
-$(\eps_g, \delta)$-DP under (Budget). Because the achieved $\eps$ is
+$(\eps_g, \delta)$-DP under \eqref{eq:budget}. Because the achieved $\eps$ is
 monotone-increasing in $p_g$, a unique $p_g \in (0, 1]$ exists
 (capped at $1$ if the budget cannot be exhausted); we locate it by
 binary search using the \ac{RDP} accountant~\cite{mironov2017renyi}
@@ -17,7 +17,7 @@ the realised batch size $\hat B(\sigma) = \sum_g |G_g|\, p_g(\sigma,
 \boldsymbol{\eps})$ as the outer-loop monitor, until $\hat B$ matches
 $B$ to the same tolerance. Profiles in which any $p_g$ falls below
 $10^{-5}$ are flagged infeasible per \cref{ass:participation}; below
-that threshold the group's contribution to (Batch) is numerically
+that threshold the group's contribution to \eqref{eq:batch} is numerically
 negligible and the \ac{iDP} contract is trivially satisfied. The
 qualitative results are insensitive to this threshold across
 $[10^{-6}, 10^{-3}]$ (\cref{app:sensitivity}).
@@ -36,7 +36,7 @@ advantage for the resulting mechanism.
 \subsection{Proof of \texorpdfstring{\cref{lem:externality}}{the externality lemma}}
 \label{app:proof-externality}
 
-We track how the solver absorbs one loosened budget. Everything rests
+We track how the solver absorbs one tightened budget. Everything rests
 on two hypothesis-testing facts about a single $(p,\sigma)$
 mechanism; the rest is bookkeeping through the two constraints.
 \emph{(i) More sampling leaks strictly more:} for $p < p'$, the
@@ -51,19 +51,20 @@ by subsampling~\cite{balle2020privacy}. Hence the budget a mechanism
 achieves at the shared $\delta$, $\eps(p, \sigma)$, is smooth,
 strictly increasing in $p$, and strictly decreasing in $\sigma$.
 
-Now solve the constraints in order. (Budget) inverts fact (i): at a
+Now solve the constraints in order. Constraint \eqref{eq:budget} inverts fact (i): at a
 given $\sigma$, group $g$'s binding rate $p_g(\sigma, \eps_g)$ is
 the unique rate whose leakage exhausts the budget, and it rises in
 $\eps_g$ (a looser budget permits more sampling) and in $\sigma$
-(more noise creates sampling room, by (ii)). (Batch) then pins
+(more noise creates sampling room, by (ii)). Constraint \eqref{eq:batch} then pins
 $\sigma$: the expected batch $F(\sigma) := \sum_g |G_g|\,
 p_g(\sigma, \eps_g)$ is strictly increasing in $\sigma$, so exactly
 one $\sigma$ delivers $B$.
 
-Finally, loosen $\eps_j$. At the old $\sigma$ only $p_j$ moves,
-upward, so the batch overshoots $B$; raising $\sigma$ would raise
-every rate and overshoot further, so the unique restoring direction
-is $\sigma \downarrow$. Implicit differentiation of $F(\sigma) = B$
+Finally, tighten $\eps_j$. At the old $\sigma$ only $p_j$ moves,
+downward, so the batch undershoots $B$; lowering $\sigma$ would
+lower every rate and undershoot further, so the unique restoring
+direction is $\sigma \uparrow$. Implicit differentiation of
+$F(\sigma) = B$
 makes this quantitative,
 \[
 \frac{\partial \sigma}{\partial \eps_j}
@@ -74,7 +75,7 @@ and every other group's budget is unchanged, so its rate moves only
 through the noise: $\partial p_i / \partial \eps_j = (\partial p_i /
 \partial \sigma)(\partial \sigma / \partial \eps_j) < 0$. Note where
 the argument stops: if some $p_g$ caps at $1$ (a budget the noise
-cannot exhaust), (Budget) stops binding for that group and the signs
+cannot exhaust), \eqref{eq:budget} stops binding for that group and the signs
 can degenerate---the saturation corner excluded by the hypotheses
 and met once in \cref{sec:experiments}. \qed
 
@@ -96,9 +97,9 @@ A(p,\sigma) &\;=\; I\, p\, \Adv_G(\sigma) + O\bigl((I p)^2\bigr),\\
 \end{align*}
 the latter negative, valid in the regime $I p \ll 1$ (the composed
 remainder is controlled by the product $Ip$, not by $p$ alone).
-For the externality sign, substitute the closed form $p_i =
-\sigma\sqrt{\rho_i}/\sqrt{2I\alpha}$ from the small-$p$ closed
-form \eqref{eq:sigma-implicit} into the chain rule for $\partial
+For the externality sign, substitute the small-$p$ closed
+form $p_i = \sigma\sqrt{\rho_i}/\sqrt{2I\alpha}$ behind
+\eqref{eq:sigma-implicit} into the chain rule for $\partial
 \Apld{i}/\partial\eps_j$ and factor out
 $(\partial\sigma/\partial\eps_j)<0$, which yields
 \eqref{eq:proof-bracket}. The bracket is the $\sigma$-derivative of
@@ -108,19 +109,33 @@ $f(0)=0$ and $f'(u) = 2u^2\phi(u) > 0$, so the bracket is strictly
 positive and the leading $O(p_i)$ term of $\partial
 \Apld{i}/\partial\eps_j$ is strictly negative. \qed
 
-Intuitively, an $\eps_j$-move sends both of player $i$'s dials down
+Intuitively, a tightened $\eps_j$ raises both $p_i$ and $\sigma$
 together ($p_i \propto \sigma$ along the binding constraint):
-sampling less protects them, less noise exposes them. The bracket of
-\eqref{eq:proof-bracket} is the net of those two channels along the
-ray, and its positivity says the protection from reduced sampling
-strictly outweighs the exposure from reduced noise---at every
-$\sigma$, as long as $p_i$ is small enough that their advantage is
-essentially linear in their sampling rate.
+being sampled more exposes them, the extra noise protects them. The
+bracket of \eqref{eq:proof-bracket} is the net of those two channels
+along the line $p_i \propto \sigma$, and its positivity says the
+vulnerability added by the extra sampling strictly outweighs the
+protection added by the extra noise---at
+every $\sigma$, as long as $p_i$ is small enough that their
+advantage is essentially linear in their sampling rate.
 
-\subsection{The full-region sign
-(\texorpdfstring{\cref{prop:externality-full}}{Proposition}): reduction,
-obstruction, certificate}
+\subsection{The full-region sign: reduction, obstruction,
+certificate}
 \label{app:proof-full-region}
+
+\begin{proposition}[Full-region sign: reduction and certificate]
+\label[proposition]{prop:externality-full}
+Under the hypotheses of \cref{lem:externality}, with strict interior
+$p_g(\boldsymbol{\eps}) \in (0,1)$ for every group: (i) at fixed
+$\eps_i$, the mechanism holds player $i$'s leading-order (R\'enyi)
+privacy content invariant in $\eps_j$, so the cross-effect on $\Apld{i}$
+is carried entirely by higher-order terms of the privacy profile;
+(ii) the sign of that residual is $\partial \Apld{i} / \partial \eps_j <
+0$---analytically in the small-$p$ regime
+(\cref{cor:externality-small-p}), and by numerical certificate on
+every feasible interior cell of the $K{=}200$ mechanism grid
+(\cref{app:certificate}).
+\end{proposition}
 
 \paragraph{Reduction: the leading-order effect is exactly zero.} The
 composed Poisson-subsampled Gaussian trade-off function
@@ -137,9 +152,9 @@ p\sqrt{I}\sqrt{e^{1/\sigma^2}-1}$ (Gaussian-DP central-limit
 envelope; \cite{dong2022gaussian}, Cor.~3.3), and $\Adv(\mathcal
 G(\mu)) = 2\Phi(\mu/2)-1$ strictly increasing in $\mu$. Now observe
 what an $\eps_j$-move does to player $i$'s pair $(p_i, \sigma)$ on the
-strict interior: their (Budget) constraint stays binding, so $p_i =
-\sigma\sqrt{\rho_i}/\sqrt{2I\alpha}$---the mechanism slides along the
-ray $p_i \propto \sigma$, on which the ratio $p_i/\sigma$, and hence
+strict interior: their budget constraint \eqref{eq:budget} stays binding, so $p_i =
+\sigma\sqrt{\rho_i}/\sqrt{2I\alpha}$---the mechanism moves along the
+line $p_i \propto \sigma$, on which the ratio $p_i/\sigma$, and hence
 the upper-envelope scale $\mu_+$, is \emph{constant}. This is the
 structural content of part (i), and worth pausing on: the mechanism
 is built to hold every player's nominal guarantee fixed, so at the
@@ -151,27 +166,27 @@ shape of the privacy profile---which is precisely why it hides
 \paragraph{Obstruction: why no full analytic closure.} Because the
 leading term cancels, the sign of $\partial \Apld{i} / \partial \eps_j$
 must come from the residual, and the envelope pair is too loose to
-extract it: along the ray, $\mu_+$ is constant while $\mu_-$ moves
+extract it: along the line, $\mu_+$ is constant while $\mu_-$ moves
 \emph{against} the claimed direction (as $\sigma$ falls,
 $\sigma\sqrt{e^{1/\sigma^2}-1}$ rises), so the sandwich brackets
 $\Apld{i}$ without ordering its response. Likewise the pointwise profile
 monotonicities---$A$ increasing in $p$ at fixed $\sigma$, decreasing
 in $\sigma$ at fixed $p$~\cite{balle2020privacy}---pull in opposite
-directions along the ray and do not decide it either. In the
+directions along the curve and do not decide it either. In the
 small-$p$ regime the residual \emph{is} decided:
 \cref{cor:externality-small-p} evaluates the derivative along the
-ray exactly, and the bracket of \eqref{eq:proof-bracket} says the
+line exactly, and the bracket of \eqref{eq:proof-bracket} says the
 sampling channel strictly dominates the noise channel. Beyond small
 $p$ we know of no analytic argument and flag the closure as open.
 
 \paragraph{Certificate.} The full-region claim is therefore certified
-exhaustively instead: the finite-difference sign is negative on
-$99.1\%$ of the feasible interior cells of the $K{=}200$ grid at
-jitter-free strides (\cref{app:certificate}), with the residual
-concentrated exactly where the ray argument itself breaks---the
-saturation corner ($p_g \to 1$, where (Budget) stops binding and
-$p_i$ decouples from $\sigma$) and the feasibility edge (where the
-implicit differentiation of \eqref{eq:sigma-implicit} is undefined).
+exhaustively instead: the unit-stride finite-difference sign is
+negative on every feasible interior cell of the $K{=}200$ grid
+(\cref{app:certificate}). The saturation corner ($p_g \to 1$, where
+\eqref{eq:budget} stops binding and $p_i$ decouples from $\sigma$) and the
+feasibility edge (where the implicit differentiation of
+\eqref{eq:sigma-implicit} is undefined) remain outside the
+hypotheses.
 \qed
 
 \subsection{Proof of \texorpdfstring{\cref{prop:no-symmetric-ne}}{the no-symmetric-NE proposition}}
@@ -187,7 +202,7 @@ the conserved batch---can decide the second-order test.
 \delta)}$ where $\rho(\cdot,\delta)$ is the \ac{RDP}-order-$\alpha$ bound
 from the small-$p$ closed form \eqref{eq:sigma-implicit}. Then $\eps_i \mapsto s_i$
 is a $C^1$ diffeomorphism on the interior; substituting the closed
-form of $p_g(\sigma,\eps_g)$ into (Batch) yields, with $|G_1| = |G_2| =
+form of $p_g(\sigma,\eps_g)$ into \eqref{eq:batch} yields, with $|G_1| = |G_2| =
 m$,
 \begin{equation}
 \sigma(s_1, s_2) \;=\; \frac{C}{s_1 + s_2},
@@ -196,7 +211,7 @@ p_i(s_1, s_2) \;=\; \frac{C}{\sqrt{2 I \alpha}}\cdot\frac{s_i}{s_1 + s_2},
 \label{eq:agg-form}
 \end{equation}
 with $C := B \sqrt{2 I \alpha}/m > 0$. Utility becomes $u_i(s_1,
-s_2) = V(\sigma(S)) - w\, A(p_i, \sigma(S))$ with $S := s_1 + s_2$
+s_2) = V(\sigma(S)) - \lambda\, A(p_i, \sigma(S))$ with $S := s_1 + s_2$
 and the same $A(\cdot,\cdot)$ for both players.
 
 \emph{Diagonal FOC collapses.} Fix $s_1 = s_2 = s > 0$, so $\sigma =
@@ -209,8 +224,8 @@ sampling rate is monotone in their \emph{share} $s_i/S$. Player 1's
 first-order condition in $s_1$,
 \begin{equation}
 \frac{\partial u_1}{\partial s_1}
-\;=\; \bigl[V'(\sigma) - w b\bigr] \Bigl(-\tfrac{\sigma}{2 s}\Bigr)
-    \;-\; w a \,\tfrac{p}{2 s}
+\;=\; \bigl[V'(\sigma) - \lambda b\bigr] \Bigl(-\tfrac{\sigma}{2 s}\Bigr)
+    \;-\; \lambda a \,\tfrac{p}{2 s}
 \;=\; 0,
 \label{eq:foc-diagonal}
 \end{equation}
@@ -223,105 +238,170 @@ and the aggregator identities,
 \[
 \frac{\partial u_1}{\partial s_2}
 \;=\; \frac{\partial u_1}{\partial s_1}
-   + w a\, \Bigl(\frac{\partial p_1}{\partial s_1} - \frac{\partial
+   + \lambda a\, \Bigl(\frac{\partial p_1}{\partial s_1} - \frac{\partial
    p_1}{\partial s_2}\Bigr)
-\;=\; w a \cdot \frac{p}{s} \;>\; 0.
+\;=\; \lambda a \cdot \frac{p}{s} \;>\; 0.
 \]
 
 \emph{Second-order test.} Apply the difference operator $D_1 - D_2$
 to $D_1 u_1$. Because $\sigma$ depends on $(s_1,s_2)$ only through
 $S$, every term that is a function of $S$ alone is killed:
 $V'(\sigma)\sigma'(S)$ drops out entirely. Two families survive,
-both through the $p_1$-dependence. First, in the term $-w
+both through the $p_1$-dependence. First, in the term $-\lambda
 A_\sigma(p_1,\sigma)\,\sigma'(S)$ the coefficient $A_\sigma$ depends
-on $p_1$, contributing $-w\,a_{p\sigma}\,(p/s)\,\sigma'(S) =
-+\tfrac{wp}{2s^2}\,\sigma\, a_{p\sigma}$ (using $\sigma'(S) =
--\sigma/2s$). Second, the own-rate term $-w A_p\, p_{1,1}$
-contributes $-w\,a_{pp}(p/s)\,p_{1,1} - w\,a\,(D_1-D_2)p_{1,1} =
--\tfrac{wp}{2s^2}\,p\,a_{pp} + \tfrac{wp}{2s^2}\,a$ (from
-\eqref{eq:agg-form}, $p_{1,1} = p/2s$ and $(D_1-D_2)p_{1,1} =
+on $p_1$, contributing $-\lambda\,a_{p\sigma}\,(p/s)\,\sigma'(S) =
++\tfrac{\lambda p}{2s^2}\,\sigma\, a_{p\sigma}$ (using $\sigma'(S) =
+-\sigma/2s$). Second, the own-rate term $-\lambda A_p\, p_{1,1}$
+contributes $-\lambda\,a_{pp}(p/s)\,p_{1,1} -
+\lambda\,a\,(D_1-D_2)p_{1,1} =
+-\tfrac{\lambda p}{2s^2}\,p\,a_{pp} + \tfrac{\lambda p}{2s^2}\,a$
+(from \eqref{eq:agg-form}, $p_{1,1} = p/2s$ and $(D_1-D_2)p_{1,1} =
 -p/2s^2$). Altogether, at the diagonal,
 \begin{equation}
 \frac{\partial^2 u_1}{\partial s_1^2}
 -\frac{\partial^2 u_1}{\partial s_1 \partial s_2}
-\;=\; \frac{w\, p}{2\, s^2}\,\bigl(a + \sigma\, a_{p\sigma}
+\;=\; \frac{\lambda\, p}{2\, s^2}\,\bigl(a + \sigma\, a_{p\sigma}
       - p\, a_{pp}\bigr),
 \label{eq:soc-difference}
 \end{equation}
 with $a_{p\sigma} := \partial^2 A/\partial p\,\partial\sigma$ and
-$a_{pp} := \partial^2 A/\partial p^2$ at $(p,\sigma)$; the bracket is
-the responsiveness condition \eqref{eq:sign-condition}. The proof additionally requires
-$\partial^2 u_1 / (\partial s_1 \partial s_2) \geq 0$ at the
-candidate; we do not derive this from primitives---it is verified
-numerically on the mechanism caches, alongside a direct verification
-of the conclusion itself: player 1's utility slice through every
-interior diagonal first-order candidate exhibits the local minimum
-(\cref{app:symbreak}). Under \eqref{eq:sign-condition} and the mixed-partial
-condition, $\partial^2 u_1 / \partial s_1^2 > 0$ strictly at the
-diagonal FOC: the profile is a strict interior \emph{minimum} of
-$u_1(\cdot, s^\star)$, and
-\[
-u_1(s^\star + t, s^\star) - u_1(s^\star, s^\star)
-= \tfrac{1}{2}\,\partial^2_{s_1} u_1 \, t^2 + O(t^3) > 0
-\]
-for all small $t \neq 0$: a strictly profitable unilateral deviation
-in either direction. Non-FOC diagonal profiles fail the first-order
-test directly, and the $C^1$ diffeomorphism transports the conclusion
-back to $\eps$-coordinates. \qed
+$a_{pp} := \partial^2 A/\partial p^2$ at $(p,\sigma)$. The difference
+alone does not decide the test: the trough requires $\partial^2
+u_1/\partial s_1^2 > 0$ itself. Differentiating once more and
+evaluating at the diagonal---the $a_{p\sigma}$ contributions to the
+mixed partial cancel---gives
+\begin{equation}
+\frac{\partial^2 u_1}{\partial s_1\,\partial s_2}
+\;=\; \frac{1}{4 s^2}\Bigl[\,\sigma^2 V'' + 2\sigma V'
+   \;+\; \lambda\bigl(p^2 a_{pp} - \sigma^2 A_{\sigma\sigma}
+   - 2\sigma A_\sigma\bigr)\Bigr],
+\label{eq:mixed-diagonal}
+\end{equation}
+and adding \eqref{eq:soc-difference} yields the exact diagonal
+curvature,
+\begin{equation}
+4 s^2\,\frac{\partial^2 u_1}{\partial s_1^2}
+\;=\; \underbrace{\sigma^2 V'' + 2\sigma V'}_{\textrm{shared
+utility}}
+\;+\; \lambda\underbrace{\bigl(2 p a + 2 p \sigma a_{p\sigma}
+      - p^2 a_{pp} - \sigma^2 A_{\sigma\sigma}
+      - 2 \sigma A_\sigma\bigr)}_{\textrm{own risk}}
+\;=:\; \Psi.
+\label{eq:diag-curvature}
+\end{equation}
+A diagonal first-order candidate is a strict local \emph{minimum}
+of own utility---a trough, hence no equilibrium---iff $\Psi > 0$,
+and a strict local \emph{maximum}, a symmetric equilibrium
+candidate, iff $\Psi < 0$.
 
-Condition \eqref{eq:sign-condition} holds symbolically in the
-small-$p$ expansion: there $a = I\Adv_G(\sigma)$, $a_{p\sigma} =
-I\Adv_G'(\sigma)$, $a_{pp} = O(I^2 p)$, so the bracket equals
-$I\sigma\,[\Adv_G(\sigma)/\sigma + \Adv_G'(\sigma)] + O(I^2 p) > 0$
-by the positivity of the bracket in \eqref{eq:proof-bracket}---the
-diagonal deviation incentive and the externality sign are governed by
-the \emph{same} sampling-dominates-noise quantity. Both
-\eqref{eq:sign-condition} and the mixed-partial condition were
-verified numerically on every diagonal profile of the mechanism
-caches used in \cref{sec:experiments}.
+\emph{The provable regime.} In the small-$p$ expansion, $a = I
+\Adv_G$, $a_{p\sigma} = I \Adv_G'$, $A_\sigma = I p \Adv_G'$,
+$A_{\sigma\sigma} = I p \Adv_G''$, $a_{pp} = O(I^2 p)$, so the risk
+term collapses to $\lambda I p\,[\,2\Adv_G(\sigma) - \sigma^2
+\Adv_G''(\sigma)\,] + O((Ip)^2)$, which is strictly positive: with
+$u := 1/(2\sigma)$, $\sigma^2 \Adv_G'' = 4 u\varphi(u) - 2
+u^3\varphi(u)$, so $2\Adv_G - \sigma^2\Adv_G'' = 2\,[\,2\Phi(u) - 1
+- 2 u\varphi(u)\,] + 2 u^3 \varphi(u)$, and the bracket vanishes at
+$u = 0$ with derivative $2 u^2 \varphi(u) > 0$. For the canonical
+$V(\sigma) = 1/(1+\sigma^2)$ the shared-utility term is
+\[
+\sigma^2 V'' + 2\sigma V'
+\;=\; \frac{2\,\sigma^2 (\sigma^2 - 3)}{(1+\sigma^2)^3},
+\]
+non-negative exactly on $\sigma \geq \sqrt 3$---the complement of
+the strategic-substitutes region $\sigma \leq \sqrt 3$ of
+\cref{thm:continuous-ne-smallp}. On $\sigma \geq \sqrt 3$ both
+terms of $\Psi$ are positive, the candidate is a trough, non-FOC
+diagonal profiles fail the first-order test directly, and the $C^1$
+diffeomorphism transports the conclusion back to
+$\eps$-coordinates. \qed
+
+Below $\sigma = \sqrt 3$ the two terms of $\Psi$ compete: the
+shared utility saturates---$V$ is bounded, so joint loosening buys
+less and less---and its curvature along the diagonal turns
+negative, while the risk term still pushes toward the trough. Where
+the utility saturation wins, the diagonal candidate flips from
+trough to peak and a symmetric equilibrium becomes possible. Two
+caveats bound what the model analysis can claim there. First, the
+sign of $\Psi$ below $\sqrt 3$ is parameter-dependent; it must be
+measured. Second, the aggregator form \eqref{eq:agg-form} is itself
+the small-$p$ closed form, and the canonical operating points sit
+at $I p \approx 5$, where the composed advantage saturates and the
+expansion is quantitatively unreliable---the difference bracket in
+\eqref{eq:soc-difference}, for instance, evaluates \emph{negative}
+at the operating points ($-2.1$ at $\eps = 2.96$, $-4.9$ at $\eps =
+10.28$, by finite differences of the exact \ac{PLD} advantage), so
+no positivity claim for it survives outside the expansion. We
+therefore classify the exact mechanism's diagonal directly, on the
+clean $K = 200$ cache: every interior feasible diagonal cell admits
+a strictly profitable unilateral deviation \emph{except} in a
+single window around $\eps \approx 3$, where the first-order
+candidate at $\eps^\star = 2.96$ ($\sigma = 1.16 < \sqrt 3$) is a
+strict local maximum of own utility---confirmed on a $25$-point
+local refinement of the action grid, on which every deviation
+strictly loses---and a global best response to itself: the
+symmetric pure equilibrium reported in \cref{sec:no-symmetric-ne}
+(\cref{app:symbreak}).
 
 \subsection{Numerical anatomy of symmetry breaking}
 \label{app:symbreak}
 
-The quantities behind the discussion following
+The quantities behind the discussion around
 \cref{prop:no-symmetric-ne}, all computed on the canonical $K = 200$
-mechanism cache at $w = 1$.
+mechanism cache at $\lambda = 1$ and summarised in
+\cref{fig:symbreak}.
 
-\emph{Diagonal trough.} Every feasible diagonal profile admits a
-strictly profitable unilateral deviation; the smallest best-deviation
-gain across all $200$ diagonal cells is $1.9\times 10^{-3}$ utility.
-At the interior diagonal cells where the discrete own-action
-first-order condition changes sign, the profile is a local minimum of
-own utility, with deviation gains on \emph{both} sides (e.g.\ at
-$\eps^\ast = 10.28$: $+0.34$ upward, $+0.19$ downward); only near the
-saturated top of the grid does the trough degenerate to a one-sided
-slope.
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_symmetry_breaking.pdf}
+\caption{\textbf{Anatomy of symmetry breaking} ($K=200$ mechanism
+cache, symmetric two-player game). \emph{(a)} Player 1's utility
+against an opponent fixed at the diagonal first-order candidate
+$\eps^\ast$: the symmetric profile (dot) is a local minimum of their
+own utility---deviating in either direction pays. \emph{(b)}
+Alternating best-response dynamics started at diagonal profiles
+(circles): every trajectory leaves the diagonal at the first response
+and terminates at an off-diagonal pure Nash equilibrium (stars).}
+\label{fig:symbreak}
+\end{figure}
+
+\emph{Diagonal trough and the saturation window.} Outside the
+saturation window, every feasible diagonal cell admits a strictly
+profitable unilateral deviation, with median best-deviation gain
+$0.122$ utility across the $200$ diagonal cells
+(\cref{fig:symbreak}(a)). The discrete own-action first-order
+condition changes sign at eight interior diagonal cells, $\eps^\ast
+\in [1.78, 4.07]$; at the lower candidates the trough holds (e.g.\
+$\eps^\ast = 2.11$: $+0.007$ upward, $+0.0003$ downward), and at
+$\eps^\ast = 2.96$ it flips---both deviations lose, the cell is the
+symmetric pure equilibrium of \cref{sec:no-symmetric-ne}.
 
 \emph{Strategic substitutes.} The discrete cross-difference
 $u_1(\eps^{+h}_1,\eps^{+h}_2) - u_1(\eps^{+h}_1,\eps^{-h}_2) -
 u_1(\eps^{-h}_1,\eps^{+h}_2) + u_1(\eps^{-h}_1,\eps^{-h}_2)$ centred
-on diagonal cells is negative on $66.7\%$ / $79.8\%$ / $91.1\%$ of
-cells at strides $h = 4$ / $8$ / $16$; as with the sign certificate
-of \cref{app:certificate}, fine strides are dominated by
-\ac{PLD}-accountant jitter, and the coarser strides carry the signal.
+on diagonal cells is negative on $81.2\%$ / $90.2\%$ / $95.2\%$ of
+cells at strides $h = 4$ / $8$ / $16$; the coarser strides average
+over the \ac{PLD}-accountant's discreteness and carry the signal.
 
 \emph{Best-response dynamics.} Alternating best-response dynamics
-started at each of the $200$ feasible diagonal profiles leave the
-diagonal at the first response in every case, and every run
-terminates at an off-diagonal pure Nash equilibrium (median one
-round of play).
+started at each of the $200$ feasible diagonal profiles end
+off-diagonal in $197$ cases---the three exceptions start inside the
+saturation window and stay at the symmetric equilibrium---with a
+median of two steps of play; $134$ of the $200$ runs terminate at a
+pure Nash equilibrium within the iteration budget, the remainder in
+best-response cycles between near-tied asymmetric profiles
+(\cref{fig:symbreak}(b)).
 
-\emph{Symmetric mixed equilibrium.} On the $K = 22$ discretisation
-(infeasible profiles assigned a strictly dominated penalty payoff, so
-no equilibrium weights them), exact support enumeration finds the
-symmetric mixed equilibrium supported on the two budgets of the
-most-balanced mirror pure pair: $\eps = 2.52$ with probability
-$0.756$ and $\eps = 3.17$ with probability $0.244$, equilibrium value
-$0.304$ against the exposed-role payoff $0.296$ and protected-role
-payoff $0.335$ of the corresponding pure pair. Under this lottery the
-players draw distinct budgets with probability $0.37$; equal draws
-land on symmetric profiles that are themselves not equilibria---the
-mixing defers the role assignment, it does not remove it.
+\emph{Symmetric equilibria of the restriction.} Restricted to the
+two budgets of the mirror pair $(1.12, 7.13)$, the game is
+Hawk--Dove: $u(\textrm{tight}, \textrm{loose}) = (0.505, 0.253)$,
+both symmetric profiles of the restriction unstable, and the
+restriction's unique symmetric equilibrium mixed, playing tight
+with probability $0.445$ at value $0.349$---strictly between the
+two role payoffs. On the full $K = 22$ game, exact support
+enumeration finds no proper mixed symmetric equilibrium up to
+support size five; the game's symmetric equilibrium is the pure one
+of the saturation window, present already at that resolution.
 
 \subsection{Proof of \texorpdfstring{\cref{prop:self-sorting}}{the self-sorting proposition}}
 \label{app:proof-self-sorting}
@@ -365,7 +445,7 @@ $K = 200$ sweeps of \cref{sec:experiments} are certified. At $\lambda_1 =
 \lambda_2$, (S) holds with equality and the argument degenerates to
 closure of the \ac{NE} set under the swap $(\eps_1,\eps_2)
 \leftrightarrow (\eps_2,\eps_1)$---the mirror pairs of
-\cref{sec:C1}.
+\cref{sec:no-symmetric-ne}.
 
 \subsection{Proof sketch of \texorpdfstring{\cref{thm:continuous-ne-smallp}}{the existence theorem}}
 
@@ -471,7 +551,7 @@ $\mathrm{sgn}\,V'$.
 \end{proposition}
 
 The proof is by
-inspection: the mechanism constraints (Budget)--(Batch) and the closed form
+inspection: the mechanism constraints \eqref{eq:budget}--\eqref{eq:batch} and the closed form
 $p_g(\sigma,\eps_g)$ never read $V$, so
 \cref{lem:externality,cor:externality-small-p,prop:externality-full}
 and \cref{cor:coalition-attack} (which uses only the externality sign
@@ -495,7 +575,7 @@ elementwise work on the cached tensor.
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/fig_h5_v_shape.pdf}
-  \caption{\textbf{Model-utility ablation} ($K=200$, $w=1$). Pure \ac{NE}
+  \caption{\textbf{Model-utility ablation} ($K=200$, $\lambda=1$). Pure \ac{NE}
     locations under six admissible shapes for $V$. Under every shape,
     $100\%$ of the pure \acp{NE} sit off the diagonal.}
   \label{fig:H5-v-shape}
@@ -519,7 +599,7 @@ elementwise work on the cached tensor.
   \caption{Per-$V$ pure-\ac{NE} count, mean one-sided Hausdorff distance
     from a $V_1$-\ac{NE} to its nearest \ac{NE} under $V_k$ (decades of
     $\log_{10}\eps$), and externality-sign agreement with $V_1$ over
-    interior feasible edges. $K = 200$, $w = 1$.}
+    interior feasible edges. $K = 200$, $\lambda = 1$.}
   \label{tab:H5-v-shape}
 \end{table}
 
@@ -564,64 +644,47 @@ the crossover and suppressing it above.}
 This is the certificate that part (ii) of
 \cref{prop:externality-full} relies on beyond the small-$p$ regime
 (\cref{app:proof-full-region}): we certify the sign on the $K=200$
-mechanism cache by finite differences. Of the $40{,}000$ grid cells, $64.6\%$ are feasible. At
-stride $h$ grid steps, the fraction of feasible interior cells with
-the predicted cross-sign $\partial \Apld{i}/\partial \eps_j < 0$ rises
-monotonically from $72.4\%$ at $h=1$ to $93.6\%$ at $h=8$ and
-$99.1\%$ ($99.4\%$ on the strict interior) at $h=32$; the
-own-direction sign $\partial \Apld{i}/\partial \eps_i > 0$ certifies at
-$93$--$99.8\%$ over the same strides
-(\cref{fig:dade}). The stride dependence is a measurement artefact,
-not a counterexample population: at $h=1$ the finite difference is
-dominated by \ac{PLD}-accountant discretisation jitter (order switching in
-the accountant produces non-monotone noise at the $10^{-3}$ scale of
-one grid step), which averages out at coarser strides. We therefore
-quote the $h \ge 8$ figures as the certificate and flag the
-fine-stride jitter as a solver-tolerance effect; the same effect
-accounts for the isolated non-monotone cells noted in
-\cref{app:wsweep}.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.95\linewidth]{figures/fig_da_de_certificate.pdf}
-  \caption{\textbf{Finite-difference certificate} of the externality
-    sign on the $K=200$ cache: fraction of feasible interior cells
-    with $\partial \Apld{i}/\partial\eps_j < 0$ (cross) and $\partial
-    \Apld{i}/\partial\eps_i > 0$ (own) as a function of the differencing
-    stride. Fine strides are dominated by \ac{PLD}-accountant jitter;
-    the sign certifies at $99.1\%$ (cross) and $99.8\%$ (own) at
-    $h=32$.}
-  \label{fig:dade}
-\end{figure}
+mechanism cache by finite differences. Of the $40{,}000$ grid
+cells, $64.5\%$ are feasible, matching the analytic participation
+frontier cell-for-cell. At unit stride---one grid step, no
+smoothing---the predicted cross-sign $\partial \Apld{i}/\partial
+\eps_j < 0$ holds at every one of the $25{,}612$ feasible interior
+differences, and the own-direction sign $\partial \Apld{i}/\partial
+\eps_i > 0$ likewise at $25{,}612$ of $25{,}612$. The certificate
+is exhaustive on the feasible region; no stride averaging or
+jitter exclusion is required.
 
 \section{Symmetric weight sweep}
 \label{app:wsweep}
 
-Sweeping the \emph{common} weight $w \in \{0.125, 0.25, 0.5, 1, 2,
+Sweeping the \emph{common} weight $\lambda \in \{0.125, 0.25, 0.5, 1, 2,
 4\}$ for both players moves how much everyone cares, without breaking
-symmetry (\cref{fig:C7}). The asymmetric structure is remarkably
-insensitive: the pure-\ac{NE} count stays between $18$ and $52$ across the
-sweep, and every equilibrium is off-diagonal, with a single exception
-out of $241$---one diagonal profile at the utility-heavy extreme $w =
-0.125$, at $(\eps_1,\eps_2) = (26.6, 26.6)$, which sits on a grid
-cell where the numerical mechanism solver is locally non-monotone in
-$\eps$ and which we therefore attribute to solver tolerance rather
-than game structure. What the weight does move is \emph{where} the
-cloud sits (privacy-heavy play compresses budgets downward) and how
+symmetry (\cref{fig:C7}). On the utility-leaning half of the sweep
+the asymmetric structure is insensitive: $\lambda \in \{0.125, 0.25,
+0.5\}$ yields $34$--$62$ pure \acp{NE}, all off-diagonal, and
+$\lambda = 1$ adds the saturation-window equilibrium to its $42$
+asymmetric ones. The privacy-heavy extreme is different in kind: at
+$\lambda = 2$ the grid has \emph{no} pure equilibrium---only mixed
+play survives---and at $\lambda = 4$ a single corner equilibrium
+$(0.5, 0.5)$ remains. The weight also moves \emph{where} the cloud
+sits (privacy-heavy play compresses budgets downward) and how
 costly equilibrium play is in aggregate, quantified in
-\cref{sec:poev}: at $w \le 0.25$ most equilibria inflate aggregate
-advantage over the uniform baseline (up to $+170\%$), while at $w \ge
-2$ every equilibrium deflates it.
+\cref{sec:poev}: at $\lambda \le 0.25$ \emph{every} equilibrium
+inflates aggregate advantage over the uniform baseline (up to
+$+165\%$), at $\lambda = 0.5$ still $94\%$ of them do, while at
+$\lambda = 1$ only $14\%$ do and the $\lambda = 4$ corner deflates
+it by $82\%$.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=\linewidth]{figures/fig_C7_w_ratio.pdf}
+\includegraphics[width=\linewidth]{figures/fig_C7_lambda_ratio.pdf}
 \caption{\textbf{Symmetric weight sweep} ($K=200$). Pure \ac{NE} clouds at
-common weights $w \in \{0.125, \dots, 4\}$ (centroids and $68\%$
-dispersion ellipses); the dashed line is the diagonal. The \ac{NE} set
-remains off-diagonal at every weight ($240$ of $241$ equilibria; the
-one exception is a solver-tolerance artefact discussed in the text),
-shifting toward lower budgets as privacy weight grows.}
+common weights $\lambda \in \{0.125, \dots, 4\}$ (centroids and $68\%$
+dispersion ellipses); the dashed line is the diagonal. The \ac{NE}
+set stays off-diagonal at every weight except the $\lambda = 1$
+saturation-window equilibrium and the $\lambda = 4$ corner $(0.5,
+0.5)$; at $\lambda = 2$ no pure equilibrium exists. The cloud shifts
+toward lower budgets as privacy weight grows.}
 \label{fig:C7}
 \end{figure}
 
@@ -642,7 +705,7 @@ persuasion~\cite{kamenica2011bayesian} are conceptually adjacent but
 solve different design problems. The BR-PEG of \cref{sec:brpeg} is
 the Stackelberg-learning template with the tabular follower payoff
 replaced by the DP-accountant coupling of \cref{def:sampling-idp};
-the follower's private type is $\theta_H = (w_H, n_H)$, the leader
+the follower's private type is $\theta_H = (\lambda_H, n_H)$, the leader
 observes $(\eps_H^t, u_H^t)$ after each round, and the finite type
 space with a full-support prior makes Kalai--Lehrer merging
 automatic---the interesting content is what the leader does once the
@@ -677,7 +740,7 @@ so the posterior-greedy arm equals $\eps_M^\star$ for all subsequent
 rounds; separation from $\eps^{\min}$ is (A). \qed
 
 \paragraph{Clean demo instance.} With three well-separated types
-($\Theta = \{w_H \in \{0.5, 1, 2\}\}$, truth $w_H^\star = 2$, $n_H =
+($\Theta = \{\lambda_H \in \{0.5, 1, 2\}\}$, truth $\lambda_H^\star = 2$, $n_H =
 n_M = 5000$, canonical parameters), the posterior collapses after a
 single round; from $t = 1$ the Bayesian-greedy leader plays
 $\eps_M^\star \approx 3.08$, eliciting $\eps_H \approx 19$ and $A_H
@@ -717,7 +780,7 @@ framework without modification and are left open.
 \paragraph{Environment.} Player $i$'s group size is public; their type
 is their privacy weight $\lambda_i > 0$, private. A direct-revelation \ac{iDP}
 mechanism maps reported budgets to a mechanism solution satisfying
-(Budget)--(Batch), with no transfers; sampling-based \ac{iDP} as deployed is the
+\eqref{eq:budget}--\eqref{eq:batch}, with no transfers; sampling-based \ac{iDP} as deployed is the
 \emph{identity mechanism} on the budget channel.
 
 \paragraph{Proof of \cref{prop:non-strategyproof}.} Fix $i$ and $\lambda_i
@@ -740,7 +803,7 @@ dominates. \qed
 
 \paragraph{Why the classical escapes fail.} The large-market recovery
 of~\cite{kearns2014mechanism} requires single-agent influence to
-vanish; a silo moves (Batch) at $\Theta(1)$. The impossibility results
+vanish; a silo moves \eqref{eq:batch} at $\Theta(1)$. The impossibility results
 for unbounded privacy valuations~\cite{nissim2014redrawing,
 ghosh2011selling} are not the obstacle (utility here is bounded); the
 obstacle is the coupled $\sigma$: the positive results
@@ -766,7 +829,7 @@ constrains. We leave the constructive design problem to future work.
 Grid refinement from $K=22$ through $K=200$ multiplies the resolved
 pure-\ac{NE} count ($8 \to 48$) while preserving the structural
 invariants---zero diagonal equilibria, mirror pairing, the
-budget-ratio band, and the BR-loci geometry (\cref{sec:C1}).
+budget-ratio band, and the BR-loci geometry (\cref{sec:no-symmetric-ne}).
 Substituting admissible alternatives for $V$ preserves the structure
 (\cref{app:v-shape}). On a $K' = 50$ subgrid of the canonical game,
 the equilibrium count is insensitive to \emph{lowering} the

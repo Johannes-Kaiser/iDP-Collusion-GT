@@ -1,27 +1,50 @@
-\section{Equilibrium Analysis: Someone Must Carry the Risk}
+\section{Equilibrium Analysis: Equal Protection Is Unstable}
 \label{sec:analysis}
 
 As orientation before the details, the section's argument in brief:
-the externality is monotone; monotonicity rules out symmetric pure
-equilibria; preference heterogeneity then decides who carries the
-exposed role; equilibria exist in the practically relevant regime,
-though the game admits no potential function; and coalition play
-recovers the known attack. The subsections develop these claims in
-exactly this order; full proofs are deferred to \cref{app:proofs},
-and the short ones stay inline.
+the externality has a definite sign---tightening one player's budget
+raises every other player's \ac{PLD}-advantage at their unchanged
+contracts; symmetric play is unstable wherever the shared utility
+is unsaturated---one knife-edge symmetric equilibrium survives
+where it is not---so equilibrium protection is generically unequal;
+preference heterogeneity decides in whose favour; equilibria exist in the practically
+relevant regime, even though the standard potential-based existence
+arguments do not apply; and coalition play recovers the known
+attack. The subsections develop these claims in this order; full
+proofs are deferred to \cref{app:proofs}, and the short ones stay
+inline. Each claim is checked against numerical evidence in place,
+so that the analysis and its verification read as one argument.
+
+\paragraph{Numerical pipeline.}\label{sec:setup} All numerical
+evidence below is analytical---no model is trained---and comes
+from one pipeline. We solve the mechanism of
+\cref{def:sampling-idp} by bisecting on $\sigma$ until
+\eqref{eq:batch} is met, with each per-group rate chosen to make
+\eqref{eq:budget} bind under the R\'enyi
+accountant~\cite{mironov2017renyi}; profiles where any $p_i$ falls
+below a participation threshold are flagged infeasible
+(\cref{ass:participation}, \cref{app:mechanism}). Each realised
+$\Apld{i}$ is then computed exactly by \ac{PLD}
+accounting~\cite{google-dp-accounting}---the level-2 advantage of
+\eqref{eq:hierarchy}, not the level-1 ceiling. The canonical
+action grid is log-spaced with $K = 200$ points on $[0.5, 64]$ at
+$\delta = 10^{-12}$; unless noted otherwise, groups are symmetric
+with $|G_g| = 5000$, $B = 128$, $5$ training epochs, $\lambda_i =
+1$, and $V(\sigma) = 1/(1+\sigma^2)$, mirroring the empirical
+\ac{iDP} scenarios of \citet{kaiser2026your, boenisch2023have}.
 
 \subsection{The externality is monotone}
 
 Player $i$'s risk depends on exactly two quantities, $(p_i, \sigma)$,
 and the mechanism sets both from the whole budget vector. The first
 lemma fixes the \emph{direction} in which the other players' choices
-move them.
+move that pair.
 
 \begin{lemma}[Privacy externality on the feasible region]
 \label[lemma]{lem:externality}
 Consider the sampling-based \ac{iDP} mechanism of \cref{def:sampling-idp}
-on a feasible profile $\boldsymbol{\eps}$ at which constraints (Budget)
-bind for every group and (Batch) binds at $B$. Then for every pair $i
+on a feasible profile $\boldsymbol{\eps}$ at which constraints \eqref{eq:budget}
+bind for every group and \eqref{eq:batch} binds at $B$. Then for every pair $i
 \neq j$,
 \begin{equation}
 \frac{\partial \sigma}{\partial \eps_j} \;<\; 0
@@ -29,33 +52,50 @@ bind for every group and (Batch) binds at $B$. Then for every pair $i
 \frac{\partial p_i}{\partial \eps_j} \;<\; 0.
 \label{eq:externality-lemma}
 \end{equation}
-When player $j$ loosens their budget, the mechanism uses less noise and
-samples everyone else less.
+When player $j$ tightens their budget, the mechanism adds noise and
+samples everyone else more.
 \end{lemma}
 
 \begin{proof}[Proof idea]
-The externality travels through the only two quantities the players
-share: the batch and the noise. Amplification makes each group's
-binding rate $p_g(\sigma, \eps_g)$ increase in its own budget and in
-the shared $\sigma$~\cite{balle2020privacy}, so the expected batch
-is strictly increasing in $\sigma$ and (Batch) pins a unique
-$\sigma$. When player $j$ loosens their budget, they claim a larger
-share of the fixed batch; the solver can restore $B$ only by
-lowering $\sigma$, and the lower noise shrinks every other player's
-binding rate. Player $i$'s mechanism has moved---in both
-dials---though $\eps_i$ never did. Full proof in
+The externality travels through what all players share: the batch
+and the noise. Amplification makes the sampling rate at which group
+$g$ exhausts its budget, $p_g(\sigma, \eps_g)$, increase in that
+budget and in the shared $\sigma$~\cite{balle2020privacy}, so the
+expected batch is strictly increasing in $\sigma$ and \eqref{eq:batch} pins
+a unique $\sigma$. When player $j$ tightens their budget, they
+relinquish part of the fixed batch; the solver can restore $B$ only
+by raising $\sigma$, and the extra noise raises every other group's
+rate. Player $i$'s mechanism has moved---in both $p_i$ and
+$\sigma$---though $\eps_i$ never did. Full proof in
 \cref{app:proof-externality}.
 \end{proof}
 
-The lemma leaves the sign of the externality genuinely undecided:
-when player $j$ loosens their budget, player $i$ is sampled less
-(safer) under less noise (more exposed), and the two channels race.
-The next result settles the race where \ac{DPSGD} actually
-operates---small sampling rates, where player $i$'s advantage is
-essentially linear in their rate. There, the protection from being
-sampled less strictly outweighs the exposure from the thinner noise,
-at every $\sigma$: tightening a budget always exports risk onto the
-others.
+The lemma does not yet determine the sign of the externality: when
+player $j$ tightens their budget, player $i$ is sampled more but
+under more noise, and the two effects oppose each other. The next
+two results settle the sign, and both rest on the same observation.
+Player $i$'s contract holds $\eps_i$ fixed and their budget constraint \eqref{eq:budget}
+constraint binds at equality; this one equation ties $p_i$ to
+$\sigma$, confining $i$'s operating point to the single curve in
+the $(p_i, \sigma)$-plane on which the mechanism's leakage equals
+$\eps_i$. To leading order this curve is the line $p_i \propto
+\sigma$: at R\'enyi order $\alpha$, with $\rho_g(\eps_g,\delta)$
+the group's \ac{RDP} budget~\cite{mironov2017renyi}, \eqref{eq:budget} reads
+$p_g = \sigma\sqrt{\rho_g(\eps_g,\delta)}/\sqrt{2I\alpha}$, and
+summing these rates across groups under \eqref{eq:batch} gives the aggregate
+identity
+\begin{equation}
+\sigma \cdot \sum_{g}\, |G_g|\, \sqrt{\rho_g(\eps_g,\delta)} \;=\; B
+\sqrt{2I\alpha}.
+\label{eq:sigma-implicit}
+\end{equation}
+Tightening $\eps_j$ raises $\sigma$ (\cref{lem:externality}) and
+moves player $i$ along this line toward larger $\sigma$. The sign
+of the externality thus reduces to a single question: does
+$\Apld{i}$ rise or fall along $p_i \propto \sigma$? We resolve it
+first in the regime where \ac{DPSGD} operates---small sampling
+rates, where the advantage admits a closed form---and then extend
+it to arbitrary sampling rates.
 
 \begin{corollary}[Externality on $\Apld{i}$, small-$p$ regime]
 \label[corollary]{cor:externality-small-p}
@@ -64,7 +104,10 @@ $p_g \leq p_\star$ for every group, with $p_\star$ small enough that
 the $O(p^2)$ remainder of the subsampling
 expansion~\cite{balle2020privacy} is dominated by the leading term.
 Then $\Apld{i}(p_i,\sigma) = I\, p_i\, \Adv_G(\sigma) + O\bigl((I
-p_i)^2\bigr)$ with $\Adv_G(\sigma) = 2\Phi(1/(2\sigma))-1$, and
+p_i)^2\bigr)$, where $\Adv_G(\sigma) = 2\Phi(1/(2\sigma))-1$, with
+$\Phi$ the standard-normal CDF, is the advantage \eqref{eq:adv} of
+the unsubsampled Gaussian mechanism at noise multiplier $\sigma$,
+and
 \begin{equation}
 \frac{\partial \Apld{i}}{\partial \eps_j}
    \;=\; \frac{\partial \sigma}{\partial \eps_j}
@@ -74,346 +117,154 @@ p_i)^2\bigr)$ with $\Adv_G(\sigma) = 2\Phi(1/(2\sigma))-1$, and
 \;<\; 0
 \label{eq:proof-bracket}
 \end{equation}
-for every $i \neq j$ on the small-$p$ face of the feasible region.
-The regime is $I p_i \ll 1$: the expansion is exact per composition
-step and asymptotic for the composed mechanism, whose operating
-points ($I p_i$ of order one to one hundred) are covered by the
-certificate of \cref{prop:externality-full} instead.
+for every $i \neq j$ on the small-$p$ portion of the feasible region:
+tightening any other player's budget strictly raises $\Apld{i}$.
 \end{corollary}
 
 \begin{proof}[Proof idea]
-The Poisson-subsampled trade-off function is the mixture
-$T_{p,\sigma} = (1-p)(1-\alpha) + p\,T_\sigma(\alpha) + O(p^2)$, so
-its sup-gap is $p\,\Adv_G(\sigma) + O(p^2)$. The bracket in
-\eqref{eq:proof-bracket} is $\frac{1}{\sigma}\frac{d}{d\sigma}[\sigma
-\Adv_G(\sigma)]$, strictly positive (\cref{app:proofs}); multiplying
-by $\partial\sigma/\partial\eps_j < 0$ closes the sign.
+The single-step Poisson-subsampled trade-off function is exactly
+the mixture $T_{p,\sigma} = (1-p)(1-\alpha) + p\,T_\sigma(\alpha)$,
+so its per-step sup-gap is $p\,\Adv_G(\sigma)$, which composes to
+$I p_i\,\Adv_G(\sigma) + O\bigl((I p_i)^2\bigr)$. Along $p_i
+\propto \sigma$ the advantage is therefore proportional to
+$\sigma\,\Adv_G(\sigma)$, and the bracket in
+\eqref{eq:proof-bracket} equals
+$\frac{1}{\sigma}\frac{d}{d\sigma}[\sigma \Adv_G(\sigma)]$, which
+is strictly positive (\cref{app:proofs}). Hence $\Apld{i}$ is
+strictly increasing along the line, and tightening $\eps_j$ raises
+$\sigma$ and therefore $\Apld{i}$: the additional sampling
+outweighs the additional noise at every $\sigma$.
 \end{proof}
 
-For what follows we need the mechanism solution in closed form. In
-\ac{RDP} form~\cite{mironov2017renyi}, (Budget) reads $p_g(\sigma,
-\eps_g) = \sigma\sqrt{\rho_g(\eps_g,\delta)}/\sqrt{2I\alpha}$ up to
-higher order in $p_g$, so (Batch) becomes the aggregate identity
-\begin{equation}
-\sigma \cdot \sum_{g}\, |G_g|\, \sqrt{\rho_g(\eps_g,\delta)} \;=\; B
-\sqrt{2I\alpha}.
-\label{eq:sigma-implicit}
-\end{equation}
-Beyond the small-$p$ face---at the composed operating points $I p_i$
-of order one to one hundred---the expansion no longer decides the
-sign, but a structural reduction explains what an $\eps_j$-move can
-and cannot do to player $i$. Because $i$'s (Budget) constraint stays
-binding, the move slides $i$'s mechanism along the ray $p_i \propto
-\sigma$, on which its leading-order (R\'enyi) privacy content is
-constant: the mechanism is built to hold every nominal guarantee
-fixed, so at the resolution of the contract the externality is
-exactly invisible. Everything happens in the higher-order shape of
-the profile---which is why the effect accumulates \emph{below} the
-contract, as slack, rather than ever violating it, and why a
-residual this fine resists a full analytic closure. We certify its
-sign exhaustively instead.
+Beyond the small-$p$ regime this expansion no longer determines the
+sign, but the line $p_i \propto \sigma$ still constrains what a
+tightened $\eps_j$ can do to player $i$. Along the line the
+mechanism moves, yet its leading-order (R\'enyi) privacy content
+stays constant: the $(\eps_i,\delta)$ guarantee is maintained
+exactly, so the contract cannot see the change. Everything happens
+in the higher-order shape of the privacy profile, where the effect
+consumes slack instead of violating the guarantee. A sign carried
+by higher-order terms admits no closed-form proof.
+\Cref{prop:externality-full} (\cref{app:proof-full-region})
+therefore proves the invariance and certifies $\partial
+\Apld{i}/\partial\eps_j < 0$ numerically on \emph{every} feasible
+interior cell of the mechanism grid
+(\cref{app:certificate})---$25{,}612$ of $25{,}612$ unit-stride
+differences, in both the cross and the own direction.
 
-\begin{proposition}[Full-region sign: reduction and certificate]
-\label[proposition]{prop:externality-full}
-Under the hypotheses of \cref{lem:externality}, with strict interior
-$p_g(\boldsymbol{\eps}) \in (0,1)$ for every group: (i) at fixed
-$\eps_i$, the mechanism holds player $i$'s leading-order (R\'enyi)
-privacy content invariant in $\eps_j$, so the cross-effect on $\Apld{i}$
-is carried entirely by higher-order terms of the privacy profile;
-(ii) the sign of that residual is $\partial \Apld{i} / \partial \eps_j <
-0$---analytically in the small-$p$ regime
-(\cref{cor:externality-small-p}), and by numerical certificate on
-$99.1\%$ of the interior cells of the $K{=}200$ mechanism grid
-(\cref{app:certificate}).
-\end{proposition}
+In the decomposition \eqref{eq:decomp} this reads: player $i$'s
+contract fixes the ceiling $A_{\eps_i,\delta}$, and the other
+players decide where below the ceiling the realised advantage sits.
+So far this effect had only been observed
+empirically~\cite{kaiser2026your}. With a proven sign it becomes
+predictable, and a predictable advantage is what allows an informed
+game.
 
-\begin{proof}[Proof idea]
-Part (i) is the ray invariance just described---by
-\eqref{eq:sigma-implicit}, (Budget) gives $p_i \propto \sigma$ at
-fixed $\eps_i$---made exact through a sandwich of Gaussian trade-off
-envelopes in \cref{app:proof-full-region}. Part (ii) combines the
-bracket of \eqref{eq:proof-bracket} on the small-$p$ face with the
-finite-difference certificate on the rest (\cref{app:certificate});
-the failing $0.9\%$ of cells sit exactly where the ray argument
-itself breaks, at the saturation corner and the feasibility edge.
-\end{proof}
+\paragraph{Promise versus reality at a fixed contract.} The
+externality is visible on a single contract, with all strategy
+stripped away. Fix player $i$'s budget at $\eps_i = 4$ and sweep
+only the \emph{other} player's budget (\cref{fig:slack}): player
+$i$'s contract, and with it their line $p_i \propto \sigma$, never
+moves; every change below is the interaction moving them along it.
+The contracted vulnerability $A_{\eps_i,\delta} = 0.963$ stands
+still, and $\Apld{i}$ stays below it everywhere---the guarantee
+holds---but the slack between the two swings from $0.79$ to
+$0.96$, smoothly and monotonically, exactly as
+\cref{prop:externality-full} predicts. The $(\eps_i, \delta)$ pair
+alone reveals none of this variation; it is the room the strategic
+play of \cref{sec:no-symmetric-ne,sec:self-sorting} exploits, and
+the quantity a $\Delta$-augmented contract caps
+(\cref{sec:mitigation}). The full externality-response sweep, and
+the exhaustive sign certificate, are in \cref{app:certificate}.
 
-In the decomposition \eqref{eq:decomp}, the same fact becomes a
-statement about the hierarchy \eqref{eq:hierarchy}: the ceiling
-$A_{\eps_i,\delta}$ never moves---only the contract sets it---while
-the advantage beneath it does, and only the \emph{other} players move
-it.
-
-\begin{proposition}[Slack monotonicity]
-\label[proposition]{prop:slack-monotonicity}
-On the strict interior of the feasible region, for every $i \neq j$,
-\[
-\frac{\partial \mathrm{slack}_i}{\partial \eps_j}(\boldsymbol{\eps})
-\;=\; -\,\frac{\partial \Apld{i}}{\partial \eps_j}(\boldsymbol{\eps})
-\;>\; 0.
-\]
-Loosening any other player's budget enlarges $i$'s slack; tightening
-it pushes $\Apld{i}$ toward the $(\eps_i,\delta)$-DP ceiling.
-\end{proposition}
-
-\begin{proof}
-Differentiate \eqref{eq:decomp}: $A_{\eps_i,\delta}$ depends only on $\eps_i$,
-so $\partial \mathrm{slack}_i / \partial \eps_j = -\partial \Apld{i} /
-\partial \eps_j$, positive with the status of
-\cref{prop:externality-full}: analytic at small $p$, certified beyond.
-\end{proof}
-
-This is the quantity the $(\eps_i,\delta,\Delta)$-iDP contract of
-\citet{kaiser2026your, kaissis2024beyond} caps
-(\cref{sec:mitigation}), and it has a group-size reading. Under
-(Batch), a small group demanding strong privacy contributes little to
-the expected batch, so the larger groups' sampling rates rise to
-compensate: the minority \emph{exports} its privacy demand onto the
-majority---the formal content of the observation in
-\cite{kaiser2026your} that the \emph{proportion} of low-budget
-records matters as much as their budgets.
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_slack_panel.pdf}
+\caption{\textbf{Promise versus reality at a fixed contract} (anchor
+$\eps_i = 4$, $K=200$). Dashed: the level-1 ceiling $A_{\eps_i,\delta} =
+0.963$ of the hierarchy \eqref{eq:hierarchy}. Solid: the level-2
+advantage $\Apld{i}$ as the \emph{other} player's budget $\eps_j$ varies
+at fixed $\eps_i$. Shaded: the slack---the gap between the two
+levels. The level-1 guarantee upper-bounds the risk at every profile,
+but where the level-2 risk sits under it is decided by the other
+player's choice.}
+\label{fig:slack}
+\end{figure}
 
 \subsection{No symmetric equilibrium}
 \label{sec:no-symmetric-ne}
 
-If the externality must land on someone, one might still hope it lands
-evenly. It cannot: in the fully symmetric two-player game the diagonal
-is never an equilibrium.
+The externality's sign says how one player's choice moves the
+other's slack \eqref{eq:decomp}; it does not say where play comes
+to rest. Equal protection is feasible: on every diagonal profile
+of the symmetric game the two slacks coincide. Do the players
+settle there? At exactly one budget, yes; everywhere else, no.
 
-\begin{proposition}[No symmetric pure \ac{NE}, symmetric 2-player \ac{PEG}]
+\begin{proposition}[Diagonal trough outside utility saturation]
 \label[proposition]{prop:no-symmetric-ne}
-Consider the two-player \ac{PEG} with $\lambda_1 = \lambda_2 = w > 0$ and $|G_1| =
-|G_2|$. Assume $V' < 0$, that $A$, viewed as a function of
-$(p,\sigma)$, is $C^2$ with $\partial A / \partial p > 0$ strictly on
-the interior, and the responsiveness condition
+Consider the two-player \ac{PEG} with $\lambda_1 = \lambda_2 =
+\lambda > 0$ and $|G_1| = |G_2|$, in the small-$p$ regime of
+\cref{cor:externality-small-p}. Assume $V \in C^2$ with $V' < 0$,
+and that the shared utility is not yet saturated at the diagonal
+operating point:
 \begin{equation}
-\frac{\partial A}{\partial p}
-\;+\; \sigma\,\frac{\partial^2 A}{\partial p\,\partial\sigma}
-\;-\; p\,\frac{\partial^2 A}{\partial p^2} \;>\; 0
+\sigma^2\, V''(\sigma) \;+\; 2\,\sigma\, V'(\sigma) \;\geq\; 0,
 \label{eq:sign-condition}
 \end{equation}
-at the diagonal operating point. Then no interior diagonal profile
+which for the canonical $V(\sigma) = 1/(1+\sigma^2)$ holds exactly
+on $\sigma \geq \sqrt{3}$. Then no interior diagonal profile
 $(\eps^\star, \eps^\star)$ with strict feasibility is a pure Nash
 equilibrium.
 \end{proposition}
 
 \begin{proof}[Proof idea]
-Change variables to $s_i := \sqrt{\rho(\eps_i,\delta)}$; by
-\eqref{eq:sigma-implicit} the mechanism becomes an aggregator,
-$\sigma = C/(s_1+s_2)$ and $p_i = C' s_i/(s_1+s_2)$: player $i$'s
-sampling rate depends on their \emph{share} of the aggregate. At a
-diagonal point the two first-order conditions collapse to one scalar
-equation, and because $\sigma$ depends only on the sum $s_1+s_2$, the
-shared-$V$ curvature cancels exactly between the own- and
-cross-second derivatives; what survives is proportional to the left
-side of \eqref{eq:sign-condition}
-(\cref{eq:soc-difference}). Under the condition, this forces
-$\partial^2 u_1/\partial s_1^2 > 0$ at the diagonal FOC: the candidate
-is a strict local \emph{minimum} of each player's own utility, so both
-players profit from deviating in either direction. Non-FOC diagonal
-points fail the first-order test outright. Full proof in
+In the root-budget variable $s_i := \sqrt{\rho(\eps_i,\delta)}$,
+identity \eqref{eq:sigma-implicit} makes the mechanism an
+aggregator: $\sigma = C/(s_1+s_2)$ and $p_i = C'\,s_i/(s_1+s_2)$
+for positive constants $C, C'$---each player's sampling rate is
+their share of the aggregate. On the diagonal the two first-order
+conditions coincide, and two exact identities decide the
+second-order test (\cref{app:proof-no-symmetric}): the difference
+$\partial^2_{s_1} u_1 - \partial_{s_1}\partial_{s_2} u_1$ isolates
+the share term, the sum assembles the full diagonal curvature
+\begin{equation}
+4 s^2\, \frac{\partial^2 u_1}{\partial s_1^2}
+\;=\; \bigl[\sigma^2 V'' + 2\sigma V'\bigr]
+\;+\; \lambda \cdot (\textrm{own-risk curvature}),
+\label{eq:diag-curvature-main}
+\end{equation}
+and in the small-$p$ regime the own-risk curvature is strictly
+positive (a two-line Gaussian computation). Under
+\eqref{eq:sign-condition} both terms are non-negative and the first-order
+candidate is a strict local \emph{minimum} of each player's own
+utility: deviating in either direction pays. Diagonal points that
+are not critical fail the first-order test outright. Full proof in
 \cref{app:proof-no-symmetric}.
 \end{proof}
 
-Condition \eqref{eq:sign-condition} is the sampling-dominates-noise
-bracket of \cref{cor:externality-small-p} evaluated along the
-diagonal: in the small-$p$ expansion its left side is
-$I\sigma\,[\Adv_G(\sigma)/\sigma + \Adv_G'(\sigma)] + O(I^2 p) > 0$
-by the positivity of the bracket in \eqref{eq:proof-bracket}, and it
-holds numerically on every diagonal profile of the mechanism caches
-of \cref{sec:experiments}. Two scope remarks. The statement is
-interior: at the participation floor, or where sampling saturates
-($p \to 1$ and $\partial A/\partial p$ degenerates), diagonal
-equilibria can reappear---\cref{sec:experiments} meets exactly one
-such corner. And only $V' < 0$ is used, so the impossibility is not
-an artefact of our choice of $V$ (\cref{prop:V-invariance}).
+\paragraph{Where saturation wins: one symmetric equilibrium.} The
+saturation condition is not decoration. $V$ is bounded, so joint
+loosening buys less and less; below $\sigma = \sqrt 3$ the shared-utility
+curvature in \eqref{eq:diag-curvature-main} turns negative, and
+where it outweighs the risk curvature the trough flips to a peak.
+The canonical instance realises the flip: the operating noise
+satisfies $\sigma < \sqrt 3$ at every diagonal first-order
+candidate, the measured curvature is negative on a window around
+$\eps \approx 3$, and inside it the game has \emph{exactly one}
+symmetric pure equilibrium, at $\eps^\star = 2.96$---confirmed on a
+$25$-point local refinement of the action grid, every deviation
+losing (\cref{app:proof-no-symmetric}). Everywhere else the
+diagonal remains a trough: the median best-deviation gain across
+the $200$ diagonal cells is $0.122$ utility, and alternating
+best-response dynamics started on the diagonal leave it at the
+first response in $197$ of $200$ runs---the other three start
+inside the window and stay---settling after a median of two steps
+at an off-diagonal pure equilibrium (\cref{app:symbreak}).
 
-The proposition is purely negative---it rules out the diagonal;
-existence off the diagonal is a separate question
-(\cref{sec:existence}). Because this claim carries the paper, we take
-it apart: why deviating from symmetry pays, why the deviation does
-not damp back, and what of symmetry survives. Each step is analytic
-in origin and verified on the $K{=}200$ mechanism cache
-(\cref{app:symbreak}).
-
-\paragraph{Why deviate: differentiation has increasing returns.}
-Constraint (Batch) conserves aggregate exposure,
-$\sum_g |G_g|\,p_g = B$ at every profile: the game never decides
-\emph{whether} a batch worth of sampling exposure is held, only by
-whom and under how much noise. A player's sampling rate is their
-\emph{share} of that conserved aggregate---by \eqref{eq:agg-form},
-$p_i \propto s_i / (s_1{+}s_2)$, concave in their own action---while
-their advantage is nearly linear in the rate
-(\cref{cor:externality-small-p}). Concave exposure-taking plus linear
-exposure-cost is exactly the combination that makes own utility
-locally \emph{convex} at the symmetric first-order candidate
-(\cref{eq:soc-difference}): from the diagonal, moving either way
-pays. Loosening buys more model quality than the marginal exposure
-costs; tightening sheds more exposure than the model quality it
-forfeits; only conforming is locally worthless.
-\Cref{fig:symbreak}(a) shows the trough on the mechanism cache, and
-across all $200$ feasible diagonal profiles the best unilateral
-deviation gains at least $1.9\times 10^{-3}$ utility.
-
-\paragraph{Why it does not recover: budgets are strategic
-substitutes.} A deviation, once made, lowers the other player's
-return to imitating it---the budgets are strategic substitutes
-through the shared batch: near the diagonal, the discrete
-cross-difference of $u_1$ in $(\eps_1, \eps_2)$ is negative on
-$80$--$91\%$ of diagonal cells at jitter-free strides
-(\cref{app:symbreak}). Once the opponent has claimed the exposed role, the
-noise gain is already banked and one's own marginal exposure only
-adds cost, so the best response moves \emph{away} from the deviation,
-not back toward it. Deviations from symmetry therefore amplify:
-alternating best-response dynamics started at every feasible diagonal
-profile of the $K{=}200$ grid leave the diagonal at the first
-response and terminate at an off-diagonal pure equilibrium
-(\cref{fig:symbreak}(b), $200$ of $200$ starts). Restoring symmetry
-would require both players to cross the trough simultaneously, which
-is individually irrational at every point along the way.
-
-\paragraph{What survives: a lottery over roles.} The discretised game
-is finite and symmetric, so a \emph{symmetric} equilibrium exists in
-mixed strategies~\cite{nash1951noncooperative}---no contradiction
-with \cref{prop:no-symmetric-ne}, which concerns pure profiles. The
-game restricted to the two budgets of a mirror equilibrium pair is
-literally Hawk--Dove (\cref{tab:hawkdove}): both players prefer the
-protected role, the double-tight profile is the crash, and only the
-asymmetric profiles are equilibria. The symmetric mixed equilibrium
-is the classical chicken resolution: on the $K{=}22$ game it mixes
-the two roles ($\eps = 2.52$ w.p.\ $0.76$, $\eps = 3.17$ w.p.\
-$0.24$) for an expected utility of $0.304$, strictly between the
-exposed ($0.296$) and protected ($0.335$) role payoffs. Symmetry thus
-survives only \emph{ex ante}, as a fair lottery over asymmetric
-outcomes; the draw still assigns the roles. And exactly as in
-classical Hawk--Dove, where an asymmetry between the players settles
-which convention is played~\cite{maynardsmith1973logic}, any
-preference asymmetry resolves the selection problem here---that is
-the content of \cref{prop:self-sorting}, to which we turn next.
-
-\begin{table}[t]
-\centering
-\caption{The \ac{PEG} restricted to the two budgets of the mirror
-equilibrium pair $(1.91, 3.35)$ of \cref{tab:NE} is a Hawk--Dove
-game ($K=200$ cache; T $=$ tight, $\eps = 1.91$; L $=$ loose,
-$\eps = 3.35$; cells show $(u_1, u_2)$). Both players prefer the
-protected tight role given the other is loose; both symmetric
-profiles are unstable; the two asymmetric profiles are the pure
-equilibria.}
-\label{tab:hawkdove}
-\begin{tabular}{lcc}
-\toprule
- & opponent T & opponent L \\
-\midrule
-T & $(0.248,\ 0.248)$ & $(\mathbf{0.412},\ \mathbf{0.325})$ \\
-L & $(\mathbf{0.325},\ \mathbf{0.412})$ & $(0.342,\ 0.342)$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_symmetry_breaking.pdf}
-\caption{\textbf{Anatomy of symmetry breaking} ($K=200$ mechanism
-cache, symmetric two-player game). \emph{(a)} Player 1's utility
-against an opponent fixed at the diagonal first-order candidate
-$\eps^\ast$: the symmetric profile (dot) is a local minimum of their
-own utility---deviating in either direction pays. \emph{(b)}
-Alternating best-response dynamics started at diagonal profiles
-(circles): every trajectory leaves the diagonal at the first response
-and terminates at an off-diagonal pure Nash equilibrium (stars).}
-\label{fig:symbreak}
-\end{figure}
-
-\subsection{Who carries it: self-sorting}
-\label{sec:self-sorting}
-
-Under exact symmetry, which player concedes is decided by equilibrium
-selection---the equilibria come in mirror pairs. Any preference
-asymmetry breaks the tie, and it breaks it in a fixed direction.
-
-\begin{proposition}[Self-sorting, 2-player \ac{PEG}]
-\label[proposition]{prop:self-sorting}
-Consider the 2-player \ac{PEG} with $\lambda_1 > \lambda_2 > 0$, $|G_1| = |G_2|$, $V$
-strictly decreasing, own-budget monotonicity $\partial \Apld{i} / \partial
-\eps_i > 0$, and the exchange condition (S) of \cref{app:proofs}
-(satisfied in the high-noise regime and verified numerically at every
-equilibrium candidate we report). Then every pure Nash equilibrium
-$(\eps_1^\star, \eps_2^\star)$ satisfies $\eps_1^\star \le
-\eps_2^\star$.
-\end{proposition}
-
-\begin{proof}[Proof idea]
-Suppose the \emph{more} privacy-sensitive player held the higher
-budget. Neither player may profit from swapping to the other's
-budget; writing out the two no-swap inequalities and dividing them,
-condition (S) forces $\lambda_2 \geq \lambda_1$---a contradiction. Full proof in
-\cref{app:proof-self-sorting}.
-\end{proof}
-
-The direction is the counterintuitive part: the \emph{more}
-privacy-sensitive player ends up with the lower budget \emph{and} the
-lower realised advantage, and the realised risk lands on the player
-who cares least. They are not being exploited---at equilibrium they are
-compensated through the shared model quality---but the composition of
-outcomes is exactly the one the \ac{iDP} contract never priced: your
-realised protection is set by your neighbours' preferences, not your
-own.
-
-\subsection{Existence, and why enumeration is necessary}
-\label{sec:existence}
-
-\begin{theorem}[Pure \ac{NE} existence on a substitutes box, $n = 2$]
-\label{thm:continuous-ne-smallp}
-Let $\mathcal{B} = [\eps_{\mathrm{lo}}, \eps_{\mathrm{hi}}]^2$ be any box of
-feasible profiles on which $p_g \leq p_\star$ (as in
-\cref{cor:externality-small-p}) and the budgets are strategic
-substitutes, $\partial^2 u_i / \partial \eps_1 \partial \eps_2 \leq
-0$---in the small-$p$ expansion the latter needs only $V''(\sigma) +
-2V'(\sigma)/\sigma \leq 0$, i.e.\ $\sigma \leq \sqrt 3$ for the
-canonical $V$. Under the order that reverses one player's coordinate,
-the \ac{PEG} restricted to $\mathcal{B}$ is a supermodular game on a compact lattice
-and admits a non-empty complete lattice of pure Nash equilibria of
-the restricted game, with extremal
-elements~\cite{topkis1979equilibrium, milgrom1990rationalizability};
-any such equilibrium whose best responses over the full action set
-remain in $\mathcal{B}$ is an equilibrium of the \ac{PEG} itself.
-\end{theorem}
-
-The regime is the relevant one: \ac{DPSGD} sampling rates sit at
-$10^{-4}$ to $10^{-2}$, and the noisier half of the caches' operating
-range $\sigma \in [0.5, 5]$ satisfies the $V$-curvature condition.
-Two honest flags remain. Existence on the full feasible region,
-including the saturation corner $p_g \to 1$, is open; there we rely
-on exhaustive grid enumeration (\cref{sec:experiments}). And the
-lattice route is intrinsically two-player: substitutes cannot be
-re-ordered into complements for every pair at once when $n > 2$. The
-aggregative structure of \eqref{eq:sigma-implicit}---opponents enter
-only through a sum---is the natural route to larger games, in the
-Cournot tradition of \citet{novshek1985cournot}; we leave it open and
-use enumeration and fictitious play at $n > 2$ (\cref{sec:H3}). Nor
-is enumeration laziness: the familiar shortcut of minimising a
-potential function is unavailable in principle.
-
-\begin{proposition}[The \ac{PEG} is not a potential game]
-\label[proposition]{prop:non-potential}
-Under \eqref{eq:utility} and the mechanism of \cref{def:sampling-idp},
-the \ac{PEG} admits no exact, weighted, or ordinal potential in the sense
-of \citet{monderer1996potential}: the Monderer--Shapley cross-partial
-condition fails for every choice of positive player weights, and the
-discretised game contains a four-profile strict improvement cycle.
-\end{proposition}
-
-The Price-of-Privacy game was a potential game precisely because its
-privacy cost was separable~\cite{pejo2019together}; the mechanism's
-coupling is what destroys the structure (proof in \cref{app:proofs}).
-This is why our existence route above trades concavity for
-monotonicity, and why the sign analysis of
-\cref{cor:externality-small-p,prop:externality-full} is the
-load-bearing input.
-
-For the numerics we also record the best-response geometry. At an
-interior best response, $\partial u_i / \partial \eps_i = 0$ reads
+To see the proposition at work, play the game from any starting
+profile. A player asks one question: does the last unit of budget
+buy more model utility than it costs in weighted own advantage?
+The balance point is the interior best response,
 \begin{equation}
 \frac{1}{\lambda_i}
 \;=\; \frac{ \partial \Apld{i} / \partial \eps_i }
@@ -421,52 +272,381 @@ interior best response, $\partial u_i / \partial \eps_i = 0$ reads
 \;\bigg|_{\boldsymbol{\eps}},
 \label{eq:foc}
 \end{equation}
-defining, for each player, an implicit \ac{BR} curve in the action plane
-whose intersections are the pure \acp{NE}. Neither side of \eqref{eq:foc}
-has a closed form, but both are computable by single \ac{PLD} evaluations,
-which is how \cref{sec:experiments} traces the \ac{BR} loci.
+and the direction of the imbalance is the direction of the move:
+while the marginal utility exceeds the weighted marginal
+advantage, loosen; once it falls short, tighten. From here the
+walk to an equilibrium has four steps.
+
+\begin{enumerate}
+\item \textbf{On the diagonal, both directions pay---outside the
+saturation window.} \Cref{prop:no-symmetric-ne} puts every
+unsaturated diagonal candidate at the bottom of a trough of each
+player's own utility, so the question above has the worst possible
+answer---both. On the $K = 200$ cache the trough is the rule: the
+median best-deviation gain across the $200$ diagonal cells is
+$0.122$ utility. Someone moves---unless play starts inside the
+window around $\eps^\star = 2.96$, where nothing pays and the
+symmetric equilibrium holds.
+
+\item \textbf{One loosening, two ledgers.} Suppose player~1
+loosens; everything that follows is the aggregator
+\eqref{eq:sigma-implicit}. For player~1 the move is a new
+contract: a steeper line $p_1 \propto \sigma$ and a larger share
+of the fixed batch. The noise falls, so $V$ rises for both
+players, and player~1 is sampled more under that thinner noise,
+so $\Apld{1}$ rises---player~1 buys the shared utility with their
+own exposure. Player~2 signs nothing and does nothing, yet gains
+twice: their line is unchanged, the falling $\sigma$ slides them
+down it, and along the line less sampling beats less noise
+(\cref{cor:externality-small-p})---$\Apld{2}$ falls while $V$
+rises.
+
+\item \textbf{The counter-move is to tighten.} The model
+improvement player~2 would have loosened for has already been
+delivered, so the utility side of \eqref{eq:foc} has collapsed
+while the advantage side has not: budgets are strategic
+substitutes, and player~2's best response is to tighten---shed
+exposure, and consume what player~1 funded.
+
+\item \textbf{Play settles at a crossing, generically off the
+diagonal.} By step~3, near the diagonal each best response falls
+in the other's budget, and an equilibrium is a crossing of the two
+mirror-image loci (\cref{fig:C6}). Outside the saturation window
+the diagonal threads the gap between them: no symmetric profile is
+a mutual best response, so alternating best responses leave the
+diagonal at the first move---in $197$ of $200$ runs started
+there---and settle, in a median of two steps, where the loci
+cross: one player loose and exposed, one tight and protected. The
+three exceptions start inside the window and stay at the symmetric
+equilibrium (\cref{app:symbreak}).
+\end{enumerate}
+
+Unlike the externality results, this subsection needs more of $V$
+than its sign: the saturation curvature \eqref{eq:sign-condition}
+is load-bearing, and it is exactly where it fails that symmetric
+play survives.
+
+\paragraph{Enumeration agrees: one symmetric equilibrium, all
+others asymmetric.} We enumerate the cleanest instance by brute
+force: two players, identical group sizes, identical weights, both
+budgets swept over the full grid. The $K = 200$ payoff matrix has
+$43$ pure Nash equilibria: the symmetric equilibrium of the
+saturation window, and $42$ off-diagonal equilibria in mirror
+pairs (\cref{fig:C6}; representative equilibria in \cref{tab:NE}).
+The asymmetric equilibria are \emph{frontier} equilibria: at all
+$42$, the tight player sits within one grid cell of the
+participation floor against the loose player's budget---the same
+feasible infimum the coalition best response of
+\cref{sec:coalition} selects---so the budget ratios concentrate in
+the narrow band the frontier's geometry dictates,
+$\max(\eps_1^*,\eps_2^*)/\min(\eps_1^*,\eps_2^*) \in [6.38, 6.70]$
+with median $6.54$. Stable asymmetric play means one player
+roughly $6.5\times$ looser, and the \ac{PLD}-advantages split
+accordingly---at the most asymmetric equilibria one player's
+realised $A$ reaches $0.32$ while the other's stays below $0.001$.
+\Cref{fig:C1} shows the incentive at work: at any diagonal
+profile outside the window, lowering the own budget buys a large
+drop in own advantage at a modest utility cost.
+
+The \ac{BR} loci in \cref{fig:C6} are the zero set of
+\eqref{eq:foc}, read off the cached payoff by numeric
+differentiation along each player's own axis: neither side of
+\eqref{eq:foc} has a closed form, but the sign of their difference
+is measurable in every cell. The corner branches are not interior
+optima: against a sufficiently loose opponent, the best response is
+pinned to the participation frontier
+(\cref{ass:participation})---the same feasible infimum the
+coalition best response of \cref{sec:coalition} selects---and
+against a sufficiently tight one, to the frontier's mirror. The
+frontier itself is analytic. On it, player~2's rate sits at the
+floor $\bar p$, so the batch constraint pins player~1's rate at
+$B/|G_1| - \bar p$; the noise $\bar\sigma(\eps_1)$ then solves
+player~1's budget alone, and the frontier is the curve on which
+$(\bar\sigma(\eps_1), \bar p)$ exhausts exactly $\eps_2$. So on
+two of its three branches the best response is a closed-form
+curve, and the equilibria inherit that structure: the tight
+player's coordinate is exact, the loose player's is a
+near-indifferent position along the wall---the loose payoff varies
+by less than $10^{-4}$ across the highlighted segment, so the $42$
+grid equilibria are best read as samples from a one-parameter
+family of frontier equilibria. Grid
+resolution moves the equilibrium
+\emph{count}, not the structure: at $K = 22$ the same game
+resolves $7$ pure \acp{NE}, at $K = 200$ it resolves $43$---the
+stepped \ac{BR} loci of a finer grid cross more often. What is
+invariant, and is the claim we stake, is the structure: mirror
+pairs along the crossing band, plus the single symmetric
+equilibrium of the saturation window, already present at $K = 22$;
+we therefore quote $K = 200$ throughout and read individual
+\ac{NE} coordinates as samples from the crossing band. The common
+privacy weight moves the picture only at its extremes: $\lambda
+\in \{0.125, 0.25, 0.5, 1\}$ yields $34$--$62$ pure \acp{NE} of
+the same structure, but at $\lambda = 2$ the grid has \emph{no}
+pure equilibrium at all---only mixed play survives---and at
+$\lambda = 4$ a single corner equilibrium $(0.5, 0.5)$ remains
+(\cref{app:wsweep}).
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_C1_payoff.pdf}
+\caption{\textbf{Anatomy of the symmetric 2-player PEG} ($K=22$ shown
+for legibility). Payoff surface $u_1(\eps_1,\eps_2)$ (left),
+best-response correspondences with pure \acp{NE} as black stars (centre),
+and realised \ac{MIA} advantage $\Apld{1}$ (right). Every pure \ac{NE} lies off the
+diagonal.}
+\label{fig:C1}
+\end{figure*}
+
+\begin{figure}[!t]
+\centering
+\input{tex/fig_C6_tikz}
+\caption{\textbf{The best-response landscape} ($K=200$). Each
+player's best response has three branches, read off the zero set of
+the measured first-order condition. Against a tight opponent
+(lower/left leg) the best response runs along the \emph{upper}
+feasibility wall: loosening pays all the way to the frontier.
+Against a loose opponent (upper/right leg) it runs along the
+\emph{lower} wall: tightening pays all the way to the participation
+floor. In between, an interior branch crosses the diagonal
+(dashed); it is drawn as points because the payoff there is flat to
+within $10^{-2}$ of its maximum and the ridge position is
+near-indifferent. Grey marks the infeasible profiles; the dark
+curve is the analytic frontier---the floor rate $\bar p$ for one
+player, the batch pinning the other. The equilibria sit where the
+mirror-image branches meet: the mirror pairs occupy the highlighted
+\emph{frontier segments}---the tight player pinned at the feasible
+infimum, the loose player near-indifferent along the wall, budget
+ratios $6.38\times$--$6.70\times$ (median $6.54\times$)---and the
+saturation window contributes the single symmetric equilibrium at
+$\eps^\star = 2.96$ (star), where the interior branches cross.}
+\label{fig:C6}
+\end{figure}
+
+\input{tex/table_NE}
+
+\paragraph{What survives of symmetry.} Two things, of very
+different character. Inside the saturation window, symmetry
+survives outright: the pure equilibrium at $\eps^\star = 2.96$
+gives both players the same budget and the same realised advantage
+($0.104$ each), and it is the equilibrium with the least aggregate
+advantage of the entire set (\cref{sec:poev}). Outside the window,
+symmetry survives only as a lottery. Restricted to the two budgets
+of a mirror pair---take $(1.12, 7.13)$---the \ac{PEG} is a
+Hawk--Dove game~\cite{maynardsmith1973logic}: each player prefers
+the tight, protected role ($u = 0.50$, against $0.25$ for the
+exposed role), both symmetric profiles of the restriction are
+unstable, and the restriction's only symmetric equilibrium is
+mixed~\cite{nash1951noncooperative}, playing tight with
+probability $0.45$ at value $0.35$---strictly between the two role
+payoffs (\cref{app:symbreak}). That lottery is fair, but every
+draw of it hands one player the exposed role. Any asymmetry
+between the players breaks the tie and selects the convention;
+preference asymmetry is the one our players have, and we turn to
+it next.
+
+\subsection{Whose slack shrinks: self-sorting}
+\label{sec:self-sorting}
+
+Under exact symmetry the equilibria come in mirror pairs, and which
+player concedes is settled only by the lottery over roles of
+\cref{sec:no-symmetric-ne}. Any preference asymmetry breaks the
+tie, and it breaks it in a fixed direction.
+
+\begin{proposition}[Self-sorting, 2-player \ac{PEG}]
+\label[proposition]{prop:self-sorting}
+Consider the 2-player \ac{PEG} with $\lambda_1 > \lambda_2 > 0$
+(player~1 the more privacy-sensitive), $|G_1| = |G_2|$, $V$
+strictly decreasing, own-budget monotonicity $\partial \Apld{i} / \partial
+\eps_i > 0$, and the exchange condition (S) of
+\cref{app:proof-self-sorting}. Then every pure Nash equilibrium
+$(\eps_1^\star, \eps_2^\star)$ satisfies $\eps_1^\star \le
+\eps_2^\star$.
+\end{proposition}
+
+\begin{proof}[Proof idea]
+Suppose the \emph{more} privacy-sensitive player held the higher
+budget. At equilibrium neither player can profit by swapping to the
+other's budget; dividing the two resulting no-swap inequalities and
+applying condition (S) forces $\lambda_2 \geq \lambda_1$---a
+contradiction. Full proof in \cref{app:proof-self-sorting}.
+\end{proof}
+
+Condition (S) holds throughout the high-noise regime and is
+verified numerically at every equilibrium candidate we report
+(\cref{app:proof-self-sorting}).
+
+\paragraph{The sweep confirms the sorting.} Fixing $\lambda_2 = 1$
+and sweeping $\lambda_1 \in \{0.25, 0.5, 1, 2, 4\}$ yields
+$37$--$61$ pure \acp{NE} per ratio (\cref{fig:C8}). The \ac{NE}
+cloud migrates exactly as \cref{prop:self-sorting} predicts: when
+player~1 values privacy less, the equilibria sit in the region
+where player~1 holds the high budget and the higher realised
+advantage; as $\lambda_1/\lambda_2$ crosses unity, the cloud
+migrates through the symmetric configuration into the mirror
+region. Sorting compliance---the fraction of equilibria with the
+higher-$\lambda$ player on the lower budget---is $170$ of $174$
+across the sweep, with all four exceptions at the mildest ratio
+$\lambda_1/\lambda_2 = 0.5$.
+Preference is not the only asymmetry that assigns the roles.
+Sweeping the group-size ratio $r = |G_1|/|G_2|$ across two orders
+of magnitude (all else symmetric), the smaller group plays the
+smaller equilibrium budget and ends at the smaller realised
+advantage at every ratio (\cref{fig:C2}): with player~1 in the
+minority ($r < 1$), equilibria have $\eps_1^* \in [1.5, 3]$
+against $\eps_2^* \approx 10$, yielding $\Apld{1}^* < 0.01$
+against $\Apld{2}^* \in [0.24, 0.32]$, and the pattern mirrors for
+$r > 1$. The mechanism is legible in \eqref{eq:batch}: a small
+group demanding strong privacy contributes little to the expected
+batch, the majority's sampling rate rises to compensate, and its
+realised advantage rises with it. The minority free-rides on the
+shared mechanism~\cite{hardin1968tragedy}---a privacy analogue of
+the classical result that small groups benefit disproportionately
+from a common resource.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_C2_asymmetric.pdf}
+\caption{\textbf{Group-size asymmetry.} Equilibrium budgets (left) and
+realised \ac{MIA} advantages (right) as a function of the size ratio
+$|G_1|/|G_2|$. The minority group plays the lower budget and ends at
+the lower realised advantage at every ratio; the flip at $r{=}1$ is where the
+minority/majority labels exchange.}
+\label{fig:C2}
+\end{figure*}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_C8_asymmetric_lambda.pdf}
+\caption{\textbf{Preference asymmetry} ($K=200$, $\lambda_2 = 1$). Pure \ac{NE}
+clouds under $\lambda_1/\lambda_2 \in \{0.25, 0.5, 1, 2, 4\}$ (centroids and
+$68\%$ dispersion ellipses). As player $1$ becomes more
+privacy-sensitive the cloud migrates from lower-right (player $1$
+exposed) to upper-left (player $2$ exposed), never crossing the
+diagonal: heterogeneity self-sorts instead of averaging out.}
+\label{fig:C8}
+\end{figure}
+
+The direction is fixed: the \emph{more} privacy-sensitive player
+ends at the lower budget \emph{and} the lower realised advantage;
+the slack that shrinks belongs to the player who cares least. The
+exposed player is not exploited---at equilibrium the shared model
+utility compensates them. But the outcome is one the \ac{iDP}
+contract never priced: your realised protection is set by your
+neighbours' preferences, not your own.
+
+\subsection{Existence, and why enumeration is necessary}
+\label{sec:existence}
+
+Symmetry breaking says where equilibria are not; it does not yet
+show that any exist. In the low-sampling region where \ac{DPSGD}
+operates, the same substitutes structure that pushes the players
+apart also delivers existence.
+
+\begin{theorem}[Pure \ac{NE} existence on a substitutes box, $n = 2$]
+\label{thm:continuous-ne-smallp}
+Let $\mathcal{B} = [\eps_{\mathrm{lo}}, \eps_{\mathrm{hi}}]^2$ be a box of
+feasible profiles on which $p_g \leq p_\star$ (as in
+\cref{cor:externality-small-p}) and the budgets are strategic
+substitutes, $\partial^2 u_i / \partial \eps_1 \partial \eps_2 \leq
+0$. Then the \ac{PEG} restricted to $\mathcal{B}$ has a pure Nash
+equilibrium~\cite{topkis1979equilibrium,
+milgrom1990rationalizability}, and any such equilibrium whose best
+responses over the full action set remain in $\mathcal{B}$ is an
+equilibrium of the \ac{PEG} itself.
+\end{theorem}
+
+Both hypotheses hold in the practically relevant regime:
+\ac{DPSGD} sampling rates sit at $10^{-4}$ to $10^{-2}$, placing
+operation in the small-$p$ regime of
+\cref{cor:externality-small-p}, and there the substitutes condition
+reduces, for the canonical $V$, to the curvature bound $\sigma \leq
+\sqrt 3$, which holds on the less-noisy portion of the caches'
+operating range $\sigma \in [0.5, 5]$ (proof and the lattice
+structure of the equilibrium set in \cref{app:proofs}).
+
+Two limitations remain. Existence on the full feasible region,
+including the saturation corner $p_g \to 1$, is open; there we rely
+on exhaustive grid enumeration (\cref{sec:no-symmetric-ne}). And this
+order-theoretic (lattice) route is intrinsically two-player:
+substitutes cannot be
+re-ordered into complements for every pair at once when $n > 2$. The
+aggregative structure of \eqref{eq:sigma-implicit}---opponents enter
+only through a sum---is the natural route to larger games, in the
+Cournot tradition of \citet{novshek1985cournot}; we leave that
+route open and use enumeration and fictitious play at $n > 2$
+(\cref{sec:H3}).
+
+Enumeration is a necessity, not a convenience: the familiar
+shortcut---a potential function whose minimiser is automatically an
+equilibrium---is unavailable in principle.
+
+\begin{proposition}[The \ac{PEG} is not a potential game]
+\label[proposition]{prop:non-potential}
+Under \eqref{eq:utility} and the mechanism of \cref{def:sampling-idp},
+the \ac{PEG} admits no exact, weighted, or ordinal potential in the sense
+of \citet{monderer1996potential}.
+\end{proposition}
+
+The Price-of-Privacy game was a potential game precisely because its
+privacy cost was separable~\cite{pejo2019together}; the mechanism's
+coupling is what destroys the structure (proof in \cref{app:proofs}).
+This is why our existence route trades the concavity that the
+classical existence arguments require for the monotonicity that
+strategic substitutes provide, and why the sign analysis of
+\cref{cor:externality-small-p,prop:externality-full} is the
+load-bearing input.
+
+\paragraph{Where $V$ enters as more than a sign.} The externality
+proofs never touch $V$, the best-response condition \eqref{eq:foc}
+uses only $\mathrm{sgn}\,V'$, and the coalition corollary of
+\cref{sec:coalition} uses only the externality sign on the
+target's coordinate; \cref{prop:V-invariance} (\cref{app:V})
+records this formally. The one exception is deliberate: the
+symmetry-breaking result of \cref{sec:no-symmetric-ne} reads $V$'s
+saturation curvature \eqref{eq:sign-condition}, and the location
+of the symmetric equilibrium moves with the shape of $V$
+(\cref{app:v-shape}). The experimental choice $V(\sigma) =
+1/(1+\sigma^2)$ is a representative of a class for every
+sign-driven result, and the explicit curvature condition states
+exactly what the exception needs.
 
 \subsection{Coalitions: the attack is a corollary}
 \label{sec:coalition}
+
+Every player so far weighs only their own harm. We now let a subset
+commit to a joint action first, with the remaining players
+responding---a Stackelberg game with malice weight $\kappa$ on the
+target's vulnerability (\cref{def:coalition})---and read off the
+coalition's best response in the high-malice limit.
 
 \begin{corollary}[Coalition best response recovers the attack]
 \label[corollary]{cor:coalition-attack}
 Fix a target $t$, a coalition $C \subseteq N \setminus \{t\}$ of size
 $k$, and any actions $\boldsymbol{\eps}_{-C}$ for the others. As
 $\kappa \to \infty$ in \cref{def:coalition}, the coalition's
-Stackelberg best response is the coalition-symmetric profile at the
-\emph{participation-preserving minimum} budget
-$\eps^{\star}_k(\boldsymbol{\eps}_{-C})$, and the target advantage
+Stackelberg best response is coalition-symmetric---every colluder
+plays the same budget---at the \emph{participation-preserving
+minimum} $\eps^{\star}_k(\boldsymbol{\eps}_{-C})$, and the target
+advantage
 $\Apld{t}$ induced at that best response is non-decreasing in $k$.
 \end{corollary}
 
 \begin{proof}[Proof idea]
 $\partial \Apld{t} / \partial \eps_i < 0$ for every $i \in C$
-(\cref{prop:externality-full}, with its analytic-plus-certified
-status), so the coalition pushes every budget as
-low as feasibility admits; below the participation floor a colluder
-drops out of (Batch) and stops exerting the externality, hence the
-\emph{infimum feasible} rather than the grid minimum. Adding a member
-enlarges the set of budgets pulling $\sigma$ up, so $\Apld{t}$ is monotone
-in $k$.
+(\cref{prop:externality-full}; analytic at small $p$, certified
+numerically beyond), so the coalition pushes every budget as low as
+feasibility admits. Below the participation floor a colluder's
+sampling rate reaches zero (\cref{ass:participation}), so they drop
+out of \eqref{eq:batch} and stop raising $\sigma$---pushing lower only
+forfeits leverage; the optimum is therefore the \emph{feasible
+infimum}, not the grid minimum. Adding a member enlarges the set of
+budgets pulling $\sigma$ up, so $\Apld{t}$ is non-decreasing in $k$.
 \end{proof}
 
 This is the budget-manipulation attack of \citet{kaiser2026your},
 recovered as rational play: any coordinated subset of data holders
 whose joint utility weights the target's harm arrives at the same
-action vector, whether or not anyone calls it an attack. The corollary
-deliberately claims no more than that mapping---the empirical
-demonstration is prior work's---and \cref{sec:attacks} shows its
-force is contingent on a target that does not respond.
-
-\paragraph{The role of $V$ is only its sign.} Every load-bearing
-statement above reads $V$ solely through the sign of $V'$: the
-externality proofs never touch $V$, the coalition corollary uses only
-the externality sign on the target's coordinate, and the
-best-response condition \eqref{eq:foc} depends on $V$ only through
-$\mathrm{sgn}\,V'$. We record this formally as
-\cref{prop:V-invariance} (\cref{app:V}), where an ablation over six
-admissible shapes---from Gaussian to affine---also confirms the
-equilibrium structure numerically (\cref{app:v-shape}). The
-experimental choice $V(\sigma) = 1/(1+\sigma^2)$ is thus a
-representative of a class, not a load-bearing assumption.
+action vector, whether or not anyone calls it an attack. The
+equivalence is all the corollary claims---the empirical
+demonstration is prior work's---and \cref{sec:attacks} shows the
+attack's force is contingent on a target that does not respond.

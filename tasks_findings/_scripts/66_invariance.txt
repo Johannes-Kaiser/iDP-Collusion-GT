@@ -1,0 +1,31 @@
+invariance matrix over 191 two-player configs
+
+corner-dominated: 122/191 overall
+   by cost: linear:107/110  quad:15/81
+   by lam : lam0.3-3:48/49  lam<0.3:31/31  lam>3:28/30  lamq<500:11/48  lamq>500:4/33
+   by G   : G500:21/44  G5000:45/66  G50000:28/36  Gasym:28/45
+   by T   : T1:113/181  T2:9/10
+
+trough exists: 107/191 overall
+   by cost: linear:80/110  quad:27/81
+   by lam : lam0.3-3:47/49  lam<0.3:13/31  lam>3:20/30  lamq<500:19/48  lamq>500:8/33
+   by G   : G500:16/44  G5000:49/66  G50000:8/36  Gasym:34/45
+   by box : box128:43/68  box16:8/35  box64:56/88
+   by T   : T1:99/181  T2:8/10
+
+spec premium>1e-4: 34/191 overall
+   by lam : lam0.3-3:9/49  lam<0.3:0/31  lam>3:11/30  lamq<500:5/48  lamq>500:9/33
+   by G   : G500:13/44  G5000:10/66  G50000:0/36  Gasym:11/45
+   by het : het:17/37  hom:17/154
+
+fair wins (premium<-1e-4): 12/191 overall
+
+diag opt interior: 26/191 overall
+   by G   : G500:16/44  G5000:6/66  G50000:0/36  Gasym:4/45
+
+sym gap<1e-3 & interior: 21/191 overall
+   by G   : G500:14/44  G5000:4/66  G50000:0/36  Gasym:3/45
+
+n=3 (3333, 3333, 3334): diag argmax 64.000 interior=False
+
+n=3 (1000, 4000, 5000): diag argmax 64.000 interior=False

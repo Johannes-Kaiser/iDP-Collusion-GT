@@ -2,8 +2,8 @@
 
 Purpose
 -------
-The auto-regenerated K=200 figures (`fig_C6_locus_K200`, `fig_C7_w_ratio`,
-`fig_C8_asymmetric_w`) suffered from three visual defects that made them
+The auto-regenerated K=200 figures (`fig_C6_locus_K200`, `fig_C7_lambda_ratio`,
+`fig_C8_asymmetric_lambda`) suffered from three visual defects that made them
 unreadable in the paper:
 
   * fig_C6 left panel: the discrete-argmax best-response curves were
@@ -20,8 +20,8 @@ This script reads the real caches at
 and produces the polished figures at
 
     paper/figures/fig_C6_locus_K200.{pdf,svg}
-    paper/figures/fig_C7_w_ratio.{pdf,svg}
-    paper/figures/fig_C8_asymmetric_w.{pdf,svg}
+    paper/figures/fig_C7_lambda_ratio.{pdf,svg}
+    paper/figures/fig_C8_asymmetric_lambda.{pdf,svg}
 
 Design choices
 --------------
@@ -175,12 +175,15 @@ def polish_C6():
 
     # ---- Panel (a): smoothed BR loci + clustered NE stars --------------
     ax = axes[0]
-    x1, y1 = smooth_br(br1, actions, window=7)   # BR_1(eps_2): x=eps_1, y=eps_2
-    y2_x, y2_y = smooth_br(br2, actions, window=7)  # BR_2(eps_1): x=eps_1, y=eps_2
-    # For BR_2, the smoothing runs BR_2[j] over j=eps_1 index, giving
-    # (log actions[j], log actions[BR_2[j]]) -> (eps_1, eps_2). smooth_br
-    # returns (10**log_x, 10**log_y_smooth), i.e. (eps_1, eps_2) already.
-    ax.loglog(x1, y1, "-", color=PRIMARY_BLUE, lw=1.4,
+    # smooth_br returns (opponent eps, smoothed BR eps). For BR_1 the
+    # opponent axis is eps_2 (y) and the response is eps_1 (x), so the
+    # pair must be transposed before plotting; for BR_2 the orientation
+    # matches the axes as returned. In the symmetric game br1 == br2 as
+    # arrays, so plotting both untransposed draws two pixel-identical
+    # curves and hides the mirror geometry entirely.
+    x1_opp, y1_br = smooth_br(br1, actions, window=7)  # (eps_2, BR_1(eps_2))
+    y2_x, y2_y = smooth_br(br2, actions, window=7)     # (eps_1, BR_2(eps_1))
+    ax.loglog(y1_br, x1_opp, "-", color=PRIMARY_BLUE, lw=1.4,
               label=r"$\varepsilon_1 = \mathrm{BR}_1(\varepsilon_2)$")
     ax.loglog(y2_x, y2_y, "-", color=PRIMARY_ORANGE, lw=1.4,
               label=r"$\varepsilon_2 = \mathrm{BR}_2(\varepsilon_1)$")
@@ -214,9 +217,10 @@ def polish_C6():
                     aspect="auto", cmap="viridis", interpolation="nearest")
     cbar = plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     cbar.set_label("NE count per cell", fontsize=7)
-    # Overlay smoothed BR curves and clustered centroids in log units.
-    log_x1 = np.log10(x1)
-    log_y1 = np.log10(y1)
+    # Overlay smoothed BR curves and clustered centroids in log units,
+    # BR_1 transposed onto the (eps_1, eps_2) axes as in panel (a).
+    log_x1 = np.log10(y1_br)
+    log_y1 = np.log10(x1_opp)
     log_y2x = np.log10(y2_x)
     log_y2y = np.log10(y2_y)
     ax.plot(log_x1, log_y1, "-", color="white", lw=0.9, alpha=0.85)
@@ -278,7 +282,7 @@ def polish_C7():
                  markersize=8, zorder=5)
 
     handles = [Line2D([0], [0], color=colors[ip], marker="o", lw=0,
-                       markersize=5, label=f"$w={r['w']:g}$")
+                       markersize=5, label=f"$\\lambda={r['w']:g}$")
                for ip, r in enumerate(rows)]
     ax.legend(handles=handles, frameon=False, fontsize=6,
               loc="lower right", ncol=2)
@@ -288,13 +292,13 @@ def polish_C7():
     ax.set_ylim(0.5, 64)
     ax.set_xlabel(r"$\varepsilon_1$")
     ax.set_ylabel(r"$\varepsilon_2$")
-    ax.set_title(r"NE locations across symmetric $w$ (68\% dispersion shaded)")
+    ax.set_title(r"NE locations across symmetric $\lambda$ (68\% dispersion shaded)")
 
     plt.tight_layout()
-    fig.savefig(FIG_DIR / "fig_C7_w_ratio.pdf")
-    fig.savefig(FIG_DIR / "fig_C7_w_ratio.svg")
+    fig.savefig(FIG_DIR / "fig_C7_lambda_ratio.pdf")
+    fig.savefig(FIG_DIR / "fig_C7_lambda_ratio.svg")
     plt.close(fig)
-    print(f"  wrote fig_C7_w_ratio")
+    print(f"  wrote fig_C7_lambda_ratio")
 
 
 # --- C8 -------------------------------------------------------------------
@@ -333,7 +337,7 @@ def polish_C8():
 
     handles = [Line2D([0], [0], color=colors[ip], marker="s", lw=0,
                        markersize=5,
-                       label=f"$w_1/w_2 = {r['ratio']:g}$")
+                       label=f"$\\lambda_1/\\lambda_2 = {r['ratio']:g}$")
                for ip, r in enumerate(rows)]
     ax.legend(handles=handles, frameon=False, fontsize=6,
               loc="lower right", ncol=2)
@@ -343,18 +347,20 @@ def polish_C8():
     ax.set_ylim(0.5, 64)
     ax.set_xlabel(r"$\varepsilon_1$")
     ax.set_ylabel(r"$\varepsilon_2$")
-    ax.set_title(r"NE shift under asymmetric $w_1/w_2$")
+    ax.set_title(r"NE shift under asymmetric $\lambda_1/\lambda_2$")
 
     plt.tight_layout()
-    fig.savefig(FIG_DIR / "fig_C8_asymmetric_w.pdf")
-    fig.savefig(FIG_DIR / "fig_C8_asymmetric_w.svg")
+    fig.savefig(FIG_DIR / "fig_C8_asymmetric_lambda.pdf")
+    fig.savefig(FIG_DIR / "fig_C8_asymmetric_lambda.svg")
     plt.close(fig)
-    print(f"  wrote fig_C8_asymmetric_w")
+    print(f"  wrote fig_C8_asymmetric_lambda")
 
 
 def main() -> None:
     FIG_DIR.mkdir(parents=True, exist_ok=True)
-    polish_C6()
+    # C6 is rendered natively in pgfplots (paper/tex/fig_C6_tikz.tex, data
+    # from tasks_findings/_scripts/25_fig_C6_tikz_data.py); no matplotlib
+    # panel is produced for it any more.
     polish_C7()
     polish_C8()
 

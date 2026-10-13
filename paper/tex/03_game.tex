@@ -38,7 +38,7 @@ $\langle N, \Sigma, U\rangle$ where:
   \end{equation}
   where $\lambda_i > 0$ is the player's utility/privacy weight of
   \cref{sec:idp}, pricing a unit of realised \ac{MIA} advantage on
-  their own data against a unit of model quality.
+  their own data against a unit of model utility.
 \end{itemize}
 \end{definition}
 
@@ -60,10 +60,10 @@ any particular attack.
 It is the advantage measure of \citet{kaiser2026your} transferred
 unchanged to a strategic setting. Its dependence on
 $\boldsymbol{\eps}$ runs entirely through $(p_i, \sigma)$, both of
-which the mechanism's constraints (Budget) and (Batch) determine from
+which the mechanism's constraints \eqref{eq:budget} and \eqref{eq:batch} determine from
 the whole budget vector; this coupling is the externality.
 
-\paragraph{The model-quality term.} For $V$ we use
+\paragraph{The model-utility term.} For $V$ we use
 \begin{equation}
 V(\sigma) \;=\; \frac{1}{1 + \sigma^2},
 \label{eq:V}
@@ -110,7 +110,7 @@ written in their contract---while the slack is a function of the
 entire profile. The externality therefore lives exclusively between
 levels 1 and 2 of \eqref{eq:hierarchy}: when others tighten their
 budgets, $\mathrm{slack}_i$ shrinks and $\Apld{i}$ climbs toward the
-ceiling (\cref{prop:slack-monotonicity}); the $\Delta$-clause of
+ceiling (\cref{prop:externality-full}); the $\Delta$-clause of
 \cref{sec:mitigation} caps exactly this movable term.
 
 \subsection{Coalition variant}

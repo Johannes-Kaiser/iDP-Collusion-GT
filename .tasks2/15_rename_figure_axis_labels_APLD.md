@@ -1,5 +1,13 @@
 # Task 15: Regenerate figures with $A_{\mathrm{PLD},i}$ axis labels
 
+**DONE (2026-07-09).** All eight figures regenerated plot-only from the
+existing caches via Slurm job 177257 (CPU, 1m19s): the six $A$-label
+figures plus `fig_C7_lambda_ratio` / `fig_C8_asymmetric_lambda` (the C7/C8
+paper figures are produced by `tasks_findings/_scripts/polish_C6_C7_C8.py`,
+not `run_locus.py`; both scripts were updated). Stale
+`fig_C7_w_ratio.*` / `fig_C8_asymmetric_w.*` deleted, the two
+`\includegraphics` references updated, `main.pdf` rebuilt clean (24 pages).
+
 The paper's per-player advantage notation changed from $A_i$ to
 $A_{\mathrm{PLD},i}$ (macro `\Apld{i}` in `paper/main2.tex`). The prose,
 equations, and `tex/table_NE.tex` are updated, but six included figures

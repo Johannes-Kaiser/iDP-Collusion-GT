@@ -1,0 +1,77 @@
+% Native pgfplots rendering of the C6 best-response landscape.
+% Data tables produced by tasks_findings/_scripts/32_fig_C6_landscape_data.py
+% from the K=200 mechanism cache: the global best-response branch per
+% opponent column of the cached payoff, extracted as the zero set of the
+% numerically differentiated (Savitzky-Golay-smoothed) own-axis FOC, with
+% the value-maximal branch selected per column. The corner branches lie on
+% the analytic participation frontier and its mirror; the interior branch
+% is the smoothed FOC ridge.
+\definecolor{PrimaryBlue}{HTML}{08306B}
+\definecolor{PrimaryOrange}{HTML}{FD8C3B}
+\definecolor{AccentGrey}{HTML}{4D4D4D}
+\definecolor{NEGreen}{HTML}{1B7837}
+\begin{tikzpicture}
+\begin{loglogaxis}[
+    width=\linewidth, height=0.92\linewidth,
+    xmin=0.5, xmax=64, ymin=0.5, ymax=64,
+    xlabel={$\varepsilon_1$}, ylabel={$\varepsilon_2$},
+    xtick={0.5,1,2,4,8,16,32,64},
+    ytick={0.5,1,2,4,8,16,32,64},
+    xticklabels={0.5,1,2,4,8,16,32,64},
+    yticklabels={0.5,1,2,4,8,16,32,64},
+    tick label style={font=\scriptsize},
+    label style={font=\small},
+    legend style={
+        font=\scriptsize, draw=none, fill=white, fill opacity=0.85,
+        text opacity=1, at={(0.015,0.985)}, anchor=north west,
+        cells={anchor=west},
+    },
+    legend cell align=left,
+    axis line style={AccentGrey!60},
+    grid=major, grid style={AccentGrey!15, line width=0.3pt},
+]
+% infeasible regions (participation floor, ass:participation), bounded
+% by the analytic frontier and its mirror
+\addplot[draw=none, fill=AccentGrey!14, forget plot]
+    table[x=eps1, y=eps2] {figures/data/c6l_infeas_left.dat} -- cycle;
+\addplot[draw=none, fill=AccentGrey!14, forget plot]
+    table[x=eps1, y=eps2] {figures/data/c6l_infeas_bot.dat} -- cycle;
+% analytic participation frontier (and mirror)
+\addplot[solid, AccentGrey!85!black, line width=0.8pt]
+    table[x=eps1, y=eps2] {figures/data/c6l_frontier.dat};
+\addlegendentry{analytic frontier (infeasible beyond)}
+\addplot[solid, AccentGrey!85!black, line width=0.8pt, forget plot]
+    table[x=eps2, y=eps1] {figures/data/c6l_frontier.dat};
+% BR1: corner branches run along the frontier walls ...
+\addplot[solid, PrimaryBlue, line width=1.3pt, opacity=0.9]
+    table[x=eps1, y=eps2] {figures/data/c6l_br1_chi.dat};
+\addlegendentry{$\mathrm{BR}_1(\varepsilon_2)$}
+\addplot[solid, PrimaryBlue, line width=1.3pt, opacity=0.9, forget plot]
+    table[x=eps1, y=eps2] {figures/data/c6l_br1_clo.dat};
+% ... the interior branch is the smoothed FOC ridge (points: its exact
+% position is near-indifferent in the flat central region)
+\addplot[only marks, mark=*, mark size=0.8pt, PrimaryBlue, forget plot]
+    table[x=eps1, y=eps2] {figures/data/c6l_br1_interior.dat};
+% BR2 = mirror image across the diagonal
+\addplot[solid, PrimaryOrange, line width=1.3pt, opacity=0.9]
+    table[x=eps2, y=eps1] {figures/data/c6l_br1_chi.dat};
+\addlegendentry{$\mathrm{BR}_2(\varepsilon_1)$ (mirror)}
+\addplot[solid, PrimaryOrange, line width=1.3pt, opacity=0.9, forget plot]
+    table[x=eps2, y=eps1] {figures/data/c6l_br1_clo.dat};
+\addplot[only marks, mark=*, mark size=0.8pt, PrimaryOrange, forget plot]
+    table[x=eps2, y=eps1] {figures/data/c6l_br1_interior.dat};
+% diagonal
+\addplot[dashed, AccentGrey, line width=0.5pt, domain=0.5:64, forget plot]
+    {x};
+% near-equilibrium frontier segments (span of the 42 grid NEs)
+\addplot[solid, NEGreen, line width=2.6pt, opacity=0.55]
+    table[x=eps1, y=eps2] {figures/data/c6l_ne_segment.dat};
+\addlegendentry{frontier equilibria (mirror pairs)}
+\addplot[solid, NEGreen, line width=2.6pt, opacity=0.55, forget plot]
+    table[x=eps2, y=eps1] {figures/data/c6l_ne_segment.dat};
+% the symmetric equilibrium
+\addplot[only marks, mark=star, mark size=3.2pt, black, line width=0.7pt]
+    table[x=eps1, y=eps2] {figures/data/c6l_ne_sym.dat};
+\addlegendentry{symmetric NE ($\eps^\star = 2.96$)}
+\end{loglogaxis}
+\end{tikzpicture}

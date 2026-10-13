@@ -24,8 +24,8 @@ Player utility for the Privacy Externality Game.
 
 * w_i > 0 is the player's privacy weight: how much she values a unit of
   realised MIA advantage on her own data relative to a unit of model
-  quality. Larger w_i means she weights privacy more; smaller w_i means
-  she weights model quality more.
+  utility. Larger w_i means she weights privacy more; smaller w_i means
+  she weights model utility more.
 """
 from __future__ import annotations
 

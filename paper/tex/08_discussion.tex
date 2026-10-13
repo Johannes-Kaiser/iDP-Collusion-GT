@@ -2,21 +2,24 @@
 \label{sec:discussion}
 
 Our work reframes the known fragility of sampling-based \ac{iDP}: the
-excess vulnerability that prior work attributed to adversaries is what
-rational play produces on its own. The Privacy Externality Game admits
-no symmetric pure equilibrium among symmetric players: the diagonal
-is a trough of each player's own utility, deviations from it are
-self-reinforcing because budgets are strategic substitutes, and the
-only symmetric equilibrium is a mixed lottery over who is exposed
-(proven for two players at interior profiles, corroborated
-numerically beyond). At every pure equilibrium
-someone carries the redistributed risk, heterogeneous preferences sort
+elevated realised vulnerability that prior work attributed to adversaries is what
+rational play produces on its own. The Privacy Externality Game
+generically refuses symmetric play: wherever the shared utility is
+unsaturated, the diagonal is a trough of each player's own utility
+(proven in the small-$p$ model, measured on the exact mechanism),
+deviations from it are self-reinforcing because budgets are
+strategic substitutes, and within each mirror pair the only
+symmetric equilibrium is a mixed lottery over who is exposed.
+Symmetric play survives at a single knife-edge budget where utility
+saturation flips the trough into a peak---the one symmetric pure
+equilibrium, and the welfare-best one. At every other pure equilibrium
+the players' realised risks are strictly unequal, heterogeneous preferences sort
 the exposed role onto whoever values privacy least, and the coalition
 attack of \citet{kaiser2026your} is the coordinated limit of the same
 incentive. The phenomenon is a property of the sampling-based
 realisation---its sensitivity-based sibling, replayed through the
 identical game, has a unique symmetric equilibrium---and its practical
-bite is carried by attack power: at the measurement floor the
+bite tracks attack power: at the measurement floor the
 strategic pressure vanishes; against the strongest adversary the
 deployed mechanism admits---the level any risk assessment must
 price---it does not.
@@ -55,10 +58,11 @@ security control.
 \paragraph{Conclusion.} Individual differential privacy promises that
 each contributor controls their own risk. Under the sampling-based
 realisation the promise fails not only against adversaries but at
-equilibrium: risk is redistributed by rational play, invisibly to
+equilibrium: each contributor's realised risk is set by everyone
+else's rational play, invisibly to
 every individual contract. In the hierarchy \eqref{eq:hierarchy}, the
 contract is written at the mechanism-agnostic first level; the
-redistribution takes place at the mechanism-specific second
+game plays out at the mechanism-specific second
 level---the true bound on what any adversary can extract from the
 deployed mechanism, which every player's choice moves and no
 contract states; and any deployed attack realises some fraction of

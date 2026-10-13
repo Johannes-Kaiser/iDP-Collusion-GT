@@ -1,0 +1,28 @@
+== (a) Stackelberg (K=200 cache) ==
+  lam=1.0: commit 1.6115 -> reply 10.7940; leader 0.59112, follower 0.26741
+  lam=2.0: commit 1.0910 -> reply 1.0647; leader 0.09279, follower 0.09620
+== (b) collaborative game, symmetric (K=200 cache) ==
+  lam=1.0: welfare opt (3.349, 24.133) W=0.9406; fair diag 0.8853; best NE 0.8585
+  lam=2.0: welfare opt (1.651, 11.060) W=0.5333; fair diag 0.5039; best NE nan
+== (c) heterogeneity ==
+  lam2/lam1=1.0: opt (3.35, 24.13) W=0.9406 | equal-budget 0.8853 | best NE 0.8585
+  lam2/lam1=1.5: opt (24.13, 3.35) W=0.9402 | equal-budget 0.7732 | best NE 0.8581
+  lam2/lam1=2.0: opt (24.13, 3.35) W=0.9397 | equal-budget 0.6743 | best NE 0.8577
+  lam2/lam1=4.0: opt (24.13, 3.35) W=0.9380 | equal-budget 0.3596 | best NE 0.8561
+  lam2/lam1=8.0: opt (24.13, 3.35) W=0.9346 | equal-budget -0.0577 | best NE 0.8530
+  G ratio 0.1: G=(909,9091), opt (5.66, 19.03) W=1.1385
+  G ratio 0.25: G=(2000,8000), opt (5.66, 19.03) W=1.0955
+  G ratio 0.5: G=(3333,6667), opt (3.08, 19.03) W=1.0421
+  G ratio 1.0: G=(5000,5000), opt (3.08, 19.03) W=0.9324
+  G ratio 2.0: G=(6667,3333), opt (10.37, 10.37) W=0.8840
+  G ratio 4.0: G=(8000,2000), opt (10.37, 10.37) W=0.8840
+  G ratio 10.0: G=(9091,909), opt (10.37, 10.37) W=0.8840
+== (d) GDP limit, high T ==
+  T=   390 lam=1.000: kinds {'hi': 6, 'int': 8, 'lo': 16} | Stackelberg   1.15->  5.06 (0.5163/0.3057) | W 0.8503 fair 0.8379 premium   1.5%
+  T=  1560 lam=1.000: kinds {'hi': 7, 'int': 8, 'lo': 15} | Stackelberg   1.36->  6.02 (0.3403/0.0955) | W 0.5452 fair 0.4901 premium  10.1%
+  T=  6240 lam=1.000: kinds {'hi': 0, 'int': 0, 'lo': 30} | Stackelberg   0.50->  0.50 (-0.0252/-0.0252) | W 0.3815 fair 0.0452 premium  88.2%
+  T= 25000 lam=1.000: kinds {'hi': 0, 'int': 0, 'lo': 30} | Stackelberg   0.50->  0.50 (-0.0296/-0.0296) | W 0.0828 fair -0.0592 premium 171.5%
+  T= 25000 lam=0.500: kinds {'hi': 0, 'int': 0, 'lo': 30} | Stackelberg  64.00->  0.53 (0.0578/0.5406) | W 0.5984 fair 0.4099 premium  31.5%
+  T= 25000 lam=0.350: kinds {'hi': 10, 'int': 0, 'lo': 20} | Stackelberg  10.16-> 54.20 (0.4019/0.2303) | W 0.7531 fair 0.7094 premium   5.8%
+  T= 25000 lam=0.250: kinds {'hi': 16, 'int': 0, 'lo': 14} | Stackelberg  10.16-> 54.20 (0.4524/0.3297) | W 0.9091 fair 0.9091 premium   0.0%
+  T= 25000 lam=0.125: kinds {'hi': 27, 'int': 0, 'lo': 3} | Stackelberg  64.00-> 64.00 (0.5794/0.5794) | W 1.1587 fair 1.1587 premium   0.0%

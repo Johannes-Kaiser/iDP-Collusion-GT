@@ -1,0 +1,15 @@
+== Fix 1: budget factorization delta_1 = p * h(r) ==
+  identity max rel error over 200 random (sigma,p,eps): 1.35e-11
+  r(eps) along the budget curve at sigma=0.9 (its drift is the correction):
+    eps=0.5: p=0.00068  r=958.8  p*(r-1)/(e^eps-1)=1.000000 (==1 exact)
+    eps=1.5: p=0.00280  r=1244.8  p*(r-1)/(e^eps-1)=1.000000 (==1 exact)
+    eps=3.0: p=0.01187  r=1608.5  p*(r-1)/(e^eps-1)=1.000000 (==1 exact)
+    eps=4.5: p=0.04419  r=2015.6  p*(r-1)/(e^eps-1)=1.000000 (==1 exact)
+    eps=6.0: p=0.16100  r=2500.6  p*(r-1)/(e^eps-1)=1.000000 (==1 exact)
+
+== Fix 2: symmetric stationarity criterion g(e) ==
+  G=500, V=1/(1+s), lam=8.28 (battery: stable)
+    g roots: []
+  baseline G=5000, lam=0.7 (campaign: no symmetric interior NE)
+    g roots: [(20.4458, 'falling')]
+    falling root e*=20.4458: u_sym=0.901761, column max=0.933598 -> symmetric interior NE: False

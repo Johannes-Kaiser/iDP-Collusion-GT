@@ -209,7 +209,7 @@ def main() -> None:
 
     # (3) Realised MIA advantage A_i.
     ax.plot(e_j, A, "-", color=PRIMARY_ORANGE, lw=1.7, zorder=4,
-            label=r"realised advantage $A_i$")
+            label=r"realised advantage $A_{\mathrm{PLD},i}$")
     ax.plot(e_j[::14], A[::14], "o", color=PRIMARY_ORANGE, markersize=2.6,
             markeredgecolor="white", markeredgewidth=0.4, zorder=5)
 
@@ -231,7 +231,7 @@ def main() -> None:
     #     wedge, just under the DP ceiling.
     ax.text(0.5, 0.86,
             r"$\mathrm{slack}_i(\varepsilon_i,\varepsilon_j)\;=\;"
-            r"\bar c(\varepsilon_i)\;-\;A_i(\varepsilon_i,\varepsilon_j)\;\geq\;0$",
+            r"\bar c(\varepsilon_i)\;-\;A_{\mathrm{PLD},i}(\varepsilon_i,\varepsilon_j)\;\geq\;0$",
             transform=ax.transAxes, fontsize=7.5, color=PRIMARY_BLUE,
             ha="center", va="center",
             bbox=dict(boxstyle="round,pad=0.35", fc="white",

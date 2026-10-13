@@ -31,3 +31,4 @@ figure; the current text already anticipates this experiment
 ## Budget
 ~25 profiles x 128 shadow models; GPU per Rule 3 (`--gres=gpu:1`), reuse the
 array-job template. Estimate 50-100 GPU-h.
+

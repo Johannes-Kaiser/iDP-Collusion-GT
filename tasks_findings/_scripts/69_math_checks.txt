@@ -1,0 +1,12 @@
+== Check 1: p(eps) proportional to (e^eps - 1) at fixed sigma ==
+  sigma=0.9: p/(e^eps-1) varies 4.0006e-04 .. 1.0441e-03 (rel spread 99.0%)
+  sigma=3.0: p/(e^eps-1) varies 2.4849e-03 .. 1.3460e-01 (rel spread 219.2%)
+
+== Check 2: tangency identity at the three interior worlds ==
+  V=inv_sq w=   28 G=(5000, 5000): interior peak e2=9.707 sigma=0.539 p2=0.0256 | |V'|=6.4722e-01 vs lam*p2*|c'|=6.4023e-01 (ratio 1.011)
+  V=exp    w= 38.1 G=(2000, 8000): interior peak e2=11.230 sigma=0.473 p2=0.0160 | |V'|=6.2293e-01 vs lam*p2*|c'|=6.2131e-01 (ratio 1.003)
+  V=inv    w= 2.54 G=(500, 500): interior peak e2=5.989 sigma=0.960 p2=0.2537 | |V'|=2.6026e-01 vs lam*p2*|c'|=2.4345e-01 (ratio 1.069)
+
+== Check 3: hump decomposition, baseline twin T=1 vs T=2 ==
+  T=1: least-tempting diag e=64.000, best deviation e2=47.140: gap=0.0083 = value prize -0.0006 - exposure bill -0.0089
+  T=2: least-tempting diag e=64.000, best deviation e2=29.842: gap=0.0156 = value prize -0.0020 - exposure bill -0.0176

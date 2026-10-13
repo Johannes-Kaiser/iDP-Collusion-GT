@@ -19,6 +19,7 @@ PyTorch dependency, so it can be re-used in the game-theoretic harness.
 from __future__ import annotations
 
 import math
+import os
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Sequence, Tuple
@@ -33,6 +34,17 @@ from dp_accounting import rdp, dp_event
 _DEFAULT_ORDERS = tuple(
     list(np.arange(1.25, 8.0, 0.25)) + list(range(8, 65)) + [80, 100, 150, 250, 500]
 )
+
+# ~8x denser Renyi-order grid (opt-in via PEG_RDP_DENSE=1): shrinks the
+# order-switch sawtooth in eps(delta) to isolate accountant-discreteness
+# effects. Off by default — the paper instance and all caches use
+# _DEFAULT_ORDERS.
+if os.environ.get("PEG_RDP_DENSE", "0") == "1":
+    _DEFAULT_ORDERS = tuple(
+        list(np.arange(1.03, 8.0, 0.03))
+        + list(np.arange(8.0, 64.0, 0.125))
+        + list(np.geomspace(64.0, 600.0, 80))
+    )
 
 
 @lru_cache(maxsize=400_000)
@@ -55,7 +67,7 @@ def epsilon_rdp(sigma: float, sample_rate: float, steps: int, delta: float) -> f
 # ---------------------------------------------------------------------------
 
 def _sample_rate_for_eps(sigma: float, eps_target: float, steps: int, delta: float,
-                          tol: float = 1e-3) -> float:
+                          tol: float = 1e-5) -> float:
     if eps_target <= 0.0:
         return 0.0
     if epsilon_rdp(sigma, 1.0, steps, delta) < eps_target:
@@ -100,6 +112,7 @@ def solve_mechanism(
     delta: float = 1e-12,
     sigma_range: Tuple[float, float] = (0.3, 200.0),
     min_sample_rate: float = 1e-5,
+    batch_rtol: float = 1e-4,
 ) -> MechanismResult:
     eps_target = np.asarray(eps_target, dtype=float)
     group_sizes = np.asarray(group_sizes, dtype=float)
@@ -129,28 +142,36 @@ def solve_mechanism(
             group_sizes=group_sizes.astype(int), expected_batch_size=int(target_B),
             feasible=False,
         )
-    for _ in range(40):
+    # Track the best evaluated sigma and return it, never an unevaluated
+    # bracket midpoint: returning sqrt(lo*hi) after an early tolerance
+    # break hands back a sigma whose realised batch was never checked and
+    # can be arbitrarily far from the target.
+    best_err, sigma_star, rates_star = math.inf, None, None
+    for _ in range(60):
         mid = math.sqrt(lo * hi)
         B_mid, rates_mid = realised_batch(mid)
+        err = abs(B_mid - target_B)
+        if err < best_err:
+            best_err, sigma_star, rates_star = err, mid, rates_mid
         if B_mid > target_B:
             hi, B_hi, rates_hi = mid, B_mid, rates_mid
         else:
             lo, B_lo, rates_lo = mid, B_mid, rates_mid
-        if abs(B_mid - target_B) < 5e-3 * target_B:
+        if err < batch_rtol * target_B:
             break
-    sigma_star = math.sqrt(lo * hi)
-    _, rates_star = realised_batch(sigma_star)
+    batch_converged = best_err < 5e-2 * target_B
     eps_per_g = np.array([epsilon_rdp(sigma_star, float(r), steps, delta) for r in rates_star])
-    # Feasibility: every group must have a non-degenerate sampling rate.
-    # Otherwise the (eps_g, delta)-iDP guarantee is trivially satisfied by
-    # the group simply not participating in training, which is not a
-    # meaningful instance of the mechanism (cf. Boenisch et al. 2023, Def. 4).
+    # Feasibility: the batch constraint must actually be met, and every
+    # group must have a non-degenerate sampling rate. Otherwise the
+    # (eps_g, delta)-iDP guarantee is trivially satisfied by the group
+    # simply not participating in training, which is not a meaningful
+    # instance of the mechanism (cf. Boenisch et al. 2023, Def. 4).
     participates = np.all(rates_star >= min_sample_rate)
     return MechanismResult(
         sigma=sigma_star, sample_rates=rates_star, eps_per_group=eps_per_g,
         steps=steps, delta=delta, eps_target=eps_target,
         group_sizes=group_sizes.astype(int), expected_batch_size=int(target_B),
-        feasible=bool(participates),
+        feasible=bool(participates and batch_converged),
     )
 
 
@@ -161,7 +182,8 @@ def solve_mechanism(
 _MECH_CACHE: dict = {}
 
 def solve_mechanism_cached(eps_target, group_sizes, expected_batch_size, steps,
-                            delta=1e-12) -> MechanismResult:
+                            delta=1e-12,
+                            min_sample_rate: float = 1e-5) -> MechanismResult:
     """Order-preserving wrapper around solve_mechanism with a multi-set cache.
     The cache key is multiset-canonicalised (so permutations share work), but
     the returned MechanismResult has its arrays aligned to the *input* order
@@ -173,13 +195,15 @@ def solve_mechanism_cached(eps_target, group_sizes, expected_batch_size, steps,
     # Canonicalised key for caching: sorted multi-set
     sorted_pairs_idx = sorted(range(n), key=lambda i: pairs[i])
     sorted_pairs = [pairs[i] for i in sorted_pairs_idx]
-    key = (tuple(sorted_pairs), int(expected_batch_size), int(steps), float(delta))
+    key = (tuple(sorted_pairs), int(expected_batch_size), int(steps),
+           float(delta), float(min_sample_rate))
     if key not in _MECH_CACHE:
         sorted_eps = [p[0] for p in sorted_pairs]
         sorted_gs = [p[1] for p in sorted_pairs]
         _MECH_CACHE[key] = solve_mechanism(
             eps_target=sorted_eps, group_sizes=sorted_gs,
             expected_batch_size=expected_batch_size, steps=steps, delta=delta,
+            min_sample_rate=min_sample_rate,
         )
     cached = _MECH_CACHE[key]
     # Map cached (sorted-order) arrays back to the input order

@@ -200,7 +200,7 @@ def main() -> None:
     ax.set_xlim(0.0, x_max * 1.05)
     ax.set_ylim(0.0, x_max * 1.05)
     ax.set_aspect("equal")
-    ax.set_xlabel(r"analytical $A^{\mathrm{PLD}}$")
+    ax.set_xlabel(r"analytical $A_{\mathrm{PLD}}$")
     ax.set_ylabel(r"measured $A^{\mathrm{LiRA}}$")
     ax.set_title(r"(c) Privacy-onion gap")
     ax.legend(frameon=False, fontsize=6, loc="upper left")

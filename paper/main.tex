@@ -102,22 +102,23 @@ but what \emph{rational} contributors will do with it. We formalise
 this game as the Privacy Externality Game (PEG), prove that the
 externality is monotone---tightening any budget raises everyone else's
 realised risk---and characterise its equilibria. Our headline finding
-is that the game refuses symmetric play in pure strategies: with
-identical players, no interior symmetric profile of the two-player
-game is a pure Nash equilibrium---each such profile is a local
-\emph{minimum} of each player's own utility---and at every pure
-equilibrium one player carries a strictly higher realised risk in
-exchange for the shared gain in model quality. The symmetric
-equilibrium that Nash's theorem guarantees exists only in mixed
-strategies, and it merely randomises who takes the exposed role.
-Heterogeneous privacy preferences do not
-soften this; they sort players into protected and exposed roles, with
-the risk landing on whoever values privacy least. The asymmetry is a
+is that the game generically refuses symmetric play: wherever the
+shared model utility is not yet saturated, every symmetric profile
+is a local \emph{minimum} of each player's own utility, and stable
+play is asymmetric---in the canonical instance, $42$ of $43$ pure
+equilibria put one player roughly $6.5\times$ looser, with a
+strictly higher realised risk compensated by the shared gain in
+model utility. Symmetric play survives only on a knife-edge: a
+single symmetric pure equilibrium at the budget where utility
+saturation sets in, which is also the equilibrium with the least
+aggregate risk. Heterogeneous privacy preferences do not soften the
+asymmetry; they sort players into protected and exposed roles, with
+the exposed role going to whoever values privacy least. The asymmetry is a
 property of the sampling-based realisation, not of iDP itself: the
 sensitivity-based realisation, replayed through the same game, has a
 unique and symmetric equilibrium. A recent budget-manipulation attack
 on iDP emerges in our framework as the coordinated limit of ordinary
-rational play---and collapses by a factor of 18--35 when the target is
+rational play---and collapses by a factor of 18--53 when the target is
 allowed to best-respond. Throughout, risk is priced
 mechanism-specifically: with the strongest adversary the deployed
 mechanism admits, not the loose mechanism-agnostic

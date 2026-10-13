@@ -1,118 +1,33 @@
 # T26 symmetry-breaking anatomy (K=200, w=1.0)
-pure NEs: 48, on diagonal: 0
+pure NEs: 43, on diagonal: 1
 
 # (1) diagonal first-order candidates (own-action sign change):
-  eps*=  0.538  local_min=True   best deviation gain up=+0.1324  down=+0.0899
-  eps*=  0.565  local_min=False   best deviation gain up=+0.1293  down=+0.0824
-  eps*=  0.579  local_min=True   best deviation gain up=+0.1322  down=+0.0035
-  eps*=  0.608  local_min=True   best deviation gain up=+0.1356  down=+0.0091
-  eps*=  0.670  local_min=True   best deviation gain up=+0.1497  down=+0.0187
-  eps*=  0.703  local_min=False   best deviation gain up=+0.1292  down=-0.0025
-  eps*=  0.757  local_min=True   best deviation gain up=+0.1362  down=+0.0218
-  eps*=  0.795  local_min=True   best deviation gain up=+0.1218  down=+0.0061
-  eps*=  0.814  local_min=False   best deviation gain up=+0.1171  down=-0.0038
-  eps*=  0.855  local_min=True   best deviation gain up=+0.1196  down=+0.0030
-  eps*=  0.898  local_min=True   best deviation gain up=+0.1155  down=+0.0003
-  eps*=  0.920  local_min=False   best deviation gain up=+0.1164  down=-0.0037
-  eps*=  0.966  local_min=True   best deviation gain up=+0.1437  down=+0.0004
-  eps*=  0.990  local_min=True   best deviation gain up=+0.1260  down=+0.0009
-  eps*=  1.065  local_min=True   best deviation gain up=+0.1115  down=+0.0542
-  eps*=  1.118  local_min=True   best deviation gain up=+0.1069  down=+0.0029
-  eps*=  1.174  local_min=False   best deviation gain up=+0.1172  down=-0.0008
-  eps*=  1.294  local_min=True   best deviation gain up=+0.0974  down=+0.0496
-  eps*=  1.326  local_min=False   best deviation gain up=+0.0827  down=+0.0334
-  eps*=  1.359  local_min=False   best deviation gain up=+0.1002  down=+0.0329
-  eps*=  1.392  local_min=False   best deviation gain up=+0.0971  down=+0.0053
-  eps*=  1.427  local_min=False   best deviation gain up=+0.0751  down=+0.0016
-  eps*=  1.462  local_min=False   best deviation gain up=+0.0920  down=-0.0011
-  eps*=  1.498  local_min=False   best deviation gain up=+0.0639  down=-0.0033
-  eps*=  1.535  local_min=False   best deviation gain up=+0.0896  down=+0.0026
-  eps*=  1.612  local_min=True   best deviation gain up=+0.0579  down=+0.0218
-  eps*=  1.692  local_min=True   best deviation gain up=+0.2024  down=+0.0140
-  eps*=  1.734  local_min=False   best deviation gain up=+0.0819  down=+0.0124
-  eps*=  1.820  local_min=False   best deviation gain up=+0.0679  down=+0.0043
-  eps*=  1.865  local_min=True   best deviation gain up=+0.0672  down=+0.0023
-  eps*=  1.911  local_min=True   best deviation gain up=+0.0767  down=+0.0114
-  eps*=  1.959  local_min=False   best deviation gain up=+0.1796  down=-0.0009
-  eps*=  2.007  local_min=False   best deviation gain up=+0.1759  down=-0.0015
-  eps*=  2.057  local_min=False   best deviation gain up=+0.0759  down=+0.0005
-  eps*=  2.107  local_min=False   best deviation gain up=+0.0144  down=+0.0025
-  eps*=  2.213  local_min=True   best deviation gain up=+0.1665  down=+0.0088
-  eps*=  2.267  local_min=False   best deviation gain up=+0.0875  down=+0.0055
-  eps*=  2.380  local_min=False   best deviation gain up=+0.0772  down=+0.0227
-  eps*=  2.499  local_min=True   best deviation gain up=+0.0093  down=+0.0012
-  eps*=  2.561  local_min=True   best deviation gain up=+0.0753  down=+0.0097
-  eps*=  2.624  local_min=True   best deviation gain up=+0.0316  down=+0.0737
-  eps*=  2.689  local_min=True   best deviation gain up=+0.0005  down=+0.0019
-  eps*=  2.824  local_min=False   best deviation gain up=+0.1587  down=+0.0228
-  eps*=  2.893  local_min=True   best deviation gain up=+0.0237  down=+0.0446
-  eps*=  2.965  local_min=False   best deviation gain up=+0.0098  down=+0.0730
-  eps*=  3.038  local_min=False   best deviation gain up=+0.0398  down=+0.0030
-  eps*=  3.113  local_min=False   best deviation gain up=+0.0090  down=+0.0208
-  eps*=  3.268  local_min=True   best deviation gain up=+0.0011  down=+0.0374
-  eps*=  3.349  local_min=False   best deviation gain up=+0.0098  down=+0.0701
-  eps*=  3.432  local_min=True   best deviation gain up=+0.0155  down=+0.0403
-  eps*=  3.516  local_min=True   best deviation gain up=+0.0422  down=+0.0295
-  eps*=  3.603  local_min=False   best deviation gain up=+0.0418  down=+0.0727
-  eps*=  3.692  local_min=True   best deviation gain up=+0.1656  down=+0.0149
-  eps*=  3.972  local_min=True   best deviation gain up=+0.0001  down=+0.0728
-  eps*=  4.070  local_min=True   best deviation gain up=+0.1706  down=+0.0728
-  eps*=  4.274  local_min=True   best deviation gain up=+0.0093  down=+0.0663
-  eps*=  4.487  local_min=False   best deviation gain up=+0.0446  down=+0.1727
-  eps*=  4.711  local_min=False   best deviation gain up=+0.0472  down=+0.0289
-  eps*=  5.069  local_min=True   best deviation gain up=+0.0026  down=+0.0638
-  eps*=  5.194  local_min=True   best deviation gain up=+0.0407  down=+0.0844
-  eps*=  5.322  local_min=True   best deviation gain up=+0.0036  down=+0.0650
-  eps*=  5.454  local_min=True   best deviation gain up=+0.0651  down=+0.0583
-  eps*=  5.726  local_min=False   best deviation gain up=-0.0067  down=+0.0568
-  eps*=  6.012  local_min=False   best deviation gain up=+0.0724  down=+0.0649
-  eps*=  6.161  local_min=False   best deviation gain up=+0.0056  down=+0.0622
-  eps*=  6.313  local_min=True   best deviation gain up=+0.0090  down=+0.1854
-  eps*=  6.628  local_min=True   best deviation gain up=+0.3018  down=+0.1743
-  eps*=  6.960  local_min=True   best deviation gain up=+0.3124  down=+0.0904
-  eps*=  7.307  local_min=True   best deviation gain up=+0.0102  down=+0.1074
-  eps*=  7.673  local_min=True   best deviation gain up=+0.0206  down=+0.1323
-  eps*=  8.056  local_min=False   best deviation gain up=+0.0263  down=+0.1340
-  eps*=  8.255  local_min=True   best deviation gain up=+0.0006  down=+0.1274
-  eps*=  8.881  local_min=False   best deviation gain up=+0.0003  down=+0.1571
-  eps*=  9.100  local_min=False   best deviation gain up=-0.0086  down=+0.1572
-  eps*=  9.325  local_min=True   best deviation gain up=+0.0064  down=+0.1244
-  eps*=  9.791  local_min=True   best deviation gain up=+0.0006  down=+0.1324
-  eps*= 10.280  local_min=True   best deviation gain up=+0.3417  down=+0.1909
-  eps*= 10.794  local_min=False   best deviation gain up=-0.0169  down=+0.1845
-  eps*= 14.820  local_min=False   best deviation gain up=-0.0069  down=+0.2166
-  eps*= 17.578  local_min=False   best deviation gain up=-0.0361  down=+0.2277
-  eps*= 18.912  local_min=False   best deviation gain up=-0.0072  down=+0.2748
-  eps*= 19.857  local_min=True   best deviation gain up=+0.1126  down=+0.2877
-  eps*= 21.364  local_min=True   best deviation gain up=+0.0034  down=+0.3073
-  eps*= 22.985  local_min=True   best deviation gain up=+0.0219  down=+0.3603
-  eps*= 24.729  local_min=True   best deviation gain up=+0.0076  down=+0.3482
-  eps*= 26.606  local_min=False   best deviation gain up=-0.0708  down=+0.3148
-  eps*= 28.625  local_min=False   best deviation gain up=-0.0108  down=+0.3963
-  eps*= 30.797  local_min=False   best deviation gain up=-0.0390  down=+0.3849
-  eps*= 37.430  local_min=True   best deviation gain up=+0.0073  down=+0.5038
-  eps*= 41.265  local_min=False   best deviation gain up=-0.0100  down=+0.5174
-  eps*= 46.615  local_min=False   best deviation gain up=-0.0671  down=+0.5019
-  eps*= 58.053  local_min=False   best deviation gain up=-0.0228  down=+0.6203
-  all feasible diagonal cells: min unilateral deviation gain = 1.93e-03 (>0 everywhere: True)
+  eps*=  1.777  local_min=True   best deviation gain up=+0.0342  down=+0.0000
+  eps*=  1.865  local_min=True   best deviation gain up=+0.0257  down=+0.0000
+  eps*=  1.959  local_min=False   best deviation gain up=+0.0166  down=-0.0000
+  eps*=  2.107  local_min=True   best deviation gain up=+0.0069  down=+0.0003
+  eps*=  2.624  local_min=True   best deviation gain up=+0.0032  down=+0.0018
+  eps*=  2.965  local_min=False   best deviation gain up=-0.0001  down=-0.0001
+  eps*=  3.268  local_min=False   best deviation gain up=-0.0002  down=+0.0021
+  eps*=  4.070  local_min=False   best deviation gain up=-0.0002  down=+0.0147
+  all feasible diagonal cells: min unilateral deviation gain = 0.00e+00 (>0 everywhere: False)
 
 # (2) cross-difference sign near the diagonal (substitutes <=> negative):
-  stride h= 4:  66.7% negative (192 diagonal cells)
-  stride h= 8:  79.8% negative (183 diagonal cells)
-  stride h=16:  91.1% negative (168 diagonal cells)
-  BR_1 vs eps_2: median local slope = +0.00 (37% of steps negative)
+  stride h= 4:  81.2% negative (192 diagonal cells)
+  stride h= 8:  90.2% negative (184 diagonal cells)
+  stride h=16:  95.2% negative (168 diagonal cells)
+  BR_1 vs eps_2: median local slope = +1.00 (18% of steps negative)
 
 # (3) alternating best-response dynamics from diagonal starts:
-  starts: 200; end off-diagonal: 200; end on diagonal: 0
-  ended at a pure NE: 200; median steps: 1
+  starts: 200; end off-diagonal: 197; end on diagonal: 3
+  ended at a pure NE: 134; median steps: 2
 
 # (4) 2x2 restriction to budgets (T=1.91, L=3.35)  [T=tight, L=loose]:
-  (T,T): u1=+0.2484  u2=+0.2484
-  (T,L): u1=+0.4122  u2=+0.3252
-  (L,T): u1=+0.3252  u2=+0.4122
-  (L,L): u1=+0.3421  u2=+0.3421
+  (T,T): u1=+0.2482  u2=+0.2482
+  (T,L): u1=+0.3412  u2=+0.2558
+  (L,T): u1=+0.2558  u2=+0.3412
+  (L,L): u1=+0.3399  u2=+0.3399
   anti-coordination: (T,T) unstable=True, (L,L) unstable=True, (T,L) NE=True, (L,T) NE=True
 
 # (5) symmetric mixed equilibria, exact support enumeration (K=22 full game, infeasible profiles = penalty -2.0):
-  support {2.52:0.756, 3.17:0.244}  value=+0.3035
-    P[same draw]=0.631 -> asymmetric realisation w.p. 0.369;  E|A_1-A_2|=0.014;  E[A_i]=0.097
+  none found up to support size 5

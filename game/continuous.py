@@ -42,6 +42,7 @@ class ContinuousGame:
     eps_min: float = 0.5
     eps_max: float = 64.0
     K: int = 25  # number of log-spaced points
+    min_sample_rate: float = 1e-5  # participation floor (0 disables it)
 
     def grid(self) -> np.ndarray:
         return np.logspace(np.log10(self.eps_min), np.log10(self.eps_max), self.K)
@@ -53,6 +54,7 @@ class ContinuousGame:
             group_sizes=list(self.group_sizes),
             expected_batch_size=self.expected_batch_size,
             steps=self.steps, delta=self.delta,
+            min_sample_rate=self.min_sample_rate,
         )
         advs = np.array([
             mia_advantage_subsampled_gaussian(

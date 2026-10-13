@@ -59,19 +59,19 @@ follower, best-responding on a $14$-point log grid to whatever the
 coalition commits, all else unchanged.
 
 The attack collapses (\cref{fig:H4}). Across $k \in \{1,2,3,4\}$ the
-aware target's realised advantage is $\Apld{t}^\star \in \{0.014, 0.021,
-0.019, 0.041\}$---$18$--$35\times$ below the passive-target curve and
-an order of magnitude below even the no-coalition baseline. The
-coalition's leader budget shifts up to $\eps_C^\star \in [30, 64]$
-for $k \le 3$ while the target retreats to $\eps_t^\star \in [9.9,
-14.4]$, where the mechanism-side externality on their advantage is
-small. At $k = 4$ the leader problem grows a second local optimum at
+aware target's realised advantage is $\Apld{t}^\star \in \{0.014, 0.010,
+0.018, 0.041\}$---$18$--$53\times$ below the passive-target curve and
+an order of magnitude below even the no-coalition baseline. For $k
+\le 3$ the leader budget stays interior or at the loose ceiling
+($\eps_C^\star \in \{44.1, 6.8, 64\}$) while the target retreats to
+$\eps_t^\star \in [6.8, 14.4]$, where the mechanism-side externality
+on their advantage is small. At $k = 4$ the leader argmax moves to
 the grid floor---a \emph{poisoning corner} at $\eps_C = 0.5$ that
-drives $\sigma$ to $2.4$ and drags the target down to $\eps_t^\star =
-0.73$---but even this corner yields only $\Apld{t}^\star = 0.041$ while
-costing the coalition itself almost its entire utility ($A_C = 0.025$
-at collapsed model quality); the interior optimum, continuous with $k
-\le 3$, sits at $\eps_C = 30.3$ with $\Apld{t} = 0.017$. The reading for
+drags the target down to $\eps_t^\star = 0.73$---but even this
+corner yields only $\Apld{t}^\star = 0.041$ while collapsing the
+model utility the coalition itself trains for; the interior
+optimum, continuous with $k \le 3$, does even less for the attacker
+(\cref{fig:H4}, hollow marker). The reading for
 threat modelling is sharp: the coalition attack is an attack on
 \emph{unawareness}. Its empirical force in prior work comes from
 targets that hold their budget fixed---rational for a
@@ -86,13 +86,13 @@ defence available.
 \includegraphics[width=\linewidth]{figures/fig_h4_aware_target.pdf}
 \caption{\textbf{The coalition attack against an aware target}
 (log-$y$). Orange squares: passive target pinned at $\eps_t = 32$
-(as in \cref{fig:C4}), climbing to $\Apld{t} = 0.728$ at $k = 4$. Blue
+(as in \cref{fig:C4}), climbing to $\Apld{t} = 0.729$ at $k = 4$. Blue
 circles: target best-responding to the coalition's commitment;
-$\Apld{t}^\star \le 0.041$ throughout, $17.9$--$34.8\times$ below the
+$\Apld{t}^\star \le 0.041$ throughout, $18$--$53\times$ below the
 passive curve. At $k = 4$ the filled marker is the leader argmax (a
 grid-floor poisoning corner that also ruins the coalition's own
-utility); the hollow marker is the interior optimum ($\eps_C = 30.3$,
-$\Apld{t} = 0.017$) that a coalition with any self-interest plays.}
+utility); the hollow marker is the interior optimum that a
+coalition with any self-interest plays.}
 \label{fig:H4}
 \end{figure}
 
@@ -105,7 +105,7 @@ re-trained, and an attacker faces a target whose privacy preference it
 does not know. We formalise the natural repeated extension---the
 \emph{Bayesian Repeated PEG} (BR-PEG)---and extract its one
 qualitative surprise. Two players: an attacker $M$ and an honest
-target $H$ whose type $\theta_H = (w_H, n_H)$ is drawn from a finite
+target $H$ whose type $\theta_H = (\lambda_H, n_H)$ is drawn from a finite
 set $\Theta$ known to $M$. Each round, $M$ commits to a budget
 $\eps_M^t$; $H$ observes it and myopically best-responds; the
 mechanism returns the round's outcomes, and $M$ Bayes-updates its

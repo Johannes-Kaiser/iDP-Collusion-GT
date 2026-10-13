@@ -36,7 +36,7 @@ categories predict individual behaviour only
 loosely~\cite{woodruff2014would}. We write $\lambda_i > 0$ for the
 utility/privacy weight contributor $i$ attributes to their data: how
 much they value a unit of their own realised leakage relative to a
-unit of model quality. The survey evidence says $\lambda_i$ varies
+unit of model utility. The survey evidence says $\lambda_i$ varies
 widely within any one dataset---a patient with a stigmatised
 diagnosis and a healthy volunteer in the same clinical study, or a
 rare-disease clinic and a large research hospital in the same
@@ -73,10 +73,8 @@ $(\eps_g,\delta)$-DP budget. The mechanism trains by Poisson-subsampled
 \ac{DPSGD} for $I$ iterations, where the noise multiplier $\sigma$ and the
 per-group sampling rates $p_1,\dots,p_G$ are chosen such that
 \begin{align}
-\textnormal{(Budget)} \quad
 & \textnormal{for every } g\textnormal{, the } I\textnormal{-fold } (p_g,\sigma)\textnormal{-sub-} \notag\\
-& \textnormal{sampled Gaussian is } (\eps_g,\delta)\textnormal{-DP at equality;} \notag\\
-\textnormal{(Batch)} \quad
+& \textnormal{sampled Gaussian is } (\eps_g,\delta)\textnormal{-DP at equality;} \label{eq:budget}\\
 & \sum_{g=1}^G \frac{|G_g|}{M}\,p_g \;=\; \frac{B}{M}, \label{eq:batch}
 \end{align}
 where $B$ is the desired expected batch size. We refer to $(\sigma,
@@ -193,10 +191,10 @@ quantities carry an explicit $\mathrm{LiRA}$ superscript.
 
 \paragraph{Where the externality appears.} In sampling-based iDP the
 budget vector selects the mechanism, and \cref{fig:hierarchy} shows
-how much that selection matters. The shared $\sigma$ in (Budget) is
+how much that selection matters. The shared $\sigma$ in \eqref{eq:budget} is
 the channel: for any candidate $\sigma$, the largest sampling rate
 that meets group $g$'s budget increases in $\sigma$ (more noise,
-more room to sample), and (Batch) then pins $\sigma$ as the unique
+more room to sample), and \eqref{eq:batch} then pins $\sigma$ as the unique
 value at which the rates sum to $B$. When any group tightens its
 budget the mechanism re-solves, and every other group's $(p_g,
 \sigma)$---its trade-off curve, its advantage, its slack---moves

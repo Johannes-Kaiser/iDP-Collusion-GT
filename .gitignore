@@ -70,3 +70,11 @@ HERO_FIGURE_BRIEF.md
 NOVELTY_ACTION_PLAN.md
 NOVELTY_GAME_PLAN.md
 NOVELTY_REVIEW.md
+
+# Slurm job scripts and pgfplots data tables (local only)
+*.sh
+*.dat
+
+# Source material: reference PDFs and the writing-voice corpus (voice.md, MANIFEST.md, papers)
+/*.pdf
+sources/

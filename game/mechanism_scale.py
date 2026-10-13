@@ -52,7 +52,7 @@ from .mechanism import epsilon_rdp
 
 def _sigma_for_eps(eps_target: float, sample_rate: float, steps: int,
                    delta: float, sigma_range: Tuple[float, float] = (0.1, 500.0),
-                   tol: float = 1e-3) -> float:
+                   tol: float = 1e-5) -> float:
     if eps_target <= 0.0:
         return sigma_range[1]
     lo, hi = sigma_range

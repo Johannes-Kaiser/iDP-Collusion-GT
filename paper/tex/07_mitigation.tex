@@ -1,7 +1,7 @@
 \section{Mitigation: Change the Contract, Not the Players}
 \label{sec:mitigation}
 
-If asymmetric exposure is equilibrium behaviour, mitigation cannot
+If asymmetric vulnerability is equilibrium behaviour, mitigation cannot
 consist of detecting deviants---at equilibrium there are none. Two
 repair strategies remain: discipline the \emph{reports} (mechanism
 design on the budget channel) or discipline the \emph{contract} (bound
@@ -30,7 +30,7 @@ numerical witness: against a loose opponent the best report is
 $\hat\eps_1 \approx 2.9$, against a tight one $\approx 1.2$. The
 classical rescues do not apply---the large-market route
 of~\cite{kearns2014mechanism} needs each agent's influence on the
-mechanism to vanish, whereas each silo moves (Batch) at constant
+mechanism to vanish, whereas each silo moves \eqref{eq:batch} at constant
 magnitude, and the truthful-elicitation results
 of~\cite{ghosh2011selling, chen2013truthful, nissim2014redrawing}
 model privacy costs that vanish without influence, whereas here every
@@ -74,8 +74,8 @@ sit at most $\Delta$ below the level-1 ceiling, so no unilateral or
 joint deviation by the other players, coordinated or not, can move
 player $i$'s realised advantage by more than $\Delta$ at fixed
 $\eps_i$. The coalition curve of \cref{fig:C4} is capped at height
-$\Delta$ above its floor, and the strategic redistribution of
-\cref{sec:C1} is bounded to a $\Delta$-band around each contract.
+$\Delta$ above its floor, and the strategic swing of
+\cref{sec:no-symmetric-ne} is confined to a $\Delta$-band around each contract.
 What $\Delta$-iDP does \emph{not} automatically deliver is a
 well-behaved residual game---whether an equilibrium of the restricted
 game exists, is unique, or is symmetric, and what utility cost the
